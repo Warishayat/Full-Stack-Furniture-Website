@@ -249,12 +249,23 @@ const SearchProduct = async (req, res) => {
       });
     }
 
-    const products = await Product.find({
-      $or: [
-        { title: { $regex: query, $options: "i" } },
-        { description: { $regex: query, $options: "i" } }
-      ]
+    const searchTerms = query.split(' ').filter(word => word.length > 0);
+    
+    // Create regex that handles optional trailing 's' or plural forms
+    const searchRegex = searchTerms.map(term => {
+      const baseTerm = term.toLowerCase().endsWith('s') ? term.slice(0, -1) : term;
+      const pattern = `(${term}|${baseTerm})`;
+      return {
+        $or: [
+          { title: { $regex: pattern, $options: "i" } },
+          { description: { $regex: pattern, $options: "i" } }
+        ]
+      };
     });
+
+    const products = await Product.find({
+      $and: searchRegex
+    }).populate('category');
 
     res.status(200).json({
       success: true,

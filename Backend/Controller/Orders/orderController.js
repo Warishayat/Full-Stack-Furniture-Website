@@ -43,7 +43,7 @@ const createCheckoutSession = async (req, res) => {
       },
 
       metadata: {
-        userId: req.user.id
+        userId: req.user._id.toString()
       },
 
       success_url: `${req.headers.origin}/success`,
@@ -180,8 +180,9 @@ const webhookHandler = async (req, res) => {
 
 const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.id })
-      .populate("items.product");
+    const orders = await Order.find({ user: req.user._id })
+      .populate("items.product")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -296,11 +297,50 @@ const trackOrder = async (req, res) => {
   }
 };
 
+const getOrderById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const cleanId = id.trim();
+    let order;
+
+    // Try full ID search first
+    if (cleanId.match(/^[0-9a-fA-F]{24}$/)) {
+      order = await Order.findById(cleanId)
+        .populate("user", "name email")
+        .populate("items.product");
+    }
+
+    // Fallback: search by short ID if not found (like trackOrder)
+    if (!order) {
+      order = await Order.findOne({
+        $expr: {
+          $eq: [
+            { $substrCP: [{ $toString: "$_id" }, 16, 8] },
+            cleanId.toLowerCase()
+          ]
+        }
+      })
+      .populate("user", "name email")
+      .populate("items.product");
+    }
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    res.status(200).json({ success: true, order });
+  } catch (error) {
+    console.error("getOrderById Error:", error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createCheckoutSession,
   webhookHandler,
   getMyOrders,
   getAllOrders,
   updateOrderStatus,
-  trackOrder
+  trackOrder,
+  getOrderById
 };

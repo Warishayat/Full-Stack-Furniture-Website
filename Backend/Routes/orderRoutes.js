@@ -1,7 +1,7 @@
 const express = require("express");
 const orderRouter = express.Router();
  
-const {createCheckoutSession, webhookHandler, getMyOrders, getAllOrders, updateOrderStatus, trackOrder} = require("../Controller/Orders/orderController");
+const {createCheckoutSession, webhookHandler, getMyOrders, getAllOrders, updateOrderStatus, trackOrder, getOrderById} = require("../Controller/Orders/orderController");
 const {protect} = require("../Middleware/authMiddleware");
 const {adminOnly} = require("../Middleware/checkAdmin");
 
@@ -11,6 +11,7 @@ orderRouter.get("/getMyOrders", protect, getMyOrders);
 orderRouter.get("/getAllOrders", protect, adminOnly, getAllOrders);
 orderRouter.put("/updateOrderStatus/:id", protect,adminOnly, updateOrderStatus);
 orderRouter.get("/track/:id", trackOrder); 
+orderRouter.get("/getOrderById/:id", protect, getOrderById); 
 
 
 
