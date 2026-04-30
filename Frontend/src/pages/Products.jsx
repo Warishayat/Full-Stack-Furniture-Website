@@ -68,7 +68,7 @@ const Products = () => {
   }, [activeCategory, searchQuery]);
 
   return (
-    <div className="bg-primary-50/50 min-h-screen pt-24 lg:pt-32 pb-24 lg:pb-32">
+    <div className="bg-primary-50/50 min-h-screen pt-32 lg:pt-40 pb-24 lg:pb-32">
       <div className="container mx-auto px-4 lg:px-12">
         
         {/* Header */}

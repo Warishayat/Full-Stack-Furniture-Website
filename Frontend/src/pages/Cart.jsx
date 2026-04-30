@@ -62,8 +62,8 @@ const Cart = () => {
   }
 
   return (
-    <div className="bg-secondary min-h-screen pt-24 lg:pt-32 pb-20 lg:pb-32">
-      <div className="container mx-auto px-6 lg:px-12">
+    <div className="bg-secondary min-h-screen pt-32 lg:pt-40 pb-20 lg:pb-32 px-4 md:px-8 lg:px-12">
+      <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>
             <h1 className="text-4xl lg:text-5xl font-serif font-bold text-primary-950 mb-3">Your Selection</h1>

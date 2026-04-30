@@ -21,6 +21,7 @@ import ShippingPolicy from './pages/ShippingPolicy';
 import Warranty from './pages/Warranty';
 import Bespoke from './pages/Bespoke';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import OrderDetail from './pages/OrderDetail';
 
 // Admin Pages
 import AdminDashboard from './admin/Dashboard';
@@ -66,6 +67,7 @@ function App() {
             <Route path="/success" element={<Success />} />
             <Route path="/cancel" element={<Cancel />} />
             <Route path="/orders" element={<MyOrders />} />
+            <Route path="/order/:id" element={<OrderDetail />} />
           </Route>
 
           {/* Admin Protected Routes */}

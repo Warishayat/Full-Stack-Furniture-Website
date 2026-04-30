@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import { ShoppingCart, User, Menu, X, Search, Sparkles, ChevronRight, LayoutGrid, Heart, ArrowRight } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, Search, Sparkles, ChevronRight, LayoutGrid, LogOut, Package, Clock } from 'lucide-react';
 import API from '../../services/api';
 
 const Navbar = () => {
@@ -18,22 +18,56 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('query') || '');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
+  // Headroom & Scrolled Logic
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          setIsScrolled(currentScrollY > 50);
+
+          if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            setIsHeaderVisible(false); // Hide on scroll down
+          } else if (currentScrollY <= lastScrollY || currentScrollY <= 100) {
+            setIsHeaderVisible(true); // Show on scroll up
+          }
+          
+          setLastScrollY(currentScrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
     const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
+      const searchToggle = document.getElementById('search-toggle');
+      if (searchRef.current && !searchRef.current.contains(event.target) && 
+          searchToggle && !searchToggle.contains(event.target)) {
         setIsSearchVisible(false);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('mousedown', handleClickOutside);
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  }, [lastScrollY]);
+
+  // Lock scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMobileMenuOpen]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -57,240 +91,233 @@ const Navbar = () => {
     }
   };
 
+  const navLinks = [
+    { name: 'Collections', path: '/products' },
+    { name: 'Our Story', path: '/about' },
+    { name: 'Track Order', path: '/track-order' }
+  ];
+
   return (
     <>
       <header 
-        ref={searchRef}
-        onMouseLeave={() => setIsSearchVisible(false)}
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 bg-primary-950 ${
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
+          isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+        } ${
           isScrolled 
-            ? 'py-3 border-b border-white/5 shadow-2xl shadow-black' 
-            : 'py-5 border-b border-white/5'
+            ? 'bg-primary-950/85 backdrop-blur-2xl py-2 lg:py-2.5 border-b border-white/5 shadow-2xl' 
+            : 'bg-primary-950 py-3 lg:py-4 border-b border-white/5'
         }`}
       >
-        <div className="container mx-auto px-6 lg:px-12">
+        <div className="container mx-auto px-4 lg:px-12">
           <div className="flex items-center justify-between">
             
-            {/* Left: Logo & Brand */}
-            <div className="flex-shrink-0 flex items-center gap-8">
-              <Link to="/" className="flex items-center gap-4 group">
-                <div className="relative">
-                  <div className="w-10 h-10 bg-accent rotate-45 flex items-center justify-center transition-all duration-700 group-hover:rotate-[225deg]">
-                    <Sparkles className="w-5 h-5 text-white -rotate-45 group-hover:-rotate-[225deg] transition-all duration-700" />
-                  </div>
-                  <div className="absolute inset-0 bg-accent/20 blur-xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-700"></div>
+            {/* Logo Section */}
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="relative">
+                <div className="w-10 h-10 bg-accent rotate-45 flex items-center justify-center transition-all duration-700 group-hover:rotate-[225deg] shadow-lg shadow-accent/20">
+                  <Sparkles className="w-5 h-5 text-white -rotate-45 group-hover:-rotate-[225deg] transition-all duration-700" />
                 </div>
-                <h1 className="text-2xl font-serif font-black text-white tracking-tighter italic">
-                  Elite<span className="text-accent not-italic">Seating</span>
-                </h1>
-              </Link>
+              </div>
+              <h1 className="text-xl lg:text-2xl font-serif font-black text-white tracking-tighter italic">
+                Elite<span className="text-accent not-italic">Seating</span>
+              </h1>
+            </Link>
 
-              {/* Desktop Nav Links */}
-              <nav className="hidden lg:flex items-center gap-8 ml-8 border-l border-white/10 pl-8">
-                {['Collections', 'Story', 'Track Order'].map((item) => (
-                  <Link 
-                    key={item}
-                    to={item === 'Collections' ? '/products' : item === 'Story' ? '/about' : '/track-order'}
-                    className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60 hover:text-white transition-all"
-                  >
-                    {item}
-                  </Link>
-                ))}
-              </nav>
-            </div>
+            {/* Desktop Navigation */}
+            <nav className="hidden lg:flex items-center gap-10">
+              {navLinks.map((link) => (
+                <Link 
+                  key={link.name} 
+                  to={link.path}
+                  className="text-[10px] font-black uppercase tracking-[0.3em] text-white/50 hover:text-accent transition-all relative group"
+                >
+                  {link.name}
+                  <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-accent transition-all group-hover:w-full" />
+                </Link>
+              ))}
+            </nav>
 
-            {/* Right: Actions */}
-            <div className="flex items-center gap-2 lg:gap-6">
-              
-              {/* Search Toggle */}
+            {/* Actions Section */}
+            <div className="flex items-center gap-1 lg:gap-4">
+              {/* Search Toggle (Desktop) */}
               <button 
+                id="search-toggle"
                 onClick={() => setIsSearchVisible(!isSearchVisible)}
-                className="p-2.5 text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full"
+                className="hidden lg:flex p-2.5 text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full"
               >
                 <Search className="w-5 h-5" />
               </button>
 
-              {/* Cart - Hidden for Admins or on Admin Dashboard */}
-              {!user?.isAdmin && !location.pathname.toLowerCase().startsWith('/admin') && (
-                <Link to="/cart" className="relative p-2.5 text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full group">
-                  <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+              {/* Mobile Only: Search & Cart */}
+              <div className="flex lg:hidden items-center gap-1 mr-2">
+                <button 
+                  onClick={() => setIsSearchVisible(!isSearchVisible)}
+                  className="p-2 text-white/70 hover:text-accent"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+                <Link to="/cart" className="p-2 text-white/70 hover:text-accent relative">
+                  <ShoppingCart className="w-5 h-5" />
                   {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-accent text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full">
+                    <span className="absolute top-1 right-1 bg-accent text-white text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-primary-950">
                       {cartCount}
                     </span>
                   )}
                 </Link>
-              )}
+              </div>
 
-              {/* Auth/Profile */}
-              <div className="">
+              {/* Cart (Desktop) */}
+              <div className="hidden lg:block">
+                <Link to="/cart" className="relative w-10 h-10 flex items-center justify-center text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full group">
+                  <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  {cartCount > 0 && (
+                    <span className="absolute top-1 right-1 bg-accent text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-primary-950">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+              </div>
+
+              {/* Profile (Desktop) */}
+              <div className="hidden lg:block">
                 {user ? (
                   <div className="relative group">
-                    <button className="p-2.5 text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full">
+                    <button className="p-2.5 text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full border border-white/10">
                       <User className="w-5 h-5" />
                     </button>
-                    {/* Desktop Dropdown - Hidden on Mobile */}
-                    <div className="hidden sm:block absolute right-0 w-64 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[110]">
-                      <div className="bg-primary-950 border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-6">
-                        <div className="mb-4 pb-4 border-b border-white/5">
-                          <p className="text-xs font-bold text-white truncate">{user.name}</p>
-                          <p className="text-[10px] text-white/40 truncate">{user.email}</p>
+                    <div className="absolute right-0 w-72 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[110]">
+                      <div className="bg-primary-950 border border-white/10 rounded-[2rem] shadow-2xl shadow-primary-950/50 overflow-hidden p-6 backdrop-blur-xl">
+                        <div className="mb-6 pb-6 border-b border-white/10">
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-accent mb-2">Authenticated As</p>
+                          <p className="text-sm font-bold text-white truncate mb-1">{user.name}</p>
+                          <p className="text-[10px] text-white/50 truncate font-medium">{user.email}</p>
                         </div>
                         <div className="space-y-1">
-                           {user.isAdmin && (
-                             <Link to="/admin" className="flex items-center gap-3 p-3 text-[10px] font-black text-white/60 hover:text-accent rounded-xl transition-all uppercase tracking-widest">
-                               <LayoutGrid className="w-4 h-4" /> Dashboard
-                             </Link>
-                           )}
-                           {!user.isAdmin && (
-                             <Link to="/orders" className="flex items-center gap-3 p-3 text-[10px] font-black text-white/60 hover:text-accent rounded-xl transition-all uppercase tracking-widest">
-                               <ShoppingCart className="w-4 h-4" /> Orders
-                             </Link>
-                           )}
-                           <button onClick={logout} className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all uppercase tracking-widest mt-2">
-                             Logout
-                           </button>
+                          <Link to={(user.role === 'admin' || user.isAdmin) ? "/admin" : "/orders"} className="flex items-center gap-3 p-3.5 text-[10px] font-black text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest group/item">
+                            <LayoutGrid className="w-4 h-4 text-accent group-hover/item:scale-110 transition-transform" /> 
+                            <span>Dashboard</span>
+                          </Link>
+                          <button onClick={logout} className="w-full flex items-center gap-3 p-3.5 text-[10px] font-black text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all uppercase tracking-widest mt-2">
+                            <LogOut className="w-4 h-4" /> 
+                            <span>Logout System</span>
+                          </button>
                         </div>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <Link to="/login" className="hidden sm:inline-block px-6 py-2.5 bg-accent text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-white hover:text-black transition-all">
-                    Login
+                  <Link to="/login" className="px-6 py-2.5 bg-accent text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full hover:bg-white hover:text-primary-950 transition-all shadow-lg shadow-accent/10">
+                    Join Elite
                   </Link>
                 )}
               </div>
 
-              {/* Hamburger */}
+              {/* Mobile Hamburger */}
               <button 
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="p-2.5 bg-accent text-white rounded-full hover:scale-105 transition-transform"
+                className="lg:hidden p-3 bg-white/5 text-white rounded-2xl border border-white/10 hover:bg-accent transition-all"
               >
-                <Menu className="w-5 h-5" />
+                <Menu className="w-6 h-6" />
               </button>
             </div>
           </div>
         </div>
 
         {/* Search Overlay */}
-        <div className={`absolute top-full left-0 right-0 bg-primary-950/95 backdrop-blur-3xl border-t border-white/5 transition-all duration-500 overflow-hidden ${isSearchVisible ? 'max-h-[200px] opacity-100' : 'max-h-0 opacity-0'}`}>
-          <div className="container mx-auto px-6 py-6 lg:py-10">
-            <form onSubmit={handleSearch} className="relative max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4 lg:gap-6">
+        <div 
+          ref={searchRef}
+          className={`absolute top-full left-0 right-0 bg-primary-950/98 backdrop-blur-3xl border-t border-white/5 transition-all duration-500 overflow-hidden ${isSearchVisible ? 'max-h-[220px] opacity-100' : 'max-h-0 opacity-0'}`}
+        >
+          <div className="container mx-auto px-6 py-8 lg:py-12">
+            <form onSubmit={handleSearch} className="relative max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-6">
               <input
                 type="text"
-                placeholder="Search masterpieces..."
+                placeholder="What masterpiece are you seeking?"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full flex-1 bg-transparent border-b-2 border-white/10 pb-4 text-xl lg:text-4xl font-serif text-white focus:border-accent outline-none transition-all placeholder:text-white/5"
+                className="w-full flex-1 bg-transparent border-b-2 border-accent pb-4 text-xl lg:text-4xl font-serif text-white focus:border-white outline-none transition-all placeholder:text-white/40"
                 autoFocus={isSearchVisible}
               />
-              <button type="submit" className="w-full sm:w-auto px-10 py-4 lg:py-5 bg-accent text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-white hover:text-black transition-all">
-                Search
+              <button type="submit" className="w-full md:w-auto px-12 py-4 lg:py-5 bg-accent text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-white hover:text-black transition-all">
+                Discover
               </button>
             </form>
           </div>
         </div>
       </header>
 
-      {/* Fullscreen Mobile Menu (Emerald Style) */}
-      <div className={`fixed inset-0 z-[200] bg-primary-950 transition-all duration-700 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(180,83,9,0.15),transparent)]"></div>
-        <div className="relative z-10 h-full flex flex-col p-8 lg:p-20 overflow-y-auto custom-scrollbar">
-          <div className="flex justify-between items-center mb-16">
-            <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-accent rotate-45 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white -rotate-45" />
+      {/* Premium Mobile Menu Overlay */}
+      <div className={`fixed inset-0 z-[1000] lg:hidden transition-all duration-700 ease-in-out ${
+        isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+      }`}>
+        <div className="absolute inset-0 bg-primary-950/98 backdrop-blur-3xl" onClick={() => setIsMobileMenuOpen(false)} />
+        
+        <div className={`absolute inset-y-0 right-0 w-full max-w-sm bg-primary-950 flex flex-col p-8 transition-transform duration-700 ease-in-out ${
+          isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}>
+          <div className="flex justify-between items-center mb-12">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
               </div>
-              <span className="text-2xl font-serif font-black text-white italic">EliteSeating</span>
-            </Link>
-            <button onClick={() => setIsMobileMenuOpen(false)} className="p-4 bg-white/5 text-white rounded-full">
+              <span className="text-xl font-serif font-bold text-white italic">EliteSeating</span>
+            </div>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-white/50 hover:text-accent transition-colors">
               <X className="w-8 h-8" />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-            <div>
-              <p className="text-[10px] font-black text-accent uppercase tracking-[0.5em] mb-12">Discovery</p>
-              <nav className="flex flex-col gap-6">
-                {['Home', 'Collections', 'Track Order', 'Our Story'].map((item, i) => {
-                  if (user?.isAdmin && item === 'Track Order') return null;
-                  return (
-                    <Link 
-                      key={item}
-                      to={item === 'Home' ? '/' : item === 'Collections' ? '/products' : item === 'Track Order' ? '/track-order' : '/about'}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="group flex items-center gap-6 text-3xl lg:text-5xl font-serif font-black text-white/20 hover:text-white transition-all duration-500"
-                    >
-                      <span className="text-sm font-sans text-accent opacity-0 group-hover:opacity-100 transition-all">0{i+1}</span>
-                      {item}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
+          <nav className="flex flex-col space-y-2 mb-12">
+            {navLinks.map((item, idx) => (
+              <Link
+                key={item.name}
+                to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`flex items-center justify-between py-6 border-b border-white/5 group transition-all duration-500 ${
+                  isMobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-10 opacity-0'
+                }`}
+                style={{ transitionDelay: `${idx * 100}ms` }}
+              >
+                <span className="text-3xl font-serif font-medium text-white/90 group-hover:text-accent transition-all">{item.name}</span>
+                <ChevronRight className="w-6 h-6 text-white/20 group-hover:text-accent transition-all" />
+              </Link>
+            ))}
+          </nav>
 
-            <div className="space-y-20">
-              <div>
-                <p className="text-[10px] font-black text-accent uppercase tracking-[0.5em] mb-12">Account</p>
-                <div className="flex flex-col gap-6">
-                  {user ? (
-                    <>
-                      <div className="mb-4">
-                        <p className="text-xl font-serif font-bold text-white">{user.name}</p>
-                        <p className="text-xs text-white/40">{user.email}</p>
-                      </div>
-                      {user.isAdmin && (
-                        <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-serif font-black text-white/40 hover:text-white transition-all">
-                          Dashboard
-                        </Link>
-                      )}
-                      {!user.isAdmin && (
-                        <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-serif font-black text-white/40 hover:text-white transition-all">
-                          My Orders
-                        </Link>
-                      )}
-                      <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="text-2xl font-serif font-black text-rose-500 hover:text-rose-400 text-left transition-all">
-                        Logout
-                      </button>
-                    </>
-                  ) : (
-                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-serif font-black text-white hover:text-accent transition-all">
-                      Login / Join
-                    </Link>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-[10px] font-black text-accent uppercase tracking-[0.5em] mb-12">Categories</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {categories.map((cat) => (
-                    <Link
-                      key={cat._id}
-                      to={`/products?category=${cat._id}`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="p-8 bg-white/5 border border-white/5 rounded-3xl hover:bg-accent transition-all group"
-                    >
-                      <div className="flex justify-between items-center mb-4">
-                        <LayoutGrid className="w-6 h-6 text-accent group-hover:text-white transition-colors" />
-                        <ChevronRight className="w-5 h-5 text-white/20 group-hover:translate-x-2 transition-all" />
-                      </div>
-                      <span className="text-sm font-black uppercase tracking-widest text-white">{cat.name}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
+          <div className="mt-auto">
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {user ? (
+                <>
+                  <Link 
+                    to={(user.role === 'admin' || user.isAdmin) ? "/admin" : "/orders"}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex flex-col items-center gap-3 p-6 bg-white/5 rounded-[2.5rem] border border-white/10"
+                  >
+                    <User className="w-6 h-6 text-accent" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">Account</span>
+                  </Link>
+                  <button 
+                    onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                    className="flex flex-col items-center gap-3 p-6 bg-white/5 rounded-[2.5rem] border border-white/10"
+                  >
+                    <LogOut className="w-6 h-6 text-red-400" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-red-400">Logout</span>
+                  </button>
+                </>
+              ) : (
+                <Link 
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="col-span-2 flex items-center justify-center gap-4 py-6 bg-accent rounded-[2.5rem] text-white"
+                >
+                  <User className="w-5 h-5" />
+                  <span className="text-sm font-black uppercase tracking-[0.2em]">Join Elite Seating</span>
+                </Link>
+              )}
             </div>
-          </div>
-
-          <div className="mt-auto pt-20 border-t border-white/5 flex flex-wrap gap-12">
-            <div>
-              <p className="text-[10px] font-black text-accent uppercase tracking-[0.3em] mb-2">Inquiry</p>
-              <p className="text-lg font-bold text-white">07378957840</p>
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-accent uppercase tracking-[0.3em] mb-2">Concierge</p>
-              <p className="text-lg font-bold text-white">eilteseatingltd@gmail.com</p>
+            
+            <div className="flex flex-col gap-4 text-center">
+              <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.3em]">United Kingdom • BB2 3RG</p>
             </div>
           </div>
         </div>

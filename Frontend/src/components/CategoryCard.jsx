@@ -1,7 +1,8 @@
+import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
-const CategoryCard = ({ category }) => {
+const CategoryCard = memo(({ category }) => {
   return (
     <Link 
       to={`/products?category=${category._id}`} 
@@ -38,6 +39,6 @@ const CategoryCard = ({ category }) => {
       <div className="absolute inset-6 border border-white/10 rounded-[2rem] pointer-events-none group-hover:inset-4 group-hover:border-white/20 transition-all duration-700" />
     </Link>
   );
-};
+});
 
 export default CategoryCard;

@@ -16,6 +16,11 @@
   }
 }
 
+.section-optimized {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
 @layer utilities {
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out forwards;

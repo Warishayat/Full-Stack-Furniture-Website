@@ -159,13 +159,13 @@ const ManageCategories = () => {
 
       {/* Add Category Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 bg-primary-950/60 backdrop-blur-md overflow-y-auto">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md mt-32 mb-20 border border-white/20 animate-fade-in-up scrollbar-hide">
-            <div className="sticky top-0 bg-white flex justify-between items-center p-6 border-b border-primary-50 bg-primary-50/30 z-10">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-primary-950/40 backdrop-blur-2xl overflow-y-auto">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md border border-white/20 animate-fade-in-up my-auto">
+            <div className="flex justify-between items-center p-8 border-b border-primary-50">
               <h2 className="text-2xl font-serif font-bold text-primary-950 italic flex items-center gap-4">
                  <FolderTree className="w-6 h-6 text-accent" /> New Department
               </h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-3 bg-white text-primary-400 hover:text-primary-950 rounded-full transition-all shadow-sm">
+              <button onClick={() => setIsModalOpen(false)} className="p-3 bg-primary-50 text-primary-400 hover:text-primary-950 rounded-full transition-all">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -178,7 +178,7 @@ const ManageCategories = () => {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-6 py-4 bg-white border border-primary-200 rounded-2xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
+                  className="w-full px-6 py-4 bg-white border border-primary-200 rounded-3xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
                   placeholder="e.g. Living Room Suite"
                 />
               </div>

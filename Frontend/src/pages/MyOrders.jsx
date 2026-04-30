@@ -58,7 +58,7 @@ const MyOrders = () => {
   }
 
   return (
-    <div className="bg-secondary min-h-screen pt-24 lg:pt-32 pb-24 lg:pb-32">
+    <div className="bg-secondary min-h-screen pt-32 lg:pt-32 pb-24 lg:pb-32">
       <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
         <h1 className="text-3xl font-serif font-medium text-primary-900 mb-8">My Orders</h1>
 
@@ -76,7 +76,9 @@ const MyOrders = () => {
                 <div className="bg-primary-50 p-6 border-b border-primary-100 flex flex-wrap gap-4 items-center justify-between">
                   <div>
                     <p className="text-sm text-primary-500 mb-1">Order ID</p>
-                    <p className="font-medium text-primary-900">#{order._id.slice(-8).toUpperCase()}</p>
+                    <Link to={`/order/${order._id}`} className="font-medium text-primary-950 hover:text-accent transition-colors underline decoration-accent/20 underline-offset-4">
+                      #{order._id.slice(-8).toUpperCase()}
+                    </Link>
                   </div>
                   <div>
                     <p className="text-sm text-primary-500 mb-1">Date</p>

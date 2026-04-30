@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import image1 from "../assets/images/Hero/HeroImage-1.jpg";
-import image2 from "../assets/images/Hero/HeroImage-2.jpg";
-import image3 from "../assets/images/Hero/HeroImage-3.jpg";
+import image1 from "../assets/images/Hero/HeroImage-1.webp";
+import image2 from "../assets/images/Hero/HeroImage-2.webp";
+import image3 from "../assets/images/Hero/HeroImage-3.webp";
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -44,7 +44,7 @@ const HeroSlider = () => {
       {SLIDES.map((slide, index) => (
         <div
           key={index}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out will-change-opacity ${
             index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
         >
@@ -52,7 +52,7 @@ const HeroSlider = () => {
             <img
               src={slide.image}
               alt={slide.title}
-              className={`w-full h-full object-cover object-center brightness-[0.6] transition-transform duration-[6000ms] ease-linear ${
+              className={`w-full h-full object-cover object-center brightness-[0.6] transition-transform duration-[6000ms] ease-linear will-change-transform ${
                 index === currentSlide ? 'scale-110' : 'scale-100'
               }`}
             />

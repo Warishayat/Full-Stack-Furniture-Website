@@ -21,7 +21,13 @@ const AdminDashboard = () => {
           API.get('/api/order/getAllOrders') 
         ]);
 
-        const oData = ordersRes.data.orders || ordersRes.data || [];
+        let oData = [];
+        if (ordersRes.data && Array.isArray(ordersRes.data.orders)) {
+          oData = ordersRes.data.orders;
+        } else if (Array.isArray(ordersRes.data)) {
+          oData = ordersRes.data;
+        }
+        
         setOrdersResData(oData);
         setStats({
           products: productsRes.data.products?.length || productsRes.data?.length || 0,
@@ -84,7 +90,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Admin Content Area */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             {location.pathname === '/admin' ? (
               <div className="animate-fade-in-up">
                 <div className="mb-16">
@@ -137,13 +143,58 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Additional Stats / Quick Actions */}
-                <div className="bg-primary-950 rounded-[4rem] p-12 text-white relative overflow-hidden shadow-2xl">
+                <div className="bg-primary-950 rounded-[4rem] p-12 text-white relative overflow-hidden shadow-2xl mb-12">
                    <div className="relative z-10">
                       <h3 className="text-3xl font-serif font-bold italic mb-6">Welcome back, Admin</h3>
                       <p className="text-primary-300 max-w-lg leading-relaxed">Your store is currently performing at peak efficiency. All systems are operational and secure.</p>
                    </div>
                    <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
                 </div>
+
+                {/* Recent Orders Section */}
+                <div className="bg-white rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 p-8 lg:p-12 overflow-hidden">
+                   <div className="flex items-center justify-between mb-10">
+                      <h3 className="text-2xl font-serif font-bold text-primary-950">Recent Transactions</h3>
+                      <Link to="/admin/orders" className="text-[10px] font-black uppercase tracking-[0.3em] text-accent hover:text-primary-950 transition-colors">View All Records</Link>
+                   </div>
+                   <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                         <thead>
+                            <tr className="border-b border-primary-50 text-[10px] font-black uppercase tracking-widest text-primary-400">
+                               <th className="pb-6">Reference</th>
+                               <th className="pb-6">Customer</th>
+                               <th className="pb-6">Amount</th>
+                               <th className="pb-6">Status</th>
+                            </tr>
+                         </thead>
+                         <tbody className="divide-y divide-primary-50">
+                            {ordersResData.slice(0, 5).map((order) => (
+                               <tr key={order._id} className="group hover:bg-primary-50/50 transition-all">
+                                  <td className="py-6">
+                                     <Link 
+                                       to={`/order/${order._id}`} 
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       className="font-bold text-primary-950 hover:text-accent transition-all underline decoration-accent/10 underline-offset-4"
+                                     >
+                                        #{order._id.slice(-8).toUpperCase()}
+                                     </Link>
+                                  </td>
+                                  <td className="py-6">
+                                     <div className="text-sm font-bold text-primary-950">{order.user?.name || 'Private Patron'}</div>
+                                  </td>
+                                  <td className="py-6 text-sm font-bold text-primary-950">£{order.totalPrice?.toLocaleString()}</td>
+                                  <td className="py-6">
+                                     <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-primary-50 rounded-full text-primary-500">
+                                        {order.orderStatus || 'Processing'}
+                                      </span>
+                                   </td>
+                                </tr>
+                             ))}
+                          </tbody>
+                       </table>
+                    </div>
+                 </div>
               </div>
             ) : (
               <Outlet />

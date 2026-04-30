@@ -44,44 +44,33 @@ const Home = () => {
   const nextTestimonial = () => setCurrentTestimonial((prev) => (prev + 1) % (reviews.length || 1));
   const prevTestimonial = () => setCurrentTestimonial((prev) => (prev - 1 + (reviews.length || 1)) % (reviews.length || 1));
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-secondary">
-        <div className="relative">
-          <div className="w-20 h-20 border-2 border-primary-100 rounded-full"></div>
-          <div className="w-20 h-20 border-t-2 border-accent rounded-full animate-spin absolute top-0 left-0"></div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-white">
-      {/* Hero Slider */}
+      {/* Hero Slider - Renders immediately */}
       <HeroSlider />
 
-      {/* Stats Section - One horizontal line below hero */}
-      <section className="bg-primary-950 border-y border-white/5 py-16 lg:py-24 relative overflow-hidden">
-         <div className="container mx-auto px-6 lg:px-20 relative z-10">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-0 items-center">
-               <div className="flex items-center justify-center lg:justify-start gap-8 group">
-                  <p className="text-6xl lg:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">12k+</p>
+      {/* Stats Section - Renders immediately */}
+      <section className="bg-primary-950 border-y border-white/5 py-6 lg:py-12 relative overflow-hidden">
+         <div className="container mx-auto px-6 lg:px-12 xl:px-20 relative z-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-8 items-center">
+               <div className="flex items-center justify-center lg:justify-start gap-4 lg:gap-8 group">
+                  <p className="text-5xl lg:text-6xl xl:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">12k+</p>
                   <div className="text-left">
                      <p className="text-[10px] text-primary-400 font-bold uppercase tracking-[0.4em] mb-1">Satisfied</p>
                      <p className="text-[10px] text-white font-bold uppercase tracking-[0.4em]">Homeowners</p>
                   </div>
                </div>
                
-               <div className="flex items-center justify-center gap-8 group border-y md:border-y-0 md:border-x border-white/10 py-12 md:py-0">
-                  <p className="text-6xl lg:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">25+</p>
+               <div className="flex items-center justify-center gap-4 lg:gap-8 group border-y md:border-y-0 md:border-x border-white/10 py-8 md:py-0">
+                  <p className="text-5xl lg:text-6xl xl:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">25+</p>
                   <div className="text-left">
                      <p className="text-[10px] text-primary-400 font-bold uppercase tracking-[0.4em] mb-1">Design</p>
                      <p className="text-[10px] text-white font-bold uppercase tracking-[0.4em]">Excellence</p>
                   </div>
                </div>
-
-               <div className="flex items-center justify-center lg:justify-end gap-8 group">
-                  <p className="text-6xl lg:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">100%</p>
+               
+               <div className="flex items-center justify-center lg:justify-end gap-4 lg:gap-8 group">
+                  <p className="text-5xl lg:text-6xl xl:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">100%</p>
                   <div className="text-left">
                      <p className="text-[10px] text-primary-400 font-bold uppercase tracking-[0.4em] mb-1">Organic</p>
                      <p className="text-[10px] text-white font-bold uppercase tracking-[0.4em]">Sourcing</p>
@@ -92,9 +81,8 @@ const Home = () => {
       </section>
 
       {/* Featured Collections */}
-      <section className="pt-32 pb-16 bg-secondary/30">
+      <section className="pt-32 pb-16 bg-secondary/30 section-optimized">
         <div className="container mx-auto px-6 lg:px-12">
-          
           <div className="flex flex-col md:flex-row justify-between items-center md:items-end mb-24 gap-10 text-center md:text-left">
             <div className="max-w-2xl">
               <span className="text-accent uppercase tracking-[0.4em] text-[10px] font-black mb-6 block animate-fade-in">Curated Anthology</span>
@@ -108,16 +96,24 @@ const Home = () => {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {categories.slice(0, 6).map(cat => (
-              <CategoryCard key={cat._id} category={cat} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="animate-pulse bg-primary-100 rounded-[3rem] h-[30rem]"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {categories.slice(0, 6).map(cat => (
+                <CategoryCard key={cat._id} category={cat} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Signature Pieces (Products) */}
-      <section className="pt-16 pb-32 bg-white relative overflow-hidden">
+      <section className="pt-16 pb-32 bg-white relative overflow-hidden section-optimized">
         <div className="absolute -left-20 top-1/2 -translate-y-1/2 text-[15rem] font-serif font-black text-primary-50/50 -rotate-90 select-none">
           LUXURY
         </div>
@@ -134,7 +130,7 @@ const Home = () => {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="animate-pulse bg-primary-50 rounded-[2.5rem] h-[35rem]"></div>
+                <div key={i} className="animate-pulse bg-primary-50 rounded-[2.5rem] h-[28rem]"></div>
               ))}
             </div>
           ) : (
@@ -158,7 +154,7 @@ const Home = () => {
 
       {/* Testimonials Section - Carousel */}
       {reviews.length > 0 && (
-        <section className="py-32 bg-secondary/30 relative overflow-hidden">
+        <section className="py-32 bg-secondary/30 relative overflow-hidden section-optimized">
           <div className="container mx-auto px-6 lg:px-12 relative z-10">
             <div className="text-center mb-24">
               <span className="text-accent uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Testimonials</span>
@@ -231,7 +227,7 @@ const Home = () => {
       )}
 
       {/* Philosophy Section */}
-      <section className="py-32 bg-primary-950 text-white overflow-hidden relative">
+      <section className="py-32 bg-primary-950 text-white overflow-hidden relative section-optimized">
         <div className="absolute top-0 right-0 w-1/2 h-full opacity-10">
            <img src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?q=80&w=2628&auto=format&fit=crop" className="w-full h-full object-cover" />
         </div>
@@ -280,7 +276,7 @@ const Home = () => {
       </section>
 
       {/* Final Trust Section */}
-      <section className="py-32 bg-white">
+      <section className="py-32 bg-white section-optimized">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-24">
             <div className="group text-center">

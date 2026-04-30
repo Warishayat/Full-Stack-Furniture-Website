@@ -73,8 +73,8 @@ const ManageOrders = () => {
         ) : orders.length === 0 ? (
           <div className="p-20 text-center text-primary-500 font-bold uppercase tracking-widest text-xs">No transactions recorded yet.</div>
         ) : (
-          <div className="w-full overflow-x-auto overflow-y-hidden custom-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[800px]">
+          <div className="w-full overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse min-w-[900px]">
               <thead>
                 <tr className="bg-primary-950 text-white text-[10px] font-black uppercase tracking-[0.2em]">
                   <th className="p-5">Reference</th>
@@ -90,7 +90,9 @@ const ManageOrders = () => {
                   <tr key={order._id} className="hover:bg-primary-50 transition-colors">
                     <td className="p-5">
                        <Link 
-                         to={`/track-order?tid=${order._id.slice(-8).toUpperCase()}`}
+                         to={`/order/${order._id}`}
+                         target="_blank"
+                         rel="noopener noreferrer"
                          className="font-serif font-bold text-primary-950 hover:text-accent transition-colors underline decoration-accent/30 underline-offset-4"
                        >
                          #{order._id.slice(-8).toUpperCase()}
@@ -100,8 +102,8 @@ const ManageOrders = () => {
                       {new Date(order.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="p-5">
-                      <div className="font-black text-primary-950 text-sm mb-1">{order.userId?.name || 'Private Client'}</div>
-                      <div className="text-[10px] text-primary-500 font-black uppercase tracking-widest">{order.userId?.email}</div>
+                      <div className="font-black text-primary-950 text-sm mb-1">{order.user?.name || 'Private Client'}</div>
+                      <div className="text-[10px] text-primary-500 font-black uppercase tracking-widest">{order.user?.email}</div>
                     </td>
                     <td className="p-5 font-black text-primary-950 whitespace-nowrap">
                       £{order.totalPrice?.toLocaleString(undefined, { minimumFractionDigits: 2 })}

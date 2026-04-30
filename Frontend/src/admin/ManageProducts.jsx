@@ -294,13 +294,13 @@ const ManageProducts = () => {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-[200] flex items-start justify-center p-4 bg-primary-950/60 backdrop-blur-md overflow-y-auto">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl mt-32 mb-20 border border-white/20 animate-fade-in-up scrollbar-hide">
-            <div className="sticky top-0 bg-white flex justify-between items-center p-6 border-b border-primary-50 bg-primary-50/30 z-10">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-primary-950/40 backdrop-blur-2xl overflow-y-auto">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-2xl border border-white/20 animate-fade-in-up my-auto">
+            <div className="flex justify-between items-center p-8 border-b border-primary-50">
               <h2 className="text-2xl font-serif font-bold text-primary-950">
                 {editingId ? 'Refine Masterpiece' : 'New Creation'}
               </h2>
-              <button onClick={resetForm} className="p-3 bg-white text-primary-400 hover:text-primary-950 rounded-full transition-all shadow-sm">
+              <button onClick={resetForm} className="p-3 bg-primary-50 text-primary-400 hover:text-primary-950 rounded-full transition-all">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -316,7 +316,7 @@ const ManageProducts = () => {
                       name="title"
                       value={formData.title}
                       onChange={handleInputChange}
-                      className="w-full px-6 py-4 bg-white border border-primary-200 rounded-2xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
+                      className="w-full px-6 py-4 bg-white border border-primary-200 rounded-3xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
                       placeholder="Enter title..."
                     />
                   </div>
@@ -331,7 +331,7 @@ const ManageProducts = () => {
                         step="0.01"
                         value={formData.price}
                         onChange={handleInputChange}
-                        className="w-full px-6 py-4 bg-white border border-primary-200 rounded-2xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
+                        className="w-full px-6 py-4 bg-white border border-primary-200 rounded-3xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
                         placeholder="0.00"
                       />
                     </div>
@@ -344,7 +344,7 @@ const ManageProducts = () => {
                         step="0.01"
                         value={formData.oldprice}
                         onChange={handleInputChange}
-                        className="w-full px-6 py-4 bg-white border border-primary-200 rounded-2xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
+                        className="w-full px-6 py-4 bg-white border border-primary-200 rounded-3xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
                         placeholder="Was..."
                       />
                     </div>
@@ -359,7 +359,7 @@ const ManageProducts = () => {
                         min="0"
                         value={formData.stock}
                         onChange={handleInputChange}
-                        className="w-full px-6 py-4 bg-white border border-primary-200 rounded-2xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
+                        className="w-full px-6 py-4 bg-white border border-primary-200 rounded-3xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300"
                         placeholder="Quantity"
                       />
                     </div>
@@ -369,7 +369,7 @@ const ManageProducts = () => {
                         name="category"
                         value={formData.category}
                         onChange={handleInputChange}
-                        className="w-full px-6 py-4 bg-white border border-primary-200 rounded-2xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all appearance-none cursor-pointer"
+                            className="w-full px-6 py-4 bg-white border border-primary-200 rounded-3xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all appearance-none cursor-pointer"
                       >
                         <option value="">Select Department</option>
                         {categories.map(cat => (
@@ -413,7 +413,7 @@ const ManageProducts = () => {
                             }
                           }
                         }}
-                        className="flex-1 px-6 py-4 bg-white border border-primary-200 rounded-2xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300 text-xs"
+                        className="flex-1 px-6 py-4 bg-white border border-primary-200 rounded-3xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all placeholder:text-primary-300 text-xs"
                         placeholder="Type color and press Enter..."
                       />
                       <button 
@@ -537,7 +537,7 @@ const ManageProducts = () => {
                       rows="3"
                       value={formData.description}
                       onChange={handleInputChange}
-                      className="w-full px-6 py-4 bg-white border border-primary-200 rounded-2xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all resize-none placeholder:text-primary-300"
+                      className="w-full px-6 py-4 bg-white border border-primary-200 rounded-3xl focus:ring-2 focus:ring-accent/50 outline-none text-primary-950 font-bold transition-all resize-none placeholder:text-primary-300"
                       placeholder="Describe this piece..."
                     ></textarea>
                   </div>
