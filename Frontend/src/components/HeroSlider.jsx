@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import image1 from "../assets/images/hero/HeroImage-1.jpg";
-import image2 from "../assets/images/hero/HeroImage-2.jpg";
-import image3 from "../assets/images/hero/HeroImage-3.jpg";
+import image1 from "../assets/images/Hero/HeroImage-1.jpg";
+import image2 from "../assets/images/Hero/HeroImage-2.jpg";
+import image3 from "../assets/images/Hero/HeroImage-3.jpg";
 
 const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
