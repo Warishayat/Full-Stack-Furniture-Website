@@ -12,7 +12,7 @@ const Success = () => {
   }, []);
 
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center bg-secondary py-12 px-4 text-center">
+    <div className="min-h-screen flex flex-col items-center justify-start bg-secondary pt-24 lg:pt-36 px-4 text-center">
       <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-primary-100 max-w-lg w-full">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle className="w-10 h-10 text-green-600" />

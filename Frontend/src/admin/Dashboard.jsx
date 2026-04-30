@@ -10,6 +10,7 @@ const AdminDashboard = () => {
     categories: 0,
     orders: 0
   });
+  const [ordersResData, setOrdersResData] = useState([]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -20,10 +21,12 @@ const AdminDashboard = () => {
           API.get('/api/order/getAllOrders') 
         ]);
 
+        const oData = ordersRes.data.orders || ordersRes.data || [];
+        setOrdersResData(oData);
         setStats({
           products: productsRes.data.products?.length || productsRes.data?.length || 0,
           categories: categoriesRes.data.categories?.length || categoriesRes.data?.length || 0,
-          orders: ordersRes.data.orders?.length || ordersRes.data?.length || 0,
+          orders: oData.length,
         });
       } catch (error) {
         console.error('Failed to fetch admin stats', error);
@@ -43,13 +46,13 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen pt-32 lg:pt-40 pb-20">
-      <div className="max-w-[1600px] mx-auto px-4 lg:px-4">
-        <div className="flex flex-col lg:flex-row gap-6">
+    <div className="bg-slate-50 min-h-screen pt-32 lg:pt-40 pb-20 overflow-x-hidden">
+      <div className="max-w-[1440px] mx-auto px-4 lg:px-8">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           
           {/* Admin Sidebar */}
-          <div className="lg:w-64 shrink-0">
-            <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-primary-950/10 p-8 sticky top-32 border border-primary-100">
+          <div className="lg:w-72 shrink-0">
+            <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-primary-950/10 p-8 lg:sticky lg:top-40 border border-primary-100">
               <div className="flex items-center gap-4 mb-10 px-2">
                  <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-white shadow-lg shadow-accent/20">
                     <Activity className="w-5 h-5" />
@@ -89,8 +92,8 @@ const AdminDashboard = () => {
                    <h1 className="text-5xl font-serif font-bold text-primary-950">Dashboard Overview</h1>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 mb-12">
-                  <div className="bg-white p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 mb-12">
+                  <div className="bg-white p-8 lg:p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500 mt-6 lg:mt-0">
                     <div className="w-16 h-16 bg-primary-950 text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent transition-all duration-500 shadow-sm">
                       <Package className="w-8 h-8" />
                     </div>
@@ -100,7 +103,7 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                   
-                  <div className="bg-white p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500">
+                  <div className="bg-white p-8 lg:p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500 mt-6 lg:mt-0">
                     <div className="w-16 h-16 bg-primary-950 text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent transition-all duration-500 shadow-sm">
                       <Tags className="w-8 h-8" />
                     </div>
@@ -110,13 +113,25 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                   
-                  <div className="bg-white p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500">
+                  <div className="bg-white p-8 lg:p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500 mt-6 lg:mt-0">
                     <div className="w-16 h-16 bg-primary-950 text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent transition-all duration-500 shadow-sm">
                       <ShoppingCart className="w-8 h-8" />
                     </div>
                     <div>
                       <p className="text-[11px] text-primary-950 font-black uppercase tracking-widest mb-2">Total Sales</p>
                       <p className="text-4xl font-serif font-bold text-primary-950">{stats.orders}</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-8 lg:p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500 mt-6 lg:mt-0">
+                    <div className="w-16 h-16 bg-accent text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary-950 transition-all duration-500 shadow-sm">
+                      <Activity className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-primary-950 font-black uppercase tracking-widest mb-2">Net Value</p>
+                      <p className="text-4xl font-serif font-bold text-primary-950">
+                        £{ordersResData.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                      </p>
                     </div>
                   </div>
                 </div>

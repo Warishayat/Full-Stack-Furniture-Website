@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Package, Truck, CheckCircle, Clock } from 'lucide-react';
 import API from '../services/api';
 
@@ -57,7 +58,7 @@ const MyOrders = () => {
   }
 
   return (
-    <div className="bg-secondary min-h-screen content-padding pb-24 lg:pb-32">
+    <div className="bg-secondary min-h-screen pt-24 lg:pt-32 pb-24 lg:pb-32">
       <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
         <h1 className="text-3xl font-serif font-medium text-primary-900 mb-8">My Orders</h1>
 
@@ -85,7 +86,7 @@ const MyOrders = () => {
                   </div>
                   <div>
                     <p className="text-sm text-primary-500 mb-1">Total</p>
-                    <p className="font-medium text-primary-900">£{order.totalAmount?.toFixed(2)}</p>
+                    <p className="font-medium text-primary-900">£{order.totalPrice?.toFixed(2)}</p>
                   </div>
                   <div>
                     <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(order.orderStatus)}`}>
@@ -93,24 +94,31 @@ const MyOrders = () => {
                       <span className="capitalize">{order.orderStatus || 'Processing'}</span>
                     </div>
                   </div>
+                  <div>
+                    <Link 
+                      to={`/track-order?tid=${order._id.slice(-8).toUpperCase()}`}
+                      className="px-4 py-2 bg-primary-950 text-white text-xs font-bold rounded-lg hover:bg-accent transition-all flex items-center gap-2"
+                    >
+                      <Truck className="w-4 h-4" /> Track Order
+                    </Link>
+                  </div>
                 </div>
 
                 {/* Order Items */}
                 <div className="p-6">
                   <h4 className="font-medium text-primary-900 mb-4">Items</h4>
-                  <ul className="divide-y divide-primary-100">
-                    {order.products?.map((item, idx) => (
+                   <ul className="divide-y divide-primary-100">
+                    {order.items?.map((item, idx) => (
                       <li key={idx} className="py-4 first:pt-0 last:pb-0 flex items-center gap-4">
                         <div className="w-16 h-16 bg-primary-50 rounded-md overflow-hidden shrink-0">
-                          {/* Handling different backends variations for nested products */}
                           <img 
                             src={item.product?.images?.[0] || 'https://placehold.co/100'} 
-                            alt={item.product?.name || 'Product'} 
+                            alt={item.product?.title || item.product?.name || 'Product'} 
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex-1">
-                          <h5 className="font-medium text-primary-900">{item.product?.name || 'Unknown Product'}</h5>
+                          <h5 className="font-medium text-primary-900">{item.product?.title || item.product?.name || 'Unknown Product'}</h5>
                           <p className="text-sm text-primary-500">Qty: {item.quantity}</p>
                         </div>
                         <div className="text-right">

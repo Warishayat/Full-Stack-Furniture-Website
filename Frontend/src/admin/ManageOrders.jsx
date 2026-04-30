@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Package, Truck, CheckCircle, Clock, Search, Filter } from 'lucide-react';
 import { toast } from 'react-toastify';
 import API from '../services/api';
@@ -88,7 +89,12 @@ const ManageOrders = () => {
                 {orders.map((order) => (
                   <tr key={order._id} className="hover:bg-primary-50 transition-colors">
                     <td className="p-5">
-                       <span className="font-serif font-bold text-primary-950">#{order._id.slice(-8).toUpperCase()}</span>
+                       <Link 
+                         to={`/track-order?tid=${order._id.slice(-8).toUpperCase()}`}
+                         className="font-serif font-bold text-primary-950 hover:text-accent transition-colors underline decoration-accent/30 underline-offset-4"
+                       >
+                         #{order._id.slice(-8).toUpperCase()}
+                       </Link>
                     </td>
                     <td className="p-5 text-primary-950 text-xs font-black uppercase tracking-widest whitespace-nowrap">
                       {new Date(order.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -98,7 +104,7 @@ const ManageOrders = () => {
                       <div className="text-[10px] text-primary-500 font-black uppercase tracking-widest">{order.userId?.email}</div>
                     </td>
                     <td className="p-5 font-black text-primary-950 whitespace-nowrap">
-                      £{order.totalAmount?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      £{order.totalPrice?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
                     <td className="p-5">
                       <div className="flex items-center gap-3">

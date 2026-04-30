@@ -13,7 +13,7 @@ const About = () => {
             alt="Office"
           />
         </div>
-        <div className="container mx-auto px-6 lg:px-20 relative z-10">
+        <div className="container mx-auto px-6 lg:px-20 relative z-10 pt-24 lg:pt-32">
           <span className="text-accent uppercase tracking-[0.4em] text-[10px] font-bold mb-6 block animate-fade-in">Our Heritage</span>
           <h1 className="text-6xl lg:text-8xl font-serif font-bold text-white mb-8 animate-fade-in-up">
             Defining <span className="italic text-shine">British</span> <br/> Luxury

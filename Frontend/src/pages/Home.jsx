@@ -61,31 +61,27 @@ const Home = () => {
       <HeroSlider />
 
       {/* Stats Section - One horizontal line below hero */}
-      <section className="bg-primary-950 border-y border-white/5 py-12 relative overflow-hidden">
+      <section className="bg-primary-950 border-y border-white/5 py-16 lg:py-24 relative overflow-hidden">
          <div className="container mx-auto px-6 lg:px-20 relative z-10">
-            <div className="flex flex-wrap justify-center lg:justify-between items-center gap-12 lg:gap-0">
-               <div className="flex items-center gap-8 group">
-                  <p className="text-6xl lg:text-7xl font-serif font-bold text-white group-hover:text-accent transition-colors">12k+</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-0 items-center">
+               <div className="flex items-center justify-center lg:justify-start gap-8 group">
+                  <p className="text-6xl lg:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">12k+</p>
                   <div className="text-left">
                      <p className="text-[10px] text-primary-400 font-bold uppercase tracking-[0.4em] mb-1">Satisfied</p>
                      <p className="text-[10px] text-white font-bold uppercase tracking-[0.4em]">Homeowners</p>
                   </div>
                </div>
                
-               <div className="hidden lg:block w-[1px] h-16 bg-white/10" />
-
-               <div className="flex items-center gap-8 group">
-                  <p className="text-6xl lg:text-7xl font-serif font-bold text-white group-hover:text-accent transition-colors">25+</p>
+               <div className="flex items-center justify-center gap-8 group border-y md:border-y-0 md:border-x border-white/10 py-12 md:py-0">
+                  <p className="text-6xl lg:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">25+</p>
                   <div className="text-left">
                      <p className="text-[10px] text-primary-400 font-bold uppercase tracking-[0.4em] mb-1">Design</p>
                      <p className="text-[10px] text-white font-bold uppercase tracking-[0.4em]">Excellence</p>
                   </div>
                </div>
 
-               <div className="hidden lg:block w-[1px] h-16 bg-white/10" />
-
-               <div className="flex items-center gap-8 group">
-                  <p className="text-6xl lg:text-7xl font-serif font-bold text-white group-hover:text-accent transition-colors">100%</p>
+               <div className="flex items-center justify-center lg:justify-end gap-8 group">
+                  <p className="text-6xl lg:text-8xl font-serif font-bold text-white group-hover:text-accent transition-colors">100%</p>
                   <div className="text-left">
                      <p className="text-[10px] text-primary-400 font-bold uppercase tracking-[0.4em] mb-1">Organic</p>
                      <p className="text-[10px] text-white font-bold uppercase tracking-[0.4em]">Sourcing</p>
@@ -142,7 +138,7 @@ const Home = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 lg:gap-12">
               {featuredProducts.map(product => (
                 <ProductCard key={product._id} product={product} />
               ))}
@@ -273,10 +269,10 @@ const Home = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                    />
                 </div>
-                <div className="absolute -bottom-10 -left-10 bg-accent p-12 rounded-[3rem] shadow-2xl max-w-[280px] text-left">
-                   <Sparkles className="w-10 h-10 text-white mb-6" />
-                   <h4 className="font-serif font-bold text-2xl text-white mb-4 italic">Bespoke Design</h4>
-                   <p className="text-white/80 text-xs leading-relaxed uppercase tracking-widest font-bold">Custom tailored for your space.</p>
+                <div className="absolute -bottom-6 -left-6 md:-bottom-10 md:-left-10 bg-accent p-8 md:p-12 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl max-w-[200px] md:max-w-[280px] text-left">
+                   <Sparkles className="w-8 h-8 md:w-10 md:h-10 text-white mb-4 md:mb-6" />
+                   <h4 className="font-serif font-bold text-xl md:text-2xl text-white mb-2 md:mb-4 italic">Bespoke Design</h4>
+                   <p className="text-white/80 text-[9px] md:text-xs leading-relaxed uppercase tracking-widest font-bold">Custom tailored for your space.</p>
                 </div>
              </div>
           </div>

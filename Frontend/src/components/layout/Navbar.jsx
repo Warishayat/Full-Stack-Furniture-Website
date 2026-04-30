@@ -61,6 +61,7 @@ const Navbar = () => {
     <>
       <header 
         ref={searchRef}
+        onMouseLeave={() => setIsSearchVisible(false)}
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 bg-primary-950 ${
           isScrolled 
             ? 'py-3 border-b border-white/5 shadow-2xl shadow-black' 
@@ -86,10 +87,10 @@ const Navbar = () => {
 
               {/* Desktop Nav Links */}
               <nav className="hidden lg:flex items-center gap-8 ml-8 border-l border-white/10 pl-8">
-                {['Collections', 'Story'].map((item) => (
+                {['Collections', 'Story', 'Track Order'].map((item) => (
                   <Link 
                     key={item}
-                    to={item === 'Collections' ? '/products' : '/about'}
+                    to={item === 'Collections' ? '/products' : item === 'Story' ? '/about' : '/track-order'}
                     className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60 hover:text-white transition-all"
                   >
                     {item}
@@ -109,24 +110,27 @@ const Navbar = () => {
                 <Search className="w-5 h-5" />
               </button>
 
-              {/* Cart */}
-              <Link to="/cart" className="relative p-2.5 text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full group">
-                <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-accent text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
+              {/* Cart - Hidden for Admins or on Admin Dashboard */}
+              {!user?.isAdmin && !location.pathname.toLowerCase().startsWith('/admin') && (
+                <Link to="/cart" className="relative p-2.5 text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full group">
+                  <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-accent text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full">
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+              )}
 
               {/* Auth/Profile */}
-              <div className="hidden sm:block">
+              <div className="">
                 {user ? (
                   <div className="relative group">
                     <button className="p-2.5 text-white/70 hover:text-accent transition-all hover:bg-white/5 rounded-full">
                       <User className="w-5 h-5" />
                     </button>
-                    <div className="absolute right-0 w-64 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[110]">
+                    {/* Desktop Dropdown - Hidden on Mobile */}
+                    <div className="hidden sm:block absolute right-0 w-64 pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-[110]">
                       <div className="bg-primary-950 border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-6">
                         <div className="mb-4 pb-4 border-b border-white/5">
                           <p className="text-xs font-bold text-white truncate">{user.name}</p>
@@ -138,9 +142,11 @@ const Navbar = () => {
                                <LayoutGrid className="w-4 h-4" /> Dashboard
                              </Link>
                            )}
-                           <Link to="/orders" className="flex items-center gap-3 p-3 text-[10px] font-black text-white/60 hover:text-accent rounded-xl transition-all uppercase tracking-widest">
-                             <ShoppingCart className="w-4 h-4" /> Orders
-                           </Link>
+                           {!user.isAdmin && (
+                             <Link to="/orders" className="flex items-center gap-3 p-3 text-[10px] font-black text-white/60 hover:text-accent rounded-xl transition-all uppercase tracking-widest">
+                               <ShoppingCart className="w-4 h-4" /> Orders
+                             </Link>
+                           )}
                            <button onClick={logout} className="w-full flex items-center gap-3 p-3 text-[10px] font-black text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all uppercase tracking-widest mt-2">
                              Logout
                            </button>
@@ -149,7 +155,7 @@ const Navbar = () => {
                     </div>
                   </div>
                 ) : (
-                  <Link to="/login" className="px-6 py-2.5 bg-accent text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-white hover:text-black transition-all">
+                  <Link to="/login" className="hidden sm:inline-block px-6 py-2.5 bg-accent text-white text-[10px] font-black uppercase tracking-widest rounded-full hover:bg-white hover:text-black transition-all">
                     Login
                   </Link>
                 )}
@@ -206,37 +212,73 @@ const Navbar = () => {
             <div>
               <p className="text-[10px] font-black text-accent uppercase tracking-[0.5em] mb-12">Discovery</p>
               <nav className="flex flex-col gap-6">
-                {['Home', 'Collections', 'Our Story'].map((item, i) => (
-                  <Link 
-                    key={item}
-                    to={item === 'Home' ? '/' : item === 'Collections' ? '/products' : '/about'}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="group flex items-center gap-6 text-3xl lg:text-5xl font-serif font-black text-white/20 hover:text-white transition-all duration-500"
-                  >
-                    <span className="text-sm font-sans text-accent opacity-0 group-hover:opacity-100 transition-all">0{i+1}</span>
-                    {item}
-                  </Link>
-                ))}
+                {['Home', 'Collections', 'Track Order', 'Our Story'].map((item, i) => {
+                  if (user?.isAdmin && item === 'Track Order') return null;
+                  return (
+                    <Link 
+                      key={item}
+                      to={item === 'Home' ? '/' : item === 'Collections' ? '/products' : item === 'Track Order' ? '/track-order' : '/about'}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="group flex items-center gap-6 text-3xl lg:text-5xl font-serif font-black text-white/20 hover:text-white transition-all duration-500"
+                    >
+                      <span className="text-sm font-sans text-accent opacity-0 group-hover:opacity-100 transition-all">0{i+1}</span>
+                      {item}
+                    </Link>
+                  );
+                })}
               </nav>
             </div>
 
-            <div>
-              <p className="text-[10px] font-black text-accent uppercase tracking-[0.5em] mb-12">Categories</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {categories.map((cat) => (
-                  <Link
-                    key={cat._id}
-                    to={`/products?category=${cat._id}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-8 bg-white/5 border border-white/5 rounded-3xl hover:bg-accent transition-all group"
-                  >
-                    <div className="flex justify-between items-center mb-4">
-                      <LayoutGrid className="w-6 h-6 text-accent group-hover:text-white transition-colors" />
-                      <ChevronRight className="w-5 h-5 text-white/20 group-hover:translate-x-2 transition-all" />
-                    </div>
-                    <span className="text-sm font-black uppercase tracking-widest text-white">{cat.name}</span>
-                  </Link>
-                ))}
+            <div className="space-y-20">
+              <div>
+                <p className="text-[10px] font-black text-accent uppercase tracking-[0.5em] mb-12">Account</p>
+                <div className="flex flex-col gap-6">
+                  {user ? (
+                    <>
+                      <div className="mb-4">
+                        <p className="text-xl font-serif font-bold text-white">{user.name}</p>
+                        <p className="text-xs text-white/40">{user.email}</p>
+                      </div>
+                      {user.isAdmin && (
+                        <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-serif font-black text-white/40 hover:text-white transition-all">
+                          Dashboard
+                        </Link>
+                      )}
+                      {!user.isAdmin && (
+                        <Link to="/orders" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-serif font-black text-white/40 hover:text-white transition-all">
+                          My Orders
+                        </Link>
+                      )}
+                      <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="text-2xl font-serif font-black text-rose-500 hover:text-rose-400 text-left transition-all">
+                        Logout
+                      </button>
+                    </>
+                  ) : (
+                    <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-serif font-black text-white hover:text-accent transition-all">
+                      Login / Join
+                    </Link>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] font-black text-accent uppercase tracking-[0.5em] mb-12">Categories</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {categories.map((cat) => (
+                    <Link
+                      key={cat._id}
+                      to={`/products?category=${cat._id}`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="p-8 bg-white/5 border border-white/5 rounded-3xl hover:bg-accent transition-all group"
+                    >
+                      <div className="flex justify-between items-center mb-4">
+                        <LayoutGrid className="w-6 h-6 text-accent group-hover:text-white transition-colors" />
+                        <ChevronRight className="w-5 h-5 text-white/20 group-hover:translate-x-2 transition-all" />
+                      </div>
+                      <span className="text-sm font-black uppercase tracking-widest text-white">{cat.name}</span>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

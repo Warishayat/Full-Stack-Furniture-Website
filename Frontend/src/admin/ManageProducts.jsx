@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Trash2, Plus, Edit, Image as ImageIcon, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import API from '../services/api';
@@ -224,14 +225,14 @@ const ManageProducts = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-primary-950/5 border border-primary-100 overflow-hidden">
+      <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-primary-950/5 border border-primary-100 overflow-hidden w-full">
         {loading ? (
           <div className="p-20 text-center text-primary-500 font-bold uppercase tracking-widest text-xs">Awaiting Data...</div>
         ) : products.length === 0 ? (
           <div className="p-20 text-center text-primary-500 font-bold uppercase tracking-widest text-xs">No pieces found. Create your first masterpiece.</div>
         ) : (
-          <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full text-left border-collapse min-w-[900px]">
+          <div className="w-full overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
                 <tr className="bg-primary-950 text-white text-[10px] font-black uppercase tracking-[0.2em]">
                   <th className="p-6 w-32">Curation</th>
@@ -246,16 +247,16 @@ const ManageProducts = () => {
                 {products.map((product) => (
                   <tr key={product._id} className="hover:bg-primary-50 transition-colors">
                     <td className="p-6">
-                      <div className="w-16 h-20 rounded-xl overflow-hidden bg-primary-100 border border-primary-200">
+                      <Link to={`/product/${product._id}`} className="block w-16 h-20 rounded-xl overflow-hidden bg-primary-100 border border-primary-200 hover:scale-105 transition-transform">
                         <img 
                           src={product.images?.[0] || 'https://placehold.co/100'} 
                           alt={product.name} 
                           className="w-full h-full object-cover"
                         />
-                      </div>
+                      </Link>
                     </td>
                     <td className="p-6 font-black text-primary-950 text-sm">
-                      <div className="line-clamp-1">{product.title || product.name}</div>
+                      <Link to={`/product/${product._id}`} className="line-clamp-1 hover:text-accent transition-colors">{product.title || product.name}</Link>
                     </td>
                     <td className="p-6 text-primary-950 text-xs font-black uppercase tracking-widest">
                       {product.category?.name || product.category || 'N/A'}

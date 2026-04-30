@@ -29,7 +29,7 @@ const Cart = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-secondary flex items-center justify-center py-20">
+      <div className="min-h-screen bg-secondary flex items-start justify-center pt-24 lg:pt-32 pb-20">
         <div className="container mx-auto px-4 max-w-lg text-center bg-white p-12 rounded-3xl shadow-xl border border-primary-100">
           <div className="w-24 h-24 mx-auto bg-primary-50 rounded-full flex items-center justify-center mb-8 text-accent">
             <ShoppingBag className="w-10 h-10" />
@@ -46,7 +46,7 @@ const Cart = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-secondary flex items-center justify-center py-20">
+      <div className="min-h-screen bg-secondary flex items-start justify-center pt-24 lg:pt-32 pb-20">
         <div className="container mx-auto px-4 max-w-lg text-center bg-white p-12 rounded-3xl shadow-xl border border-primary-100">
           <div className="w-24 h-24 mx-auto bg-primary-50 rounded-full flex items-center justify-center mb-8 text-accent">
             <ShoppingBag className="w-10 h-10" />
@@ -62,8 +62,8 @@ const Cart = () => {
   }
 
   return (
-    <div className="bg-secondary min-h-screen pt-16 lg:pt-24 pb-20 lg:pb-32">
-      <div className="container mx-auto px-4 lg:px-12">
+    <div className="bg-secondary min-h-screen pt-24 lg:pt-32 pb-20 lg:pb-32">
+      <div className="container mx-auto px-6 lg:px-12">
         <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>
             <h1 className="text-4xl lg:text-5xl font-serif font-bold text-primary-950 mb-3">Your Selection</h1>
@@ -78,7 +78,7 @@ const Cart = () => {
         <div className="flex flex-col lg:flex-row gap-12">
           
           {/* Cart Items */}
-          <div className="lg:w-2/3 space-y-6">
+          <div className="lg:w-2/3 space-y-6 mt-10 lg:mt-0">
             <div className="bg-white rounded-3xl shadow-sm border border-primary-100/50 overflow-hidden">
               <div className="hidden md:grid md:grid-cols-12 gap-4 p-8 bg-primary-50/30 text-[10px] font-bold text-primary-400 uppercase tracking-[0.2em]">
                 <div className="md:col-span-6">Product Details</div>
@@ -165,9 +165,9 @@ const Cart = () => {
                   <span className="text-primary-300 font-medium">Subtotal</span>
                   <span className="font-bold">£{cartTotal.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-primary-300 font-medium">Delivery</span>
-                  <span className="text-accent font-bold uppercase tracking-widest text-xs">
+                <div className="flex justify-between items-start gap-4">
+                  <span className="text-primary-300 font-medium shrink-0">Delivery</span>
+                  <span className="text-accent font-bold uppercase tracking-widest text-[10px] text-right leading-tight">
                     {cartTotal > 2000 ? 'Complimentary' : 'Calculated at checkout'}
                   </span>
                 </div>
@@ -178,7 +178,7 @@ const Cart = () => {
                 </div>
               </div>
 
-              <div className="space-y-4 relative z-10">
+              <div className="space-y-8 relative z-10">
                 <button 
                   onClick={handleCheckout}
                   className="w-full flex items-center justify-center px-8 py-5 bg-accent text-white font-bold rounded-full hover:bg-white hover:text-primary-950 transition-all shadow-xl shadow-accent/20"
@@ -186,7 +186,7 @@ const Cart = () => {
                   Complete Purchase
                   <ArrowRight className="w-5 h-5 ml-3" />
                 </button>
-                <p className="text-[10px] text-center text-primary-400 uppercase tracking-[0.2em] font-bold">
+                <p className="text-[10px] text-center text-primary-400 uppercase tracking-[0.2em] font-bold mt-4">
                   Secure Checkout Powered by Stripe
                 </p>
               </div>

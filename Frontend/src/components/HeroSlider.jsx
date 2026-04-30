@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import image1 from '../assets/images/hero/HeroImage-1.jpg';
-import image2 from '../assets/images/hero/HeroImage-2.jpg';
-import image3 from '../assets/images/hero/HeroImage-3.jpg';
+import image1 from "../assets/images/hero/HeroImage-1.jpg";
+import image2 from "../assets/images/hero/HeroImage-2.jpg";
+import image3 from "../assets/images/hero/HeroImage-3.jpg";
 
-const HeroSlider = () => {  
+const HeroSlider = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
+  const SLIDES = useMemo(() => [
     {
       image: image1,
       subtitle: 'Haute Couture 2026',
@@ -27,29 +27,27 @@ const HeroSlider = () => {
       title: 'Exclusive Living Spaces',
       description: 'Elevate your home with our curated collection of premium furniture, where every piece tells a story of luxury.'
     }
-  ];
+  ], []);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [SLIDES.length]);
 
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
 
   return (
     <section className="relative h-screen flex items-center bg-primary-950 overflow-hidden">
-      {/* Slides */}
-      {slides.map((slide, index) => (
+      {SLIDES.map((slide, index) => (
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
             index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
           }`}
         >
-
           <div className="absolute inset-0">
             <img
               src={slide.image}
@@ -140,9 +138,8 @@ const HeroSlider = () => {
         </button>
       </div>
 
-      {/* Slide Indicators */}
       <div className="absolute bottom-10 left-10 z-20 flex gap-3">
-        {slides.map((_, index) => (
+        {SLIDES.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
@@ -153,7 +150,6 @@ const HeroSlider = () => {
         ))}
       </div>
 
-      {/* Scroll Indicator */}
       <div className="absolute bottom-12 left-1/2 -translate-x-1/2 hidden md:block">
         <div className="w-[1px] h-16 bg-gradient-to-b from-accent to-transparent mx-auto animate-bounce" />
       </div>

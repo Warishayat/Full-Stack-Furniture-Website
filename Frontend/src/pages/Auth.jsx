@@ -50,7 +50,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex items-stretch bg-white">
       {/* Visual Side */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary-950 relative overflow-hidden items-center justify-center p-20 pt-32 lg:pt-20">
+      <div className="hidden lg:flex lg:w-1/2 bg-primary-950 relative overflow-hidden items-center justify-center p-20 pt-32 lg:pt-24">
          <div className="absolute inset-0">
             <img 
                src="https://images.unsplash.com/photo-1567016432779-094069958ea5?q=80&w=2000&auto=format&fit=crop" 
@@ -85,7 +85,7 @@ const Auth = () => {
       </div>
 
       {/* Form Side */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-20 bg-secondary/30 pt-32 lg:pt-20">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-20 bg-secondary/30 pt-32 lg:pt-24">
         <div className="max-w-md w-full animate-fade-in-up mt-8 lg:mt-12">
           <div className="mb-12">
             <Link to="/" className="flex items-center gap-3 mb-10 lg:hidden">

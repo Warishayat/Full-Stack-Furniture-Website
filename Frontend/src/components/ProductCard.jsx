@@ -40,13 +40,17 @@ const ProductCard = ({ product }) => {
           {product.description}
         </p>
         
-        <div className="flex items-center justify-between mt-auto pt-6 border-t border-primary-100">
-          <div>
-            <span className="text-[10px] block text-primary-500 font-black uppercase tracking-[0.2em] mb-1.5">Investment</span>
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-primary-950">£{product.price?.toLocaleString() || '0'}</span>
+        <div className="flex items-end justify-between mt-auto pt-6 border-t border-primary-100 gap-4">
+          <div className="flex-1 min-w-0">
+            <span className="text-[10px] block text-primary-400 font-black uppercase tracking-[0.3em] mb-2">Investment</span>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span className="text-2xl font-bold text-primary-950 leading-none">
+                £{product.price?.toLocaleString() || '0'}
+              </span>
               {product.oldprice && (
-                <span className="text-sm font-bold text-primary-300 line-through decoration-rose-500/50">£{product.oldprice.toLocaleString()}</span>
+                <span className="text-xs font-bold text-primary-300 line-through decoration-rose-500/40">
+                  £{product.oldprice.toLocaleString()}
+                </span>
               )}
             </div>
           </div>
@@ -55,10 +59,10 @@ const ProductCard = ({ product }) => {
               e.preventDefault();
               addToCart(product._id, 1);
             }}
-            className="w-14 h-14 rounded-2xl bg-primary-950 flex items-center justify-center text-white hover:bg-rose-500 transition-all duration-500 shadow-xl shadow-primary-900/10 group-hover:shadow-rose-500/30"
+            className="w-12 h-12 rounded-xl bg-primary-950 flex items-center justify-center text-white hover:bg-rose-500 transition-all duration-500 shadow-xl shadow-primary-900/10 group-hover:shadow-rose-500/30 shrink-0"
             aria-label="Add to cart"
           >
-            <ShoppingCart className="w-6 h-6 stroke-[1.5px]" />
+            <ShoppingCart className="w-5 h-5 stroke-[2px]" />
           </button>
         </div>
       </div>

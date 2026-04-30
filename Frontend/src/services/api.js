@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: window.location.hostname === 'localhost' 
+  baseURL: ['localhost', '127.0.0.1'].includes(window.location.hostname)
     ? 'http://localhost:8000' 
     : 'https://full-stack-furniture-website.onrender.com',
 });

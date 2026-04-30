@@ -83,7 +83,7 @@ const ProductDetail = () => {
   }
 
   return (
-    <div className="bg-secondary min-h-screen pt-16 lg:pt-24 pb-24 lg:pb-32">
+    <div className="bg-secondary min-h-screen pt-24 lg:pt-32 pb-24 lg:pb-32">
       <div className="container mx-auto px-4 lg:px-12">
         
         <button 
@@ -141,18 +141,35 @@ const ProductDetail = () => {
                 <h1 className="text-4xl lg:text-6xl font-serif font-bold text-primary-950 mb-6 leading-tight animate-fade-in-up">
                   {product.title || product.name}
                 </h1>
-                <div className="flex items-center gap-6 mb-8 animate-fade-in-up delay-100">
-                  <div className="bg-primary-50 px-6 py-2 rounded-2xl border border-primary-100 shadow-sm flex items-baseline gap-3">
-                    <span className="text-3xl lg:text-4xl font-bold text-primary-950">
-                      £{product.price ? product.price.toLocaleString() : '0'}
-                    </span>
-                    {product.oldprice && (
-                      <span className="text-lg font-bold text-primary-300 line-through decoration-accent/50">
-                        £{product.oldprice.toLocaleString()}
+                <div className="flex flex-col gap-4 mb-10 animate-fade-in-up delay-100">
+                  <div className="flex items-center gap-6">
+                    <div className="bg-primary-50 px-6 py-2 rounded-2xl border border-primary-100 shadow-sm flex items-baseline gap-3">
+                      <span className="text-3xl lg:text-4xl font-bold text-primary-950">
+                        £{product.price ? product.price.toLocaleString() : '0'}
                       </span>
-                    )}
+                      {product.oldprice && (
+                        <span className="text-lg font-bold text-primary-300 line-through decoration-accent/50">
+                          £{product.oldprice.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-primary-300 text-[10px] font-bold uppercase tracking-widest">Incl. VAT & Insurance</span>
                   </div>
-                  <span className="text-primary-300 text-[10px] font-bold uppercase tracking-widest">Incl. VAT & Insurance</span>
+
+                  {/* Clearpay Installments */}
+                  <div className="flex items-center gap-4 bg-white border border-primary-100 rounded-2xl p-5 shadow-sm max-w-sm group hover:border-accent transition-all duration-500">
+                    <div className="w-12 h-12 bg-[#B2FCE4] rounded-xl flex items-center justify-center shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                       <span className="text-[#000000] font-black text-[9px] uppercase tracking-tighter text-center leading-none">Clear<br/>pay</span>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-primary-400 font-bold uppercase tracking-widest leading-tight">
+                        Interest-Free Installments
+                      </p>
+                      <p className="text-[13px] font-black text-primary-950 mt-1">
+                        4 payments of <span className="text-accent italic">£{(product.price / 4).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
               
