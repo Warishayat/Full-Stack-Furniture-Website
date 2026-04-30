@@ -221,11 +221,11 @@ const getAllOrders = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { orderStatus } = req.body;
 
-    const validStatus = ["processing", "shipped", "delivered"];
+    const validStatus = ["processing", "shipped", "delivered", "cancelled"];
 
-    if (!validStatus.includes(status)) {
+    if (!validStatus.includes(orderStatus)) {
       return res.status(400).json({
         success: false,
         message: "Invalid status"
@@ -241,7 +241,7 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    order.orderStatus = status;
+    order.orderStatus = orderStatus;
     await order.save();
 
     res.status(200).json({
@@ -262,11 +262,30 @@ const updateOrderStatus = async (req, res) => {
 const trackOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ success: false, message: "Invalid Order ID format" });
+    const cleanId = id.trim();
+    let order;
+
+
+    if (cleanId.match(/^[0-9a-fA-F]{24}$/)) {
+      order = await Order.findById(cleanId).select("orderStatus createdAt totalPrice items");
+    } else {
+      // Try searching for the ID as a substring (e.g., last 8 chars)
+      // MongoDB ObjectID string is lowercase, so we compare with lowercase input
+      order = await Order.findOne({
+        $expr: {
+          $eq: [
+            { $substrCP: [{ $toString: "$_id" }, 16, 8] },
+            cleanId.toLowerCase()
+          ]
+        }
+      }).select("orderStatus createdAt totalPrice items");
+
+      // Fallback: search by exact string if any other field matches (like stripeSessionId)
+      if (!order) {
+        order = await Order.findOne({ stripeSessionId: cleanId }).select("orderStatus createdAt totalPrice items");
+      }
     }
 
-    const order = await Order.findById(id).select("orderStatus createdAt totalPrice items");
     if (!order) {
       return res.status(404).json({ success: false, message: "No order found with this reference" });
     }
