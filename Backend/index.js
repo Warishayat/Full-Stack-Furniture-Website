@@ -9,15 +9,17 @@ const category_router = require('./Routes/categories');
 const cartRouter = require('./Routes/cartRoutes');
 const orderRouter = require('./Routes/orderRoutes');
 const review_router = require('./Routes/RatingReviewRoutes');
+const { webhookHandler } = require("./Controller/Orders/orderController")
 
 const app = express();
 
 app.use(cors());
 connectDB();
 
-app.use(
+app.post(
   "/api/order/webhook",
-  express.raw({ type: "application/json" })
+  express.raw({ type: "application/json" }),
+  webhookHandler
 );
 
 app.use(express.json());
