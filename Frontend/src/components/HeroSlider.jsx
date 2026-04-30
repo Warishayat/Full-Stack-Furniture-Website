@@ -1,25 +1,28 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import image1 from '../assets/images/hero/HeroImage-1.jpg';
+import image2 from '../assets/images/hero/HeroImage-2.jpg';
+import image3 from '../assets/images/hero/HeroImage-3.jpg';
 
-const HeroSlider = () => {
+const HeroSlider = () => {  
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const slides = [
     {
-      image: '/src/assets/images/hero/HeroImage-1.jpg',
+      image: image1,
       subtitle: 'Haute Couture 2026',
       title: 'The Art of Exceptional Comfort',
       description: 'Discover furniture that transcends time. Handcrafted masterpieces designed to bring soul and elegance to your modern living spaces.'
     },
     {
-      image: '/src/assets/images/hero/HeroImage-2.jpg',
+      image: image2,
       subtitle: 'Timeless Elegance',
       title: 'Crafted for Modern Living',
       description: 'Experience the perfect blend of traditional craftsmanship and contemporary design for your sanctuary.'
     },
     {
-      image: '/src/assets/images/hero/HeroImage-3.jpg',
+      image: image3,
       subtitle: 'Luxury Redefined',
       title: 'Exclusive Living Spaces',
       description: 'Elevate your home with our curated collection of premium furniture, where every piece tells a story of luxury.'
