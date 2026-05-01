@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Package, Truck, CheckCircle, Clock, MapPin, CreditCard, ChevronLeft, Calendar, User } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, MapPin, CreditCard, ChevronLeft, Calendar, User, ArrowLeft } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 
 const OrderDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -65,13 +67,13 @@ const OrderDetail = () => {
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
           <div>
-            <button 
-              onClick={() => navigate(-1)} 
+            <Link 
+              to={(user?.role === 'admin' || user?.isAdmin) ? "/admin/orders" : "/orders"} 
               className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-primary-400 hover:text-accent transition-colors mb-4 group"
             >
-              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Back to History
-            </button>
+              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              { (user?.role === 'admin' || user?.isAdmin) ? 'Back to Order Management' : 'Back to Order History'}
+            </Link>
             <h1 className="text-4xl lg:text-5xl font-serif font-bold text-primary-950">
               Order <span className="text-accent italic">#{order._id.slice(-8).toUpperCase()}</span>
             </h1>
@@ -104,19 +106,19 @@ const OrderDetail = () => {
                       <div className="flex items-center gap-8">
                         <div className="w-24 h-32 bg-primary-50 rounded-2xl overflow-hidden border border-primary-100 group shrink-0">
                           <img 
-                            src={item.product?.images?.[0] || 'https://placehold.co/200x300'} 
-                            alt={item.product?.title || item.product?.name} 
+                            src={item.image || item.product?.images?.[0] || 'https://placehold.co/200x300'} 
+                            alt={item.title || item.product?.title || item.product?.name} 
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         </div>
                         <div className="flex-1 min-w-0 space-y-2">
-                          <h4 className="text-lg font-serif font-bold text-primary-950 truncate">{item.product?.title || item.product?.name}</h4>
+                          <h4 className="text-lg font-serif font-bold text-primary-950 truncate">{item.title || item.product?.title || item.product?.name || 'Handcrafted Piece'}</h4>
                           <p className="text-xs text-primary-500 font-bold uppercase tracking-widest">Qty: {item.quantity}</p>
-                          <p className="text-accent font-bold">£{item.product?.price?.toLocaleString()}</p>
+                          <p className="text-accent font-bold">£{(item.price || item.product?.price || 0).toLocaleString()}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-xl font-serif font-bold text-primary-950">
-                            £{((item.product?.price || 0) * item.quantity).toLocaleString()}
+                            £{(item.price ? item.price * item.quantity : (item.product?.price || 0) * item.quantity).toLocaleString()}
                           </p>
                         </div>
                       </div>

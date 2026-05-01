@@ -91,8 +91,6 @@ const ManageOrders = () => {
                     <td className="p-5">
                        <Link 
                          to={`/order/${order._id}`}
-                         target="_blank"
-                         rel="noopener noreferrer"
                          className="font-serif font-bold text-primary-950 hover:text-accent transition-colors underline decoration-accent/30 underline-offset-4"
                        >
                          #{order._id.slice(-8).toUpperCase()}

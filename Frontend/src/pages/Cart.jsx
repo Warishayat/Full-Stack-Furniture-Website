@@ -88,25 +88,25 @@ const Cart = () => {
               </div>
               
               <ul className="divide-y divide-primary-50">
-                {cartItems.map((item) => (
+                {cartItems.filter(item => item.product).map((item) => (
                   <li key={item._id} className="p-8 hover:bg-primary-50/20 transition-colors">
                     <div className="flex flex-col md:grid md:grid-cols-12 gap-8 items-center">
                       
                       {/* Product Info */}
                       <div className="md:col-span-6 flex items-center gap-6 w-full">
-                        <Link to={`/product/${item.product._id}`} className="w-28 h-28 shrink-0 bg-primary-100 rounded-2xl overflow-hidden shadow-inner">
+                        <Link to={`/product/${item.product?._id}`} className="w-28 h-28 shrink-0 bg-primary-100 rounded-2xl overflow-hidden shadow-inner">
                           <img 
-                            src={item.product.images?.[0] || 'https://placehold.co/150'} 
-                            alt={item.product.name} 
+                            src={item.product?.images?.[0] || 'https://placehold.co/150'} 
+                            alt={item.product?.name} 
                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         </Link>
                         <div className="space-y-1">
-                          <Link to={`/product/${item.product._id}`}>
-                            <h3 className="text-lg font-serif font-bold text-primary-950 hover:text-accent transition-colors line-clamp-1">{item.product.name}</h3>
+                          <Link to={`/product/${item.product?._id}`}>
+                            <h3 className="text-lg font-serif font-bold text-primary-950 hover:text-accent transition-colors line-clamp-1">{item.product?.name}</h3>
                           </Link>
-                          <p className="text-accent font-bold text-sm">£{item.product.price?.toLocaleString()}</p>
-                          <p className="text-primary-400 text-xs">SKU: CF-{item.product._id?.slice(-6).toUpperCase()}</p>
+                          <p className="text-accent font-bold text-sm">£{item.product?.price?.toLocaleString()}</p>
+                          <p className="text-primary-400 text-xs">SKU: CF-{item.product?._id?.slice(-6).toUpperCase()}</p>
                         </div>
                       </div>
 
@@ -132,7 +132,7 @@ const Cart = () => {
                       {/* Price Total */}
                       <div className="md:col-span-2 text-right w-full">
                         <span className="text-lg font-bold text-primary-950">
-                          £{(item.product.price * item.quantity).toLocaleString()}
+                          £{((item.product?.price || 0) * item.quantity).toLocaleString()}
                         </span>
                       </div>
 
@@ -195,15 +195,9 @@ const Cart = () => {
             {/* Trust Badges */}
             <div className="mt-8 grid grid-cols-2 gap-4">
               <div className="bg-white p-6 rounded-2xl border border-primary-100 flex flex-col items-center text-center">
-                <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center mb-3 text-accent">
-                  <Plus className="w-5 h-5 rotate-45" />
-                </div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-primary-950">Safe Delivery</p>
               </div>
               <div className="bg-white p-6 rounded-2xl border border-primary-100 flex flex-col items-center text-center">
-                <div className="w-10 h-10 bg-primary-50 rounded-full flex items-center justify-center mb-3 text-accent">
-                  <Plus className="w-5 h-5 rotate-45" />
-                </div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-primary-950">2 Year Warranty</p>
               </div>
             </div>

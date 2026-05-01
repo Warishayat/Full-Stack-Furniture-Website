@@ -104,7 +104,7 @@ const Navbar = () => {
           isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
         } ${
           isScrolled 
-            ? 'bg-primary-950/85 backdrop-blur-2xl py-2 lg:py-2.5 border-b border-white/5 shadow-2xl' 
+            ? 'bg-primary-950 py-2 lg:py-2.5 border-b border-white/5 shadow-2xl' 
             : 'bg-primary-950 py-3 lg:py-4 border-b border-white/5'
         }`}
       >
@@ -112,15 +112,8 @@ const Navbar = () => {
           <div className="flex items-center justify-between">
             
             {/* Logo Section */}
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-accent rotate-45 flex items-center justify-center transition-all duration-700 group-hover:rotate-[225deg] shadow-lg shadow-accent/20">
-                  <Sparkles className="w-5 h-5 text-white -rotate-45 group-hover:-rotate-[225deg] transition-all duration-700" />
-                </div>
-              </div>
-              <h1 className="text-xl lg:text-2xl font-serif font-black text-white tracking-tighter italic">
-                Elite<span className="text-accent not-italic">Seating</span>
-              </h1>
+            <Link to="/" className="flex items-center group h-10 lg:h-12 ml-4 lg:ml-0">
+              <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.8] transform-gpu drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]" />
             </Link>
 
             {/* Desktop Navigation */}
@@ -226,19 +219,22 @@ const Navbar = () => {
         {/* Search Overlay */}
         <div 
           ref={searchRef}
-          className={`absolute top-full left-0 right-0 bg-primary-950/98 backdrop-blur-3xl border-t border-white/5 transition-all duration-500 overflow-hidden ${isSearchVisible ? 'max-h-[220px] opacity-100' : 'max-h-0 opacity-0'}`}
+          className={`absolute top-full left-0 right-0 bg-primary-950 border-t border-white/10 transition-all duration-500 overflow-hidden ${isSearchVisible ? 'max-h-[220px] opacity-100 shadow-2xl' : 'max-h-0 opacity-0'}`}
         >
-          <div className="container mx-auto px-6 py-8 lg:py-12">
+          <div className="container mx-auto px-6 py-10 lg:py-14">
             <form onSubmit={handleSearch} className="relative max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-6">
-              <input
-                type="text"
-                placeholder="What masterpiece are you seeking?"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full flex-1 bg-transparent border-b-2 border-accent pb-4 text-xl lg:text-4xl font-serif text-white focus:border-white outline-none transition-all placeholder:text-white/40"
-                autoFocus={isSearchVisible}
-              />
-              <button type="submit" className="w-full md:w-auto px-12 py-4 lg:py-5 bg-accent text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-white hover:text-black transition-all">
+              <div className="relative w-full flex-1">
+                <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-accent" />
+                <input
+                  type="text"
+                  placeholder="What masterpiece are you seeking?"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-black/40 border-2 border-white/5 pl-16 pr-6 py-5 rounded-[2rem] text-lg lg:text-2xl font-serif text-white focus:border-accent focus:bg-black/60 outline-none transition-all placeholder:text-white/20 shadow-inner"
+                  autoFocus={isSearchVisible}
+                />
+              </div>
+              <button type="submit" className="w-full md:w-auto px-12 h-16 bg-accent text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-full hover:bg-white hover:text-black transition-all shadow-lg shadow-accent/20">
                 Discover
               </button>
             </form>
@@ -256,11 +252,8 @@ const Navbar = () => {
           isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}>
           <div className="flex justify-between items-center mb-12">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-xl font-serif font-bold text-white italic">EliteSeating</span>
+            <div className="flex items-center h-12">
+              <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.5] transform-gpu" />
             </div>
             <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-white/50 hover:text-accent transition-colors">
               <X className="w-8 h-8" />

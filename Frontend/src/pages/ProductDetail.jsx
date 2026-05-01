@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Plus, Minus, Check, ShieldCheck, Truck } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, CreditCard, Box, HelpCircle } from 'lucide-react';
 import API from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +17,7 @@ const ProductDetail = () => {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState('');
+  const [activeAccordion, setActiveAccordion] = useState('description');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -53,6 +54,18 @@ const ProductDetail = () => {
     }
     if (product) {
       addToCart(product._id, quantity);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!user) {
+      toast.info('Please login to continue to checkout');
+      navigate('/login');
+      return;
+    }
+    if (product) {
+      await addToCart(product._id, quantity);
+      navigate('/cart');
     }
   };
 
@@ -173,90 +186,189 @@ const ProductDetail = () => {
                 </div>
               </div>
               
-              <div className="prose prose-primary text-primary-500 mb-10 max-w-none leading-relaxed text-lg italic animate-fade-in-up delay-200 border-l-4 border-accent pl-8">
-                <p>"{product.description || 'No description available.'}"</p>
-              </div>
-
-              {/* Colors */}
+              {/* Available Finishes (Colors) - Restored */}
               {Array.isArray(product.colors) && product.colors.length > 0 && (
-                <div className="mb-10 animate-fade-in-up delay-300">
-                  <label className="text-[10px] font-bold text-primary-400 uppercase tracking-widest block mb-4">Available Finishes</label>
-                  <div className="flex gap-4">
+                <div className="mb-10 animate-fade-in-up delay-150">
+                  <label className="text-[10px] font-black text-primary-950 uppercase tracking-[0.3em] block mb-5">Available Finishes</label>
+                  <div className="flex flex-wrap gap-4">
                     {product.colors.map((color, idx) => (
                       <div key={idx} className="group relative">
-                        <div className="w-10 h-10 rounded-full border border-primary-100 shadow-sm hover:scale-110 transition-all cursor-pointer bg-white flex items-center justify-center p-1">
+                        <div className="w-12 h-12 rounded-full border-2 border-primary-100 shadow-sm hover:border-accent hover:scale-110 transition-all cursor-pointer bg-white flex items-center justify-center p-1">
                           <div 
-                            className="w-full h-full rounded-full" 
+                            className="w-full h-full rounded-full shadow-inner" 
                             style={{ backgroundColor: typeof color === 'string' ? color.toLowerCase().replace(/\s+/g, '') : '#ccc' }}
                           ></div>
                         </div>
-                        <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-[8px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all whitespace-nowrap text-primary-950">
+                        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-primary-950 text-white text-[8px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-all z-20 pointer-events-none whitespace-nowrap shadow-xl">
                           {String(color)}
-                        </span>
+                          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-primary-950 rotate-45"></div>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-
-              {/* Specifications */}
-              {product.specifications && typeof product.specifications === 'object' && (
-                <div className="mb-12 animate-fade-in-up delay-400 space-y-8">
-                  <label className="text-[10px] font-bold text-primary-400 uppercase tracking-widest block mb-4">Technical Curation</label>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                    {/* General */}
-                    {(product.specifications?.general?.material || product.specifications?.general?.finish) && (
-                      <div className="space-y-3">
-                        <h4 className="text-[10px] font-black text-primary-950 uppercase tracking-[0.2em] border-b border-primary-50 pb-2">Composition</h4>
-                        {product.specifications?.general?.material && (
-                          <div className="flex justify-between py-1">
-                            <span className="text-[10px] text-primary-400 uppercase tracking-widest">Material</span>
-                            <span className="text-[10px] text-primary-950 font-black uppercase tracking-widest">{product.specifications.general.material}</span>
-                          </div>
-                        )}
-                        {product.specifications?.general?.finish && (
-                          <div className="flex justify-between py-1">
-                            <span className="text-[10px] text-primary-400 uppercase tracking-widest">Finish</span>
-                            <span className="text-[10px] text-primary-950 font-black uppercase tracking-widest">{product.specifications.general.finish}</span>
-                          </div>
-                        )}
+              
+              {/* Interactive Information Accordion */}
+              <div className="mb-12 space-y-4 animate-fade-in-up delay-200">
+                {/* Description Section */}
+                <div className="border-b border-primary-50 pb-4">
+                  <button 
+                    onClick={() => setActiveAccordion(activeAccordion === 'description' ? '' : 'description')}
+                    className="w-full flex items-center justify-between py-4 text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeAccordion === 'description' ? 'bg-accent text-white' : 'bg-primary-50 text-primary-400'}`}>
+                        <Box className="w-5 h-5" />
                       </div>
-                    )}
-
-                    {/* Dimensions */}
-                    {(product.specifications?.dimensions?.length || product.specifications?.dimensions?.width || product.specifications?.dimensions?.height) && (
-                      <div className="space-y-3">
-                        <h4 className="text-[10px] font-black text-primary-950 uppercase tracking-[0.2em] border-b border-primary-50 pb-2">Dimensions</h4>
-                        <div className="flex justify-between py-1">
-                          <span className="text-[10px] text-primary-400 uppercase tracking-widest">Scale (L×W×H)</span>
-                          <span className="text-[10px] text-primary-950 font-black uppercase tracking-widest">
-                            {product.specifications?.dimensions?.length || 0} × {product.specifications?.dimensions?.width || 0} × {product.specifications?.dimensions?.height || 0} cm
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Assembly & Care */}
-                  <div className="p-6 bg-primary-50/50 rounded-[2rem] border border-primary-50">
-                    <div className="flex flex-wrap gap-10">
-                      <div>
-                        <span className="text-[8px] font-black text-primary-400 uppercase tracking-widest block mb-2">Assembly</span>
-                        <span className="text-[10px] font-black text-primary-950 uppercase tracking-widest">
-                          {product.specifications?.assembly?.required ? 'Professional Required' : 'Delivered Assembled'}
-                        </span>
-                      </div>
-                      {product.specifications?.care?.instructions && (
-                        <div className="flex-1">
-                          <span className="text-[8px] font-black text-primary-400 uppercase tracking-widest block mb-2">Maintenance</span>
-                          <p className="text-[10px] text-primary-600 italic leading-relaxed">"{product.specifications.care.instructions}"</p>
-                        </div>
-                      )}
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-950">Description</span>
+                    </div>
+                    <ChevronDown className={`w-5 h-5 text-primary-300 transition-transform duration-500 ${activeAccordion === 'description' ? 'rotate-180 text-accent' : ''}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${activeAccordion === 'description' ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
+                    <div className="pl-14 pr-4">
+                      <p className="text-primary-500 leading-relaxed italic border-l-2 border-accent/20 pl-6">
+                        "{product.description || 'This exquisite piece is a testament to timeless design and unparalleled craftsmanship.'}"
+                      </p>
                     </div>
                   </div>
                 </div>
-              )}
+
+                {/* Specifications Section */}
+                <div className="border-b border-primary-50 pb-4">
+                  <button 
+                    onClick={() => setActiveAccordion(activeAccordion === 'specs' ? '' : 'specs')}
+                    className="w-full flex items-center justify-between py-4 text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeAccordion === 'specs' ? 'bg-accent text-white' : 'bg-primary-50 text-primary-400'}`}>
+                        <ShieldCheck className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-950">Technical Specifications</span>
+                    </div>
+                    <ChevronDown className={`w-5 h-5 text-primary-300 transition-transform duration-500 ${activeAccordion === 'specs' ? 'rotate-180 text-accent' : ''}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${activeAccordion === 'specs' ? 'max-h-[1000px] opacity-100 mt-6' : 'max-h-0 opacity-0'}`}>
+                    <div className="pl-14 pr-4 space-y-8">
+                      {/* Composition */}
+                      <div className="grid grid-cols-1 gap-4">
+                        <div className="bg-primary-50/50 p-6 rounded-2xl border border-primary-50 hover:border-accent/20 transition-colors">
+                          <p className="text-[8px] font-black text-primary-400 uppercase tracking-widest mb-4">Material & Finish</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             <div className="space-y-1">
+                               <p className="text-[8px] font-bold text-primary-300 uppercase tracking-widest">Material</p>
+                               <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest">{product.specifications?.general?.material || 'Hand-picked Timber'}</p>
+                             </div>
+                             <div className="space-y-1">
+                               <p className="text-[8px] font-bold text-primary-300 uppercase tracking-widest">Finish</p>
+                               <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest">{product.specifications?.general?.finish || 'Premium Varnish'}</p>
+                             </div>
+                          </div>
+                        </div>
+                        
+                        <div className="bg-primary-50/50 p-6 rounded-2xl border border-primary-50 hover:border-accent/20 transition-colors">
+                          <p className="text-[8px] font-black text-primary-400 uppercase tracking-widest mb-4">Scale & Protection</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             <div className="space-y-1">
+                               <p className="text-[8px] font-bold text-primary-300 uppercase tracking-widest">L × W × H ({product.specifications?.dimensions?.unit || 'cm'})</p>
+                               <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest">
+                                 {product.specifications?.dimensions?.length || 0} × {product.specifications?.dimensions?.width || 0} × {product.specifications?.dimensions?.height || 0}
+                               </p>
+                             </div>
+                             <div className="space-y-1">
+                               <p className="text-[8px] font-bold text-primary-300 uppercase tracking-widest">Warranty</p>
+                               <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest">{product.specifications?.general?.warranty || 'Lifetime Structural'}</p>
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Packaging & Logistics */}
+                      <div className="bg-primary-50/50 p-6 rounded-3xl border border-primary-50">
+                        <h5 className="text-[9px] font-black text-primary-950 uppercase tracking-[0.2em] mb-4 border-b border-primary-100 pb-2">Packaging & Logistics</h5>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                           <div>
+                              <p className="text-[8px] font-black text-primary-400 uppercase tracking-widest mb-1">Package Weight</p>
+                              <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest">{product.specifications?.packaging?.boxWeight || 'Calculated at checkout'}</p>
+                           </div>
+                           <div>
+                              <p className="text-[8px] font-black text-primary-400 uppercase tracking-widest mb-1">Packaging Details</p>
+                              <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest">{product.specifications?.packaging?.packagingDetails || 'Secure transit-safe crates'}</p>
+                           </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Delivery & Assembly */}
+                <div className="border-b border-primary-50 pb-4">
+                  <button 
+                    onClick={() => setActiveAccordion(activeAccordion === 'delivery' ? '' : 'delivery')}
+                    className="w-full flex items-center justify-between py-4 text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeAccordion === 'delivery' ? 'bg-accent text-white' : 'bg-primary-50 text-primary-400'}`}>
+                        <Truck className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-950">Delivery & Assembly</span>
+                    </div>
+                    <ChevronDown className={`w-5 h-5 text-primary-300 transition-transform duration-500 ${activeAccordion === 'delivery' ? 'rotate-180 text-accent' : ''}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${activeAccordion === 'delivery' ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
+                    <div className="pl-14 pr-4">
+                      <div className="bg-primary-50/50 p-6 rounded-2xl space-y-4 border border-primary-50">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                           <div>
+                              <p className="text-[8px] font-black text-primary-400 uppercase tracking-widest mb-1">Est. Delivery Time</p>
+                              <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest">{product.specifications?.delivery?.time || '7-14 Business Days'}</p>
+                           </div>
+                           <div>
+                              <p className="text-[8px] font-black text-primary-400 uppercase tracking-widest mb-1">Delivery Charges</p>
+                              <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest">{product.specifications?.delivery?.charges || 'Complimentary White-Glove'}</p>
+                           </div>
+                        </div>
+                        <div className="pt-4 border-t border-primary-100">
+                          <div className="flex items-start gap-4">
+                             <Check className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                             <div>
+                                <p className="text-[10px] font-black text-primary-950 uppercase tracking-widest mb-1">Assembly Details</p>
+                                <p className="text-[10px] text-primary-500 italic leading-relaxed">
+                                   {product.specifications?.assembly?.details || (product.specifications?.assembly?.required ? 'Our professional team will handle the full assembly and installation of your piece upon arrival.' : 'This piece is delivered fully assembled and ready for immediate use.')}
+                                </p>
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Care Instructions */}
+                <div className="pb-4">
+                  <button 
+                    onClick={() => setActiveAccordion(activeAccordion === 'care' ? '' : 'care')}
+                    className="w-full flex items-center justify-between py-4 text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeAccordion === 'care' ? 'bg-accent text-white' : 'bg-primary-50 text-primary-400'}`}>
+                        <HelpCircle className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-primary-950">Care & Maintenance</span>
+                    </div>
+                    <ChevronDown className={`w-5 h-5 text-primary-300 transition-transform duration-500 ${activeAccordion === 'care' ? 'rotate-180 text-accent' : ''}`} />
+                  </button>
+                  <div className={`overflow-hidden transition-all duration-500 ease-in-out ${activeAccordion === 'care' ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
+                    <div className="pl-14 pr-4">
+                      <div className="bg-primary-50/50 p-6 rounded-2xl">
+                        <p className="text-[10px] text-primary-600 italic leading-relaxed">
+                          "{product.specifications?.care?.instructions || 'Dust regularly with a soft, dry cloth. Avoid direct sunlight and heat sources to preserve the natural beauty of the materials.'}"
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Selection & Actions */}
               <div className="space-y-8 mb-12">
@@ -279,13 +391,22 @@ const ProductDetail = () => {
                   </div>
                 </div>
                 
-                <button 
-                  onClick={handleAddToCart}
-                  className="w-full flex items-center justify-center px-10 h-20 bg-primary-950 text-white font-bold rounded-full hover:bg-accent transition-all duration-500 shadow-2xl shadow-primary-900/20 text-lg uppercase tracking-widest"
-                >
-                  <ShoppingCart className="w-6 h-6 mr-4" />
-                  Add to Curation
-                </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
+                  <button 
+                    onClick={handleAddToCart}
+                    className="flex items-center justify-center px-8 h-20 bg-white border-2 border-primary-950 text-primary-950 font-bold rounded-full hover:bg-primary-950 hover:text-white transition-all duration-500 text-[10px] uppercase tracking-[0.2em] group"
+                  >
+                    <ShoppingCart className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
+                    Add to Curation
+                  </button>
+                  <button 
+                    onClick={handleBuyNow}
+                    className="flex items-center justify-center px-8 h-20 bg-primary-950 text-white font-bold rounded-full hover:bg-accent transition-all duration-500 shadow-xl shadow-primary-950/20 text-[10px] uppercase tracking-[0.2em] group"
+                  >
+                    <CreditCard className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
+                    Buy It Now
+                  </button>
+                </div>
               </div>
 
               {/* Luxury Badges */}

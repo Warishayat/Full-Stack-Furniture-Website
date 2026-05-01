@@ -61,8 +61,8 @@ const Auth = () => {
          </div>
          
          <div className="relative z-10 max-w-md text-center">
-            <div className="w-20 h-20 bg-accent rounded-3xl rotate-12 flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-accent/20">
-               <Sparkles className="w-10 h-10 text-white -rotate-12" />
+            <div className="mx-auto mb-10 h-20 flex items-center justify-center">
+               <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.5] transform-gpu" />
             </div>
             <h2 className="text-5xl font-serif font-bold text-white mb-6 leading-tight">Join the <br/> <span className="text-accent italic">Elite Curation</span></h2>
             <h3 className="text-primary-300 text-lg leading-relaxed">Unlock exclusive access to our handcrafted masterpieces and bespoke interior services.</h3>
@@ -88,11 +88,8 @@ const Auth = () => {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-20 bg-secondary/30 pt-32 lg:pt-24">
         <div className="max-w-md w-full animate-fade-in-up mt-8 lg:mt-12">
           <div className="mb-12">
-            <Link to="/" className="flex items-center gap-3 mb-10 lg:hidden">
-               <div className="w-8 h-8 bg-accent rotate-45 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white -rotate-45" />
-               </div>
-               <h1 className="text-xl font-serif font-bold text-primary-950 tracking-widest">COMFORT.</h1>
+            <Link to="/" className="flex items-center mb-10 lg:hidden h-10">
+               <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.5] origin-left transform-gpu" />
             </Link>
             <h2 className="text-4xl font-serif font-bold text-primary-950 mb-3">
               {isLogin ? 'Welcome Back' : 'Begin Your Journey'}
@@ -116,6 +113,7 @@ const Auth = () => {
                   onChange={handleChange}
                   className="w-full pl-14 pr-6 py-5 bg-white border border-primary-100 rounded-[1.5rem] focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-sm font-medium"
                   placeholder="Your Full Name"
+                  autoComplete="name"
                 />
               </div>
             )}
@@ -130,6 +128,7 @@ const Auth = () => {
                 onChange={handleChange}
                 className="w-full pl-14 pr-6 py-5 bg-white border border-primary-100 rounded-[1.5rem] focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-sm font-medium"
                 placeholder="Email Address"
+                autoComplete="email"
               />
             </div>
 
@@ -143,6 +142,7 @@ const Auth = () => {
                 onChange={handleChange}
                 className="w-full pl-14 pr-6 py-5 bg-white border border-primary-100 rounded-[1.5rem] focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-sm font-medium"
                 placeholder="Password"
+                autoComplete={isLogin ? "current-password" : "new-password"}
               />
             </div>
 
@@ -157,6 +157,7 @@ const Auth = () => {
                   onChange={handleChange}
                   className="w-full pl-14 pr-6 py-5 bg-white border border-primary-100 rounded-[1.5rem] focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-sm font-medium"
                   placeholder="Confirm Password"
+                  autoComplete="new-password"
                 />
               </div>
             )}

@@ -80,7 +80,7 @@ export const CartProvider = ({ children }) => {
   );
 
   const cartCount = cartItems.reduce(
-    (count, item) => count + item.quantity,
+    (count, item) => item.product ? count + item.quantity : count,
     0
   );
 

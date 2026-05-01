@@ -114,18 +114,19 @@ const MyOrders = () => {
                       <li key={idx} className="py-4 first:pt-0 last:pb-0 flex items-center gap-4">
                         <div className="w-16 h-16 bg-primary-50 rounded-md overflow-hidden shrink-0">
                           <img 
-                            src={item.product?.images?.[0] || 'https://placehold.co/100'} 
-                            alt={item.product?.title || item.product?.name || 'Product'} 
+                            src={item.image || item.product?.images?.[0] || 'https://placehold.co/100'} 
+                            alt={item.title || item.product?.title || item.product?.name || 'Product'} 
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex-1">
-                          <h5 className="font-medium text-primary-900">{item.product?.title || item.product?.name || 'Unknown Product'}</h5>
-                          <p className="text-sm text-primary-500">Qty: {item.quantity}</p>
+                          <h4 className="text-lg font-serif font-bold text-primary-950 truncate">{item.title || item.product?.title || item.product?.name || 'Handcrafted Piece'}</h4>
+                          <p className="text-xs text-primary-500 font-bold uppercase tracking-widest">Qty: {item.quantity}</p>
+                          <p className="text-accent font-bold">£{(item.price || item.product?.price || 0).toLocaleString()}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium text-primary-900">
-                            £{((item.product?.price || 0) * item.quantity).toFixed(2)}
+                          <p className="text-xl font-serif font-bold text-primary-950">
+                            £{(item.price ? item.price * item.quantity : (item.product?.price || 0) * item.quantity).toLocaleString()}
                           </p>
                         </div>
                       </li>

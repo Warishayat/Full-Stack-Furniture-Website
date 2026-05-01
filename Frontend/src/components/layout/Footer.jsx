@@ -14,13 +14,8 @@ const Footer = () => {
           
           {/* Brand Identity */}
           <div className="space-y-8">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-accent rotate-45 flex items-center justify-center group-hover:rotate-[225deg] transition-all duration-1000 shadow-lg shadow-accent/20">
-                 <Sparkles className="w-5 h-5 text-white -rotate-45 group-hover:-rotate-[225deg] transition-all duration-1000" />
-              </div>
-              <h1 className="text-3xl font-serif font-bold text-white tracking-[0.1em]">
-                EliteSeating<span className="text-accent">.</span>
-              </h1>
+            <Link to="/" className="flex items-center group h-12">
+              <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.8] origin-left transform-gpu" />
             </Link>
             <p className="text-primary-400 text-sm leading-relaxed max-w-xs text-left">
               Defining the future of luxury living through timeless craftsmanship and sustainable design. Join EliteSeating to create masterpieces for every home.

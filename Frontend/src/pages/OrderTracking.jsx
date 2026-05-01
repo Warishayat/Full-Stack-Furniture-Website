@@ -22,7 +22,8 @@ const OrderTracking = () => {
     try {
       setLoading(true);
       setOrder(null);
-      const { data } = await API.get(`/api/order/track/${id.trim()}`);
+      const cleanId = id.trim().replace(/^#/, '');
+      const { data } = await API.get(`/api/order/track/${cleanId}`);
       setOrder(data.order);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to track order');

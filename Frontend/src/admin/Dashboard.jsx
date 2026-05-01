@@ -59,11 +59,8 @@ const AdminDashboard = () => {
           {/* Admin Sidebar */}
           <div className="lg:w-72 shrink-0">
             <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-primary-950/10 p-8 lg:sticky lg:top-40 border border-primary-100">
-              <div className="flex items-center gap-4 mb-10 px-2">
-                 <div className="w-10 h-10 bg-accent rounded-xl flex items-center justify-center text-white shadow-lg shadow-accent/20">
-                    <Activity className="w-5 h-5" />
-                 </div>
-                 <h2 className="text-sm font-black uppercase tracking-widest text-primary-950">Management</h2>
+              <div className="flex items-center mb-10 px-2 h-12">
+                 <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.2] origin-left transform-gpu drop-shadow-md" />
               </div>
               
               <nav className="space-y-3">

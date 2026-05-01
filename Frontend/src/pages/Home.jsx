@@ -4,7 +4,7 @@ import { ArrowRight, Truck, ShieldCheck, Star, Play, Award, Zap, Sparkles, Chevr
 import API from '../services/api';
 import ProductCard from '../components/ProductCard';
 import CategoryCard from '../components/CategoryCard';
-import HeroSlider from '../components/HeroSlider';
+import Hero from '../components/Hero';
 
 const Home = () => {
   const [categories, setCategories] = useState([]);
@@ -47,7 +47,7 @@ const Home = () => {
   return (
     <div className="bg-white">
       {/* Hero Slider - Renders immediately */}
-      <HeroSlider />
+      <Hero />
 
       {/* Stats Section - Renders immediately */}
       <section className="bg-primary-950 border-y border-white/5 py-6 lg:py-12 relative overflow-hidden">
