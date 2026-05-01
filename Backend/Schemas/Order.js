@@ -14,6 +14,8 @@ const OrderSchema = new Schema(
           type: Schema.Types.ObjectId,
           ref: "Product"
         },
+        title: String,
+        image: String,
         quantity: Number,
         price: Number
       }

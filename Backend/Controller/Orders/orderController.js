@@ -1,5 +1,6 @@
 const Order = require("../../Schemas/Order");
 const Cart = require("../../Schemas/Cart");
+const Product = require("../../Schemas/Product");
 const Stripe = require("stripe");
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -115,10 +116,26 @@ const webhookHandler = async (req, res) => {
         return res.status(200).json({ received: true });
       }
 
-      const items = cart.items.map(item => ({
-        product: item.product?._id,
-        quantity: item.quantity,
-        price: item.product?.price
+      const items = await Promise.all(cart.items.map(async (item) => {
+        let productData = item.product;
+        
+        // If not populated (still an ID), fetch it manually
+        if (productData && typeof productData !== 'object') {
+          productData = await Product.findById(productData);
+        }
+
+        const productId = productData?._id || item.product;
+        const price = productData?.price || 0;
+        const title = productData?.title || 'Handcrafted Piece';
+        const image = productData?.images?.[0] || '';
+        
+        return {
+          product: productId,
+          title: title,
+          image: image,
+          quantity: item.quantity,
+          price: price
+        };
       }));
 
       let paymentMethod = "card";
@@ -180,13 +197,30 @@ const webhookHandler = async (req, res) => {
 
 const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id })
-      .populate("items.product")
+    const orders = await Order.find({ 
+      $or: [
+        { user: req.user._id },
+        { user: req.user._id.toString() }
+      ]
+    })
       .sort({ createdAt: -1 });
+
+    const repairedOrders = await Promise.all(orders.map(async (order) => {
+      const orderObj = order.toObject();
+      for (let item of orderObj.items) {
+        if (item.product) {
+          const product = await Product.findById(item.product);
+          if (product) {
+            item.product = product;
+          }
+        }
+      }
+      return orderObj;
+    }));
 
     res.status(200).json({
       success: true,
-      orders
+      orders: repairedOrders
     });
 
   } catch (error) {
@@ -202,12 +236,24 @@ const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("user", "name email")
-      .populate("items.product")
       .sort({ createdAt: -1 });
+
+    const repairedOrders = await Promise.all(orders.map(async (order) => {
+      const orderObj = order.toObject();
+      for (let item of orderObj.items) {
+        if (item.product) {
+          const product = await Product.findById(item.product);
+          if (product) {
+            item.product = product;
+          }
+        }
+      }
+      return orderObj;
+    }));
 
     res.status(200).json({
       success: true,
-      orders
+      orders: repairedOrders
     });
 
   } catch (error) {
@@ -263,12 +309,13 @@ const updateOrderStatus = async (req, res) => {
 const trackOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const cleanId = id.trim();
+    const cleanId = id.trim().replace(/^#/, '');
     let order;
 
 
     if (cleanId.match(/^[0-9a-fA-F]{24}$/)) {
-      order = await Order.findById(cleanId).select("orderStatus createdAt totalPrice items");
+      order = await Order.findById(cleanId)
+        .select("orderStatus createdAt totalPrice items");
     } else {
       // Try searching for the ID as a substring (e.g., last 8 chars)
       // MongoDB ObjectID string is lowercase, so we compare with lowercase input
@@ -279,11 +326,13 @@ const trackOrder = async (req, res) => {
             cleanId.toLowerCase()
           ]
         }
-      }).select("orderStatus createdAt totalPrice items");
+      })
+      .select("orderStatus createdAt totalPrice items");
 
       // Fallback: search by exact string if any other field matches (like stripeSessionId)
       if (!order) {
-        order = await Order.findOne({ stripeSessionId: cleanId }).select("orderStatus createdAt totalPrice items");
+        order = await Order.findOne({ stripeSessionId: cleanId })
+          .select("orderStatus createdAt totalPrice items");
       }
     }
 
@@ -291,7 +340,18 @@ const trackOrder = async (req, res) => {
       return res.status(404).json({ success: false, message: "No order found with this reference" });
     }
 
-    res.status(200).json({ success: true, order });
+    // Manual Repair for items
+    const orderObj = order.toObject();
+    for (let item of orderObj.items) {
+      if (item.product) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          item.product = product;
+        }
+      }
+    }
+
+    res.status(200).json({ success: true, order: orderObj });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -306,8 +366,7 @@ const getOrderById = async (req, res) => {
     // Try full ID search first
     if (cleanId.match(/^[0-9a-fA-F]{24}$/)) {
       order = await Order.findById(cleanId)
-        .populate("user", "name email")
-        .populate("items.product");
+        .populate("user", "name email");
     }
 
     // Fallback: search by short ID if not found (like trackOrder)
@@ -320,15 +379,25 @@ const getOrderById = async (req, res) => {
           ]
         }
       })
-      .populate("user", "name email")
-      .populate("items.product");
+      .populate("user", "name email");
     }
 
     if (!order) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    res.status(200).json({ success: true, order });
+    // Manual Repair for legacy orders
+    const orderObj = order.toObject();
+    for (let item of orderObj.items) {
+      if (item.product) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          item.product = product;
+        }
+      }
+    }
+
+    res.status(200).json({ success: true, order: orderObj });
   } catch (error) {
     console.error("getOrderById Error:", error.message);
     res.status(500).json({ success: false, message: error.message });
