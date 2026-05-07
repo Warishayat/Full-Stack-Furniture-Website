@@ -22,7 +22,7 @@ export const CartProvider = ({ children }) => {
   const fetchCart = async () => {
     try {
       setLoading(true);
-      const { data } = await API.get('/cart/getCart');
+      const { data } = await API.get('/cart/getallcart');
       // Depending on how backend sends it, maybe data.cart.items
       setCartItems(data.cart?.items || []);
     } catch (error) {
@@ -32,13 +32,20 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (productId, quantity = 1) => {
+  const addToCart = async (productId, quantity = 1, options = {}) => {
     if (!user) {
       toast.error('Please login to add items to cart');
       return;
     }
     try {
-      await API.post('/cart/addToCart', { productId, quantity });
+      const { variant, material, color } = options;
+      await API.post('/cart/addtocart', { 
+        productId, 
+        quantity,
+        variant,
+        material,
+        color
+      });
       toast.success('Item added to cart');
       fetchCart();
     } catch (error) {
@@ -48,7 +55,7 @@ export const CartProvider = ({ children }) => {
 
   const updateCart = async (itemId, quantity) => {
     try {
-      await API.put(`/cart/updateCart/${itemId}`, { quantity });
+      await API.put(`/cart/item/${itemId}`, { quantity });
       fetchCart();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update cart');
@@ -67,7 +74,7 @@ export const CartProvider = ({ children }) => {
 
   const clearCart = async () => {
     try {
-      await API.delete('/cart/deleteAllCart');
+      await API.delete('/cart/dltAllCart');
       setCartItems([]);
     } catch (error) {
       console.error('Error clearing cart:', error);
@@ -75,12 +82,12 @@ export const CartProvider = ({ children }) => {
   };
 
   const cartTotal = cartItems.reduce(
-    (total, item) => total + (item.product?.price || 0) * item.quantity,
+    (total, item) => total + (Number(item.price) || 0) * item.quantity,
     0
   );
-
+ 
   const cartCount = cartItems.reduce(
-    (count, item) => item.product ? count + item.quantity : count,
+    (count, item) => count + item.quantity,
     0
   );
 

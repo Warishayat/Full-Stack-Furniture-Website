@@ -4,12 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --fc-red: #D7282F;
+  --fc-text-dark: #333333;
+  --fc-text-muted: #666666;
+  --fc-bg-light: #F8F8F8;
+}
+
 @layer base {
   html {
     @apply scroll-smooth;
   }
   body {
-    @apply font-sans bg-[#050505] text-white antialiased overflow-x-hidden;
+    @apply font-sans bg-white text-gray-900 antialiased overflow-x-hidden;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
@@ -54,56 +61,51 @@
   }
 }
 
-/* Premium Visible Scrollbar */
+/* Premium Standard Scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: #050505;
-  border-left: 1px solid rgba(255,255,255,0.05);
+  background: #f8fafc;
 }
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #b45309, #f59e0b);
-  border: 3px solid #050505;
+  background: #1e293b;
+  border: 2px solid #f8fafc;
   border-radius: 20px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #fbbf24;
+  background: #0f172a;
 }
 
 body.modal-open {
   overflow: hidden !important;
-  padding-right: 12px; /* Prevent layout shift */
 }
 
 .glass-morphism {
-  @apply bg-black/40 backdrop-blur-3xl border border-white/5;
+  @apply bg-white/80 backdrop-blur-md border border-gray-100;
 }
 
 .premium-card {
-  @apply bg-white rounded-[3rem] border border-primary-50 shadow-sm hover:shadow-2xl hover:shadow-primary-900/10 transition-all duration-700;
+  @apply bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500;
 }
 
-/* Content padding for fixed navbar */
 .content-padding {
-  @apply pt-24 lg:pt-32;
+  @apply pt-20 lg:pt-28;
 }
 
-/* Accents */
 .text-shine {
-  @apply bg-clip-text text-transparent;
-  background-image: linear-gradient(135deg, #b45309 0%, #f59e0b 100%, #fbbf24 100%);
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600;
 }
 
-.shadow-gold {
-  box-shadow: 0 10px 50px -10px rgba(180, 83, 9, 0.3);
+.shadow-premium {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
 }
 
 .custom-scrollbar::-webkit-scrollbar {
   height: 4px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #b45309;
+  background: #1e293b;
 }
 
 .scrollbar-hide {
@@ -112,4 +114,4 @@ body.modal-open {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
-}
+}

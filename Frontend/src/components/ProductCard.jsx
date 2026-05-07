@@ -1,70 +1,130 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Star } from 'lucide-react';
+import { ShoppingCart, Heart, ArrowRight, Star, CheckCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 const ProductCard = memo(({ product }) => {
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const activeInWishlist = isInWishlist(product._id);
+
+  // Calculate "Starting From" Price and extract unique colors
+  const { minPrice, oldPrice, displayImage, allColors } = useMemo(() => {
+    let min = Infinity;
+    let old = 0;
+    let img = product.images?.[0] || '';
+    let colors = new Set();
+
+    if (product.variants && product.variants.length > 0) {
+      product.variants.forEach(variant => {
+        if (variant.materials) {
+          variant.materials.forEach(material => {
+            if (material.colors) {
+              material.colors.forEach(color => {
+                if (color.price < min) {
+                  min = color.price;
+                  old = color.oldPrice || 0;
+                  if (color.images && color.images.length > 0) {
+                    img = color.images[0];
+                  }
+                }
+                if (color.name) colors.add(color.name);
+              });
+            }
+          });
+        }
+      });
+    }
+
+    return { 
+      minPrice: min === Infinity ? (product.price || 0) : min, 
+      oldPrice: old || (product.oldPrice || 0), 
+      displayImage: img,
+      allColors: Array.from(colors)
+    };
+  }, [product]);
 
   return (
-    <div className="group relative bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-rose-500/10 transition-all duration-700 ease-out flex flex-col h-full border border-primary-100">
-      <Link to={`/product/${product._id}`} className="block relative aspect-[4/3] overflow-hidden bg-primary-50">
-        <img
-          src={product.images && product.images.length > 0 ? product.images[0] : 'https://placehold.co/600x800?text=No+Image'}
-          alt={product.title || product.name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
-        />
-        <div className="absolute top-4 left-4">
-          {product.stock <= 5 && product.stock > 0 ? (
-             <span className="bg-rose-500 text-white text-[9px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg animate-pulse">
-               Limited Stock
-             </span>
-          ) : (
-             <div className="bg-white/90 backdrop-blur-md px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                <Star className="w-2.5 h-2.5 text-amber-500 fill-amber-500" />
-                <span className="text-[9px] font-bold text-primary-900 uppercase">4.9</span>
-             </div>
-          )}
+    <div className="group bg-white overflow-hidden transition-all duration-300 flex flex-col h-full relative">
+      {/* Sale Badge */}
+      {oldPrice > minPrice && (
+        <div className="absolute top-4 left-4 z-10">
+          <span className="bg-[#D7282F] text-white text-[10px] font-bold px-3 py-1 rounded-sm shadow-sm uppercase">
+            £{(oldPrice - minPrice).toLocaleString()} OFF
+          </span>
         </div>
+      )}
+
+      {/* Wishlist Heart */}
+      <button 
+        onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
+        className={`absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-sm rounded-full transition-colors ${activeInWishlist ? 'text-[#D7282F]' : 'text-gray-400 hover:text-[#D7282F]'}`}
+      >
+        <Heart className={`w-5 h-5 ${activeInWishlist ? 'fill-current' : ''}`} />
+      </button>
+
+      {/* Image Container */}
+      <Link to={`/product/${product._id}`} className="relative aspect-[4/5] overflow-hidden bg-gray-50">
+        <img
+          src={displayImage}
+          alt={product.title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
       </Link>
       
-      <div className="p-6 flex flex-col flex-1">
-        <div className="mb-2">
-           <span className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em]">Premium Selection</span>
+      {/* Content Area */}
+      <div className="pt-4 flex flex-col flex-1">
+        {/* Real Color Swatches */}
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {allColors.slice(0, 5).map((color, i) => (
+            <div 
+              key={i} 
+              title={color}
+              className={`w-4 h-4 rounded-full border border-gray-200 cursor-pointer transition-transform hover:scale-110`}
+              style={{ backgroundColor: color.toLowerCase() }}
+            />
+          ))}
+          {allColors.length > 5 && (
+            <span className="text-[10px] text-gray-400 font-bold ml-1">+{allColors.length - 5}</span>
+          )}
         </div>
-        <Link to={`/product/${product._id}`}>
-          <h3 className="text-xl font-serif font-bold text-primary-950 mb-2 hover:text-rose-500 transition-colors line-clamp-1 leading-tight">
-            {product.title || product.name}
+
+        <Link to={`/product/${product._id}`} className="block mb-1">
+          <h3 className="text-xl font-serif text-gray-900 hover:text-gray-600 transition-colors">
+            {product.title}
           </h3>
         </Link>
-        <p className="text-xs text-primary-700 mb-4 line-clamp-1 leading-relaxed font-medium">
-          {product.description}
-        </p>
         
-        <div className="flex items-end justify-between mt-auto pt-6 border-t border-primary-100 gap-4">
-          <div className="flex-1 min-w-0">
-            <span className="text-[10px] block text-primary-400 font-black uppercase tracking-[0.3em] mb-2">Investment</span>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span className="text-2xl font-bold text-primary-950 leading-none">
-                £{product.price?.toLocaleString() || '0'}
-              </span>
-              {product.oldprice && (
-                <span className="text-xs font-bold text-primary-300 line-through decoration-rose-500/40">
-                  £{product.oldprice.toLocaleString()}
-                </span>
-              )}
-            </div>
+        <p className="text-xs text-gray-500 mb-2 line-clamp-1">
+          {product.variants?.[0]?.name || 'Premium'} Sofa in {allColors[0] || 'Selection'}
+        </p>
+
+        {/* Real Ratings */}
+        <div className="flex items-center gap-1 mb-4">
+          <div className="flex text-yellow-400">
+            {[...Array(5)].map((_, i) => (
+              <Star 
+                key={i} 
+                className={`w-3 h-3 ${i < Math.floor(product.averageRating || 5) ? 'fill-current' : 'text-gray-200'}`} 
+              />
+            ))}
           </div>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              addToCart(product._id, 1);
-            }}
-            className="w-12 h-12 rounded-xl bg-primary-950 flex items-center justify-center text-white hover:bg-rose-500 transition-all duration-500 shadow-xl shadow-primary-900/10 group-hover:shadow-rose-500/30 shrink-0"
-            aria-label="Add to cart"
-          >
-            <ShoppingCart className="w-5 h-5 stroke-[2px]" />
-          </button>
+          <span className="text-[10px] text-gray-400 font-bold">({product.numReviews || 0})</span>
+        </div>
+        
+        <div className="mt-auto">
+          <div className="flex items-baseline gap-2 mb-1">
+            <span className="text-2xl font-bold text-[#D7282F]">£{minPrice.toLocaleString()}</span>
+            {oldPrice > minPrice && (
+              <span className="text-sm text-gray-400 line-through font-medium italic">was £{oldPrice.toLocaleString()}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1 text-[10px] font-bold text-[#51823F]">
+            <CheckCircle className="w-3 h-3" />
+            <span>{product.specifications?.delivery?.time || 'In stock. Fast delivery.'}</span>
+          </div>
         </div>
       </div>
     </div>

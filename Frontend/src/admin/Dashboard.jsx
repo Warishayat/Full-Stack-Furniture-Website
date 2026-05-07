@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, Tags, ShoppingCart, Activity } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ShoppingCart, Activity, ChevronRight, TrendingUp } from 'lucide-react';
 import API from '../services/api';
 
 const AdminDashboard = () => {
@@ -45,25 +45,26 @@ const AdminDashboard = () => {
   }, [location.pathname]);
 
   const navItems = [
-    { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-    { name: 'Products', path: '/admin/products', icon: Package },
-    { name: 'Categories', path: '/admin/categories', icon: Tags },
-    { name: 'Orders', path: '/admin/orders', icon: ShoppingCart },
+    { name: 'Console', path: '/admin', icon: LayoutDashboard },
+    { name: 'Inventory', path: '/admin/products', icon: Package },
+    { name: 'Departments', path: '/admin/categories', icon: Tags },
+    { name: 'Logistics', path: '/admin/orders', icon: ShoppingCart },
   ];
 
   return (
-    <div className="bg-slate-50 min-h-screen pt-32 lg:pt-40 pb-20 overflow-x-hidden">
-      <div className="max-w-[1440px] mx-auto px-4 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+    <div className="bg-white min-h-screen pt-32 lg:pt-40 pb-20 overflow-x-hidden">
+      <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
+        <div className="flex flex-col lg:flex-row gap-12 xl:gap-20">
           
-          {/* Admin Sidebar */}
-          <div className="lg:w-72 shrink-0">
-            <div className="bg-white rounded-[2.5rem] shadow-2xl shadow-primary-950/10 p-8 lg:sticky lg:top-40 border border-primary-100">
-              <div className="flex items-center mb-10 px-2 h-12">
-                 <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.2] origin-left transform-gpu drop-shadow-md" />
+          {/* Elite Sidebar */}
+          <div className="lg:w-80 shrink-0">
+            <div className="bg-[#F2EDE7] p-10 lg:sticky lg:top-40 border border-gray-100 rounded-sm">
+              <div className="mb-12">
+                 <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-2 block">Executive Suite</span>
+                 <h2 className="text-3xl font-serif font-black text-gray-900 tracking-tighter">Command <span className="italic text-gray-400">Center</span></h2>
               </div>
               
-              <nav className="space-y-3">
+              <nav className="space-y-2">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = location.pathname === item.path;
@@ -71,118 +72,105 @@ const AdminDashboard = () => {
                     <Link
                       key={item.name}
                       to={item.path}
-                      className={`flex items-center px-6 py-5 text-[11px] font-black uppercase tracking-widest rounded-2xl transition-all duration-500 ${
+                      className={`flex items-center px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 border ${
                         isActive 
-                          ? 'bg-primary-950 text-white shadow-2xl shadow-primary-950/30 translate-x-1' 
-                          : 'text-primary-500 hover:bg-primary-50 hover:text-primary-950'
+                          ? 'bg-gray-900 text-white border-gray-900 shadow-xl' 
+                          : 'text-gray-500 border-transparent hover:bg-white hover:text-gray-900 hover:border-gray-100'
                       }`}
                     >
-                      <Icon className={`w-5 h-5 mr-4 shrink-0 ${isActive ? 'text-accent' : ''}`} />
+                      <Icon className={`w-4 h-4 mr-4 ${isActive ? 'text-[#D7282F]' : ''}`} />
                       {item.name}
                     </Link>
                   );
                 })}
               </nav>
+
+              <div className="mt-12 pt-12 border-t border-gray-200">
+                 <Link to="/" className="text-[10px] font-black uppercase tracking-widest text-[#D7282F] hover:underline flex items-center gap-2">
+                    Back to Storefront <ChevronRight className="w-3 h-3" />
+                 </Link>
+              </div>
             </div>
           </div>
 
           {/* Admin Content Area */}
           <div className="flex-1 min-w-0">
             {location.pathname === '/admin' ? (
-              <div className="animate-fade-in-up">
+              <div className="animate-fade-in">
                 <div className="mb-16">
-                   <span className="text-accent uppercase tracking-[0.4em] text-[11px] font-black mb-4 block">System Status</span>
-                   <h1 className="text-5xl font-serif font-bold text-primary-950">Dashboard Overview</h1>
+                   <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Real-time Performance</span>
+                   <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 tracking-tighter mb-4">Enterprise <span className="italic text-gray-400">Overview</span></h1>
+                   <p className="text-gray-600 text-lg font-medium leading-relaxed max-w-2xl">
+                      Orchestrating excellence across your bespoke furniture empire.
+                   </p>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 mb-12">
-                  <div className="bg-white p-8 lg:p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500 mt-6 lg:mt-0">
-                    <div className="w-16 h-16 bg-primary-950 text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent transition-all duration-500 shadow-sm">
-                      <Package className="w-8 h-8" />
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-16">
+                  {[
+                    { label: 'Curated Pieces', val: stats.products, icon: Package, color: 'bg-gray-900' },
+                    { label: 'Active Depts', val: stats.categories, icon: Tags, color: 'bg-gray-900' },
+                    { label: 'Total Commissions', val: stats.orders, icon: ShoppingCart, color: 'bg-gray-900' },
+                    { label: 'Net Revenue', val: `£${ordersResData.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: TrendingUp, color: 'bg-[#D7282F]' }
+                  ].map((stat, i) => (
+                    <div key={i} className="bg-[#F2EDE7] p-10 border border-gray-100 group hover:border-[#D7282F] transition-all duration-500">
+                      <div className={`w-12 h-12 ${stat.color} text-white rounded-sm flex items-center justify-center mb-8 group-hover:scale-110 transition-transform`}>
+                        <stat.icon className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-2">{stat.label}</p>
+                        <p className="text-4xl font-serif font-black text-gray-900">{stat.val}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[11px] text-primary-950 font-black uppercase tracking-widest mb-2">Catalog Items</p>
-                      <p className="text-4xl font-serif font-bold text-primary-950">{stats.products}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white p-8 lg:p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500 mt-6 lg:mt-0">
-                    <div className="w-16 h-16 bg-primary-950 text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent transition-all duration-500 shadow-sm">
-                      <Tags className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-primary-950 font-black uppercase tracking-widest mb-2">Departments</p>
-                      <p className="text-4xl font-serif font-bold text-primary-950">{stats.categories}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white p-8 lg:p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500 mt-6 lg:mt-0">
-                    <div className="w-16 h-16 bg-primary-950 text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-accent transition-all duration-500 shadow-sm">
-                      <ShoppingCart className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-primary-950 font-black uppercase tracking-widest mb-2">Total Sales</p>
-                      <p className="text-4xl font-serif font-bold text-primary-950">{stats.orders}</p>
-                    </div>
-                  </div>
-
-                  <div className="bg-white p-8 lg:p-10 rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 group hover:border-accent transition-all duration-500 mt-6 lg:mt-0">
-                    <div className="w-16 h-16 bg-accent text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary-950 transition-all duration-500 shadow-sm">
-                      <Activity className="w-8 h-8" />
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-primary-950 font-black uppercase tracking-widest mb-2">Net Value</p>
-                      <p className="text-4xl font-serif font-bold text-primary-950">
-                        £{ordersResData.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
 
-                {/* Additional Stats / Quick Actions */}
-                <div className="bg-primary-950 rounded-[4rem] p-12 text-white relative overflow-hidden shadow-2xl mb-12">
-                   <div className="relative z-10">
-                      <h3 className="text-3xl font-serif font-bold italic mb-6">Welcome back, Admin</h3>
-                      <p className="text-primary-300 max-w-lg leading-relaxed">Your store is currently performing at peak efficiency. All systems are operational and secure.</p>
+                {/* Hero Section */}
+                <div className="bg-gray-900 p-12 lg:p-20 text-white relative overflow-hidden mb-16">
+                   <div className="relative z-10 max-w-2xl">
+                      <h3 className="text-4xl lg:text-5xl font-serif font-black italic mb-8 tracking-tight leading-tight text-white">System Integrity: <span className="text-[#D7282F]">Optimal</span></h3>
+                      <p className="text-gray-400 text-lg font-medium leading-relaxed mb-10">Global logistics and inventory synchronization are operating within peak parameters. Continue curating excellence.</p>
+                      <div className="flex gap-6">
+                         <Link to="/admin/products" className="px-10 py-4 bg-white text-gray-900 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#D7282F] hover:text-white transition-all">New Orchestration</Link>
+                         <Link to="/admin/orders" className="px-10 py-4 border border-white text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-gray-900 transition-all">Audit Logistics</Link>
+                      </div>
                    </div>
-                   <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+                   <div className="absolute top-0 right-0 w-96 h-96 bg-[#D7282F]/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
                 </div>
 
                 {/* Recent Orders Section */}
-                <div className="bg-white rounded-[3rem] shadow-2xl shadow-primary-950/5 border border-primary-100 p-8 lg:p-12 overflow-hidden">
-                   <div className="flex items-center justify-between mb-10">
-                      <h3 className="text-2xl font-serif font-bold text-primary-950">Recent Transactions</h3>
-                      <Link to="/admin/orders" className="text-[10px] font-black uppercase tracking-[0.3em] text-accent hover:text-primary-950 transition-colors">View All Records</Link>
+                <div className="border border-gray-100 p-10 lg:p-16">
+                   <div className="flex items-center justify-between mb-12">
+                      <h3 className="text-3xl font-serif font-black text-gray-900 tracking-tight">Recent <span className="italic text-gray-400">Acquisitions</span></h3>
+                      <Link to="/admin/orders" className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D7282F] hover:underline">Full Registry</Link>
                    </div>
                    <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                          <thead>
-                            <tr className="border-b border-primary-50 text-[10px] font-black uppercase tracking-widest text-primary-400">
+                            <tr className="border-b border-gray-100 text-[10px] font-black uppercase tracking-widest text-gray-400">
                                <th className="pb-6">Reference</th>
-                               <th className="pb-6">Customer</th>
-                               <th className="pb-6">Amount</th>
+                               <th className="pb-6">Patron</th>
+                               <th className="pb-6">Valuation</th>
                                <th className="pb-6">Status</th>
                             </tr>
                          </thead>
-                         <tbody className="divide-y divide-primary-50">
+                         <tbody className="divide-y divide-gray-50">
                             {ordersResData.slice(0, 5).map((order) => (
-                               <tr key={order._id} className="group hover:bg-primary-50/50 transition-all">
-                                  <td className="py-6">
+                               <tr key={order._id} className="group hover:bg-[#F2EDE7]/30 transition-all">
+                                  <td className="py-8">
                                      <Link 
                                        to={`/order/${order._id}`} 
-                                       target="_blank"
-                                       rel="noopener noreferrer"
-                                       className="font-bold text-primary-950 hover:text-accent transition-all underline decoration-accent/10 underline-offset-4"
+                                       className="font-bold text-gray-900 hover:text-[#D7282F] transition-all"
                                      >
                                         #{order._id.slice(-8).toUpperCase()}
                                      </Link>
                                   </td>
-                                  <td className="py-6">
-                                     <div className="text-sm font-bold text-primary-950">{order.user?.name || 'Private Patron'}</div>
+                                  <td className="py-8">
+                                     <div className="text-sm font-bold text-gray-900">{order.user?.name || 'Private Patron'}</div>
+                                     <div className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{order.user?.email}</div>
                                   </td>
-                                  <td className="py-6 text-sm font-bold text-primary-950">£{order.totalPrice?.toLocaleString()}</td>
-                                  <td className="py-6">
-                                     <span className="text-[9px] font-black uppercase tracking-widest px-3 py-1 bg-primary-50 rounded-full text-primary-500">
+                                  <td className="py-8 text-sm font-bold text-gray-900">£{order.totalPrice?.toLocaleString()}</td>
+                                  <td className="py-8">
+                                     <span className="text-[9px] font-black uppercase tracking-widest px-4 py-1.5 bg-gray-900 text-white rounded-full">
                                         {order.orderStatus || 'Processing'}
                                       </span>
                                    </td>

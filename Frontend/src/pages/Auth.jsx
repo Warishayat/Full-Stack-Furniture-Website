@@ -48,138 +48,105 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-stretch bg-white">
-      {/* Visual Side */}
-      <div className="hidden lg:flex lg:w-1/2 bg-primary-950 relative overflow-hidden items-center justify-center p-20 pt-32 lg:pt-24">
-         <div className="absolute inset-0">
-            <img 
-               src="https://images.unsplash.com/photo-1567016432779-094069958ea5?q=80&w=2000&auto=format&fit=crop" 
-               className="w-full h-full object-cover opacity-30 scale-110 animate-subtle-zoom"
-               alt="Luxury Furniture"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-950 via-primary-950/80 to-accent/20" />
-         </div>
-         
-         <div className="relative z-10 max-w-md text-center">
-            <div className="mx-auto mb-10 h-20 flex items-center justify-center">
-               <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.5] transform-gpu" />
-            </div>
-            <h2 className="text-5xl font-serif font-bold text-white mb-6 leading-tight">Join the <br/> <span className="text-accent italic">Elite Curation</span></h2>
-            <h3 className="text-primary-300 text-lg leading-relaxed">Unlock exclusive access to our handcrafted masterpieces and bespoke interior services.</h3>
-            
-            <div className="mt-12 space-y-6 text-left">
-               {[
-                 'Early access to limited editions',
-                 'Complimentary white-glove delivery',
-                 'Direct consultation with master designers'
-               ].map((text, i) => (
-                 <div key={i} className="flex items-center gap-4 text-white/80">
-                    <div className="w-6 h-6 bg-accent/20 rounded-full flex items-center justify-center">
-                       <CheckCircle className="w-4 h-4 text-accent" />
-                    </div>
-                    <span className="text-sm font-medium tracking-wide">{text}</span>
-                 </div>
-               ))}
-            </div>
-         </div>
+    <div className="min-h-screen bg-white">
+      {/* Breadcrumbs */}
+      <div className="container mx-auto px-6 lg:px-12 pt-28 lg:pt-32">
+        <nav className="flex text-sm text-gray-500 gap-2 mb-12">
+          <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
+          <span>›</span>
+          <span className="text-[#D7282F] font-medium">{isLogin ? 'Sign-in' : 'Register'}</span>
+        </nav>
       </div>
 
-      {/* Form Side */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-20 bg-secondary/30 pt-32 lg:pt-24">
-        <div className="max-w-md w-full animate-fade-in-up mt-8 lg:mt-12">
-          <div className="mb-12">
-            <Link to="/" className="flex items-center mb-10 lg:hidden h-10">
-               <img src="/logo.png" alt="EliteSeating Logo" className="h-full w-auto object-contain scale-[2.5] origin-left transform-gpu" />
-            </Link>
-            <h2 className="text-4xl font-serif font-bold text-primary-950 mb-3">
-              {isLogin ? 'Welcome Back' : 'Begin Your Journey'}
-            </h2>
-            <p className="text-primary-400 font-medium tracking-wide">
-              {isLogin 
-                ? 'Sign in to manage your luxury curation.' 
-                : 'Register to start your exceptional home experience.'}
-            </p>
+      <div className="container mx-auto px-6 lg:px-12 flex flex-col items-center">
+        <div className="max-w-md w-full text-center">
+          <h1 className="text-5xl md:text-6xl font-serif text-gray-800 mb-2">
+            {isLogin ? 'Sign in' : 'Register'}
+          </h1>
+          <div className="w-16 h-1 bg-[#F2EDE7] mx-auto mb-12 relative overflow-hidden">
+             <div className="absolute inset-0 bg-[#D7282F]/40 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6 text-left" onSubmit={handleSubmit}>
             {!isLogin && (
-              <div className="relative group">
-                <User className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary-300 group-focus-within:text-accent transition-colors" />
+              <div className="space-y-1">
                 <input
                   type="text"
                   name="name"
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full pl-14 pr-6 py-5 bg-white border border-primary-100 rounded-[1.5rem] focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-sm font-medium"
-                  placeholder="Your Full Name"
-                  autoComplete="name"
+                  className="w-full px-6 py-4 border border-gray-200 rounded-sm focus:border-gray-400 outline-none transition-all placeholder:text-gray-300"
+                  placeholder="Full Name"
                 />
               </div>
             )}
 
-            <div className="relative group">
-              <Mail className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary-300 group-focus-within:text-accent transition-colors" />
+            <div className="space-y-1">
               <input
                 type="email"
                 name="email"
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pl-14 pr-6 py-5 bg-white border border-primary-100 rounded-[1.5rem] focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-sm font-medium"
-                placeholder="Email Address"
-                autoComplete="email"
+                className="w-full px-6 py-4 border border-gray-200 rounded-sm focus:border-gray-400 outline-none transition-all placeholder:text-gray-300"
+                placeholder="Email"
               />
             </div>
 
-            <div className="relative group">
-              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary-300 group-focus-within:text-accent transition-colors" />
+            <div className="space-y-1">
               <input
                 type="password"
                 name="password"
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full pl-14 pr-6 py-5 bg-white border border-primary-100 rounded-[1.5rem] focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-sm font-medium"
+                className="w-full px-6 py-4 border border-gray-200 rounded-sm focus:border-gray-400 outline-none transition-all placeholder:text-gray-300"
                 placeholder="Password"
-                autoComplete={isLogin ? "current-password" : "new-password"}
               />
             </div>
 
+            {isLogin && (
+              <div className="text-right">
+                <Link to="/forgot-password" size="sm" className="text-xs text-[#D7282F] hover:underline font-medium">
+                  Forgot your password?
+                </Link>
+              </div>
+            )}
+
             {!isLogin && (
-              <div className="relative group">
-                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-primary-300 group-focus-within:text-accent transition-colors" />
+              <div className="space-y-1">
                 <input
                   type="password"
                   name="confirmPassword"
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="w-full pl-14 pr-6 py-5 bg-white border border-primary-100 rounded-[1.5rem] focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-sm font-medium"
+                  className="w-full px-6 py-4 border border-gray-200 rounded-sm focus:border-gray-400 outline-none transition-all placeholder:text-gray-300"
                   placeholder="Confirm Password"
-                  autoComplete="new-password"
                 />
               </div>
             )}
 
-            <button
-              type="submit"
-              className="group w-full py-5 px-6 bg-primary-950 text-white rounded-full hover:bg-accent font-bold transition-all shadow-2xl shadow-primary-900/20 flex items-center justify-center gap-3"
-            >
-              {isLogin ? 'Sign In' : 'Create Account'}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-            </button>
+            <div className="pt-4">
+              <button
+                type="submit"
+                className="w-full py-4 bg-[#51823F] text-white font-bold rounded-sm hover:bg-[#457036] transition-all text-lg"
+              >
+                {isLogin ? 'Sign in' : 'Create Account'}
+              </button>
+            </div>
           </form>
 
-          <div className="mt-12 text-center">
-            <p className="text-primary-400 text-sm font-medium mb-4">
-              {isLogin ? "New to COMFORT?" : "Already a member?"}
+          <div className="mt-12 pt-8 border-t border-gray-100">
+            <p className="text-gray-500 text-sm mb-4">
+              {isLogin ? "New to EliteSeating?" : "Already have an account?"}
             </p>
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-primary-950 hover:text-accent font-bold text-sm underline decoration-accent/30 underline-offset-8 transition-all"
+              className="text-gray-900 font-bold hover:text-[#D7282F] transition-colors"
             >
-              {isLogin ? "Apply for an Account" : "Return to Sign In"}
+              {isLogin ? "Register now" : "Return to Sign in"}
             </button>
           </div>
         </div>

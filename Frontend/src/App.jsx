@@ -1,12 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-// Layouts
 import AppLayout from './components/layout/AppLayout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
-
-// Pages
 import Home from './pages/Home';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
@@ -22,8 +18,15 @@ import Warranty from './pages/Warranty';
 import Bespoke from './pages/Bespoke';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import OrderDetail from './pages/OrderDetail';
+import Contact from './pages/Contact';
+import HelpCenter from './pages/HelpCenter';
+import Inspiration from './pages/Inspiration';
+import ReturnsPolicy from './pages/ReturnsPolicy';
+import Account from './pages/Account';
+import Wishlist from './pages/Wishlist';
 
-// Admin Pages
+
+
 import AdminDashboard from './admin/Dashboard';
 import ManageProducts from './admin/ManageProducts';
 import ManageCategories from './admin/ManageCategories';
@@ -49,25 +52,29 @@ function App() {
       
       <Routes>
         <Route element={<AppLayout />}>
-          {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Auth />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/track-order" element={<OrderTracking />} />
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
           <Route path="/warranty" element={<Warranty />} />
           <Route path="/bespoke" element={<Bespoke />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/help" element={<HelpCenter />} />
+          <Route path="/inspiration" element={<Inspiration />} />
+          <Route path="/returns-policy" element={<ReturnsPolicy />} />
           
           {/* User Protected Routes */}
           <Route element={<ProtectedRoute />}>
+            <Route path="/account" element={<Account />} />
             <Route path="/success" element={<Success />} />
             <Route path="/cancel" element={<Cancel />} />
             <Route path="/orders" element={<MyOrders />} />
-            <Route path="/order/:id" element={<OrderDetail />} />
           </Route>
 
           {/* Admin Protected Routes */}
