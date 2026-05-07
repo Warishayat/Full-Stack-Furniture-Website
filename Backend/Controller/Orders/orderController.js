@@ -1,6 +1,7 @@
 const Order = require("../../Schemas/Order");
 const Cart = require("../../Schemas/Cart");
 const Product = require("../../Schemas/Product");
+const User = require("../../Schemas/User");
 const Stripe = require("stripe");
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -13,24 +14,45 @@ const createCheckoutSession = async (req, res) => {
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Cart is empty"
+        message: "Cart is empty",
       });
     }
 
-    const lineItems = cart.items.map(item => ({
-      price_data: {
-        currency: "gbp",
-        product_data: {
-          name: item.product.title,
+    const lineItems = cart.items.map((item) => {
+      const product = item.product;
+
+      const variant = product?.variants?.find(
+        (v) => v.name === item.variant
+      );
+
+      const material = variant?.materials?.find(
+        (m) => m.name === item.material
+      );
+
+      const color = material?.colors?.find(
+        (c) => c.name === item.color
+      );
+
+      return {
+        price_data: {
+          currency: "gbp",
+          product_data: {
+            name: product.title,
+            images: color?.images?.length
+              ? color.images
+              : product.images || [],
+          },
+          unit_amount: Math.round((color?.price || 0) * 100),
         },
-        unit_amount: Math.round(item.product.price * 100),
-      },
-      quantity: item.quantity,
-    }));
+        quantity: item.quantity,
+      };
+    });
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "afterpay_clearpay"],
+
       mode: "payment",
+
       line_items: lineItems,
 
       customer_email: req.user.email,
@@ -43,28 +65,29 @@ const createCheckoutSession = async (req, res) => {
         enabled: true,
       },
 
+      // 🔥 ONLY KEEP USER ID
       metadata: {
-        userId: req.user._id.toString()
+        userId: req.user._id.toString(),
       },
 
-      success_url: `${req.headers.origin}/success`,
-      cancel_url: `${req.headers.origin}/cancel`,
+      success_url: "http://localhost:5173/success",
+      cancel_url: "http://localhost:5173/cancel",
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      url: session.url
+      url: session.url,
     });
 
   } catch (error) {
     console.error("Checkout Error:", error.message);
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
-
 
 const webhookHandler = async (req, res) => {
   let event;
@@ -77,9 +100,6 @@ const webhookHandler = async (req, res) => {
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
-
-    console.log("Webhook received:", event.type);
-
   } catch (err) {
     console.error("Webhook signature error:", err.message);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -89,17 +109,16 @@ const webhookHandler = async (req, res) => {
     try {
       const session = event.data.object;
 
-      console.log("Session ID:", session.id);
-
+      // =========================
+      // AVOID DUPLICATE ORDERS
+      // =========================
       const existingOrder = await Order.findOne({
-        stripeSessionId: session.id
+        stripeSessionId: session.id,
       });
 
       if (existingOrder) {
-        console.log("Order already exists");
         return res.status(200).json({ received: true });
       }
-
 
       const userId = session.metadata?.userId;
 
@@ -116,117 +135,132 @@ const webhookHandler = async (req, res) => {
         return res.status(200).json({ received: true });
       }
 
-      const items = await Promise.all(cart.items.map(async (item) => {
-        let productData = item.product;
-        
-        // If not populated (still an ID), fetch it manually
-        if (productData && typeof productData !== 'object') {
-          productData = await Product.findById(productData);
-        }
+      // =========================
+      // BUILD ITEMS (SCHEMA MATCH)
+      // =========================
+      const items = cart.items.map((item) => {
+        const product = item.product;
 
-        const productId = productData?._id || item.product;
-        const price = productData?.price || 0;
-        const title = productData?.title || 'Handcrafted Piece';
-        const image = productData?.images?.[0] || '';
-        
+        const variant = product?.variants?.find(
+          (v) => v.name === item.variant
+        );
+
+        const material = variant?.materials?.find(
+          (m) => m.name === item.material
+        );
+
+        const color = material?.colors?.find(
+          (c) => c.name === item.color
+        );
+
         return {
-          product: productId,
-          title: title,
-          image: image,
+          product: product._id,
+          title: product.title,
+          image: color?.images?.[0] || product.images?.[0] || "",
+
+          variant: { name: item.variant },
+          material: { name: item.material },
+          color: { name: item.color },
+
+          sku: color?.sku || "",
+
           quantity: item.quantity,
-          price: price
+          price: color?.price || 0,
         };
-      }));
+      });
+
+      // =========================
+      // FULL SHIPPING (SCHEMA MATCH)
+      // =========================
+      const addressObj = session.customer_details?.address;
+
+      const shippingAddress = {
+        fullName: session.customer_details?.name || "",
+        phone: session.customer_details?.phone || "",
+
+        address: addressObj?.line1 || "",
+        city: addressObj?.city || "",
+        postalCode: addressObj?.postal_code || "",
+        country: addressObj?.country || "",
+      };
+
+      // =========================
+      // REAL PAYMENT METHOD
+      // =========================
+      const paymentIntent = await stripe.paymentIntents.retrieve(
+        session.payment_intent
+      );
+
+      const methodType =
+        paymentIntent.payment_method_types?.[0] || "card";
 
       let paymentMethod = "card";
 
-      try {
-        const paymentIntent = await stripe.paymentIntents.retrieve(
-          session.payment_intent
-        );
-
-        const method = paymentIntent.payment_method_types?.[0];
-
-        if (method === "afterpay_clearpay") {
-          paymentMethod = "afterpay_clearpay";
-        } else if (method === "card") {
-          paymentMethod = "card";
-        }
-
-        console.log("Payment method:", paymentMethod);
-
-      } catch (err) {
-        console.log("PaymentIntent fetch failed, fallback to card");
+      if (methodType === "afterpay_clearpay") {
+        paymentMethod = "afterpay_clearpay";
       }
 
+      // =========================
+      // CREATE ORDER
+      // =========================
       const order = new Order({
         user: userId,
         items,
 
         totalPrice: (session.amount_total || 0) / 100,
 
-        paymentStatus: "paid",
+        shippingAddress,
+
         paymentMethod,
+        paymentStatus: "paid",
 
         stripeSessionId: session.id,
-        paymentIntentId: session.payment_intent,
-
-        customerDetails: {
-          name: session.customer_details?.name || "",
-          email: session.customer_details?.email || "",
-          phone: session.customer_details?.phone || "",
-          address: session.customer_details?.address || {}
-        }
+        stripePaymentIntentId: session.payment_intent,
       });
 
       await order.save();
 
+      // =========================
+      // CLEAR CART
+      // =========================
       cart.items = [];
-      cart.totalPrice = 0;
       await cart.save();
 
-      console.log("Order created successfully");
+      console.log("Order created with FULL correct data");
 
     } catch (err) {
       console.error("Order creation error:", err.message);
     }
   }
 
-  res.status(200).json({ received: true });
+  return res.status(200).json({ received: true });
 };
-
 const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ 
-      $or: [
-        { user: req.user._id },
-        { user: req.user._id.toString() }
-      ]
-    })
+    const orders = await Order.find({ user: req.user._id })
+      .populate("items.product")
       .sort({ createdAt: -1 });
 
-    const repairedOrders = await Promise.all(orders.map(async (order) => {
+    const cleanedOrders = orders.map((order) => {
       const orderObj = order.toObject();
-      for (let item of orderObj.items) {
-        if (item.product) {
-          const product = await Product.findById(item.product);
-          if (product) {
-            item.product = product;
-          }
-        }
-      }
-      return orderObj;
-    }));
 
-    res.status(200).json({
+      orderObj.items = orderObj.items.map((item) => ({
+        ...item,
+        product: item.product || null,
+      }));
+
+      return orderObj;
+    });
+
+    return res.status(200).json({
       success: true,
-      orders: repairedOrders
+      orders: cleanedOrders,
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -236,75 +270,100 @@ const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("user", "name email")
+      .populate("items.product")
       .sort({ createdAt: -1 });
 
-    const repairedOrders = await Promise.all(orders.map(async (order) => {
+    const cleanedOrders = orders.map((order) => {
       const orderObj = order.toObject();
-      for (let item of orderObj.items) {
-        if (item.product) {
-          const product = await Product.findById(item.product);
-          if (product) {
-            item.product = product;
-          }
-        }
-      }
-      return orderObj;
-    }));
 
-    res.status(200).json({
+      orderObj.items = orderObj.items.map((item) => ({
+        ...item,
+        product: item.product || null, // safe fallback if deleted
+      }));
+
+      return orderObj;
+    });
+
+    return res.status(200).json({
       success: true,
-      orders: repairedOrders
+      orders: cleanedOrders,
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
-
 
 const updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { orderStatus } = req.body;
 
-    const validStatus = ["processing", "shipped", "delivered", "cancelled"];
+    // =========================
+    // VALID STATUSES
+    // =========================
+    const validStatus = [
+      "processing",
+      "shipped",
+      "delivered",
+      "cancelled",
+    ];
 
-    if (!validStatus.includes(orderStatus)) {
+    if (!orderStatus || !validStatus.includes(orderStatus)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid status"
+        message: "Invalid order status",
       });
     }
 
+    // =========================
+    // FIND ORDER
+    // =========================
     const order = await Order.findById(id);
 
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order not found"
+        message: "Order not found",
       });
     }
 
+    // =========================
+    // AVOID DUPLICATE UPDATE
+    // =========================
+    if (order.orderStatus === orderStatus) {
+      return res.status(400).json({
+        success: false,
+        message: `Order is already ${orderStatus}`,
+      });
+    }
+
+    // =========================
+    // UPDATE
+    // =========================
     order.orderStatus = orderStatus;
+
     await order.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Order status updated",
-      order
+      message: "Order status updated successfully",
+      order: {
+        _id: order._id,
+        orderStatus: order.orderStatus,
+      },
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
-
 
 const trackOrder = async (req, res) => {
   try {
@@ -361,46 +420,60 @@ const getOrderById = async (req, res) => {
   try {
     const { id } = req.params;
     const cleanId = id.trim();
-    let order;
 
-    // Try full ID search first
-    if (cleanId.match(/^[0-9a-fA-F]{24}$/)) {
+    let order = null;
+
+    // =========================
+    // 1. FULL MONGO ID CHECK
+    // =========================
+    if (/^[0-9a-fA-F]{24}$/.test(cleanId)) {
       order = await Order.findById(cleanId)
-        .populate("user", "name email");
+        .populate("user", "name email")
+        .populate("items.product");
     }
 
-    // Fallback: search by short ID if not found (like trackOrder)
+    // =========================
+    // 2. SHORT ID FALLBACK (SAFE VERSION)
+    // =========================
     if (!order) {
-      order = await Order.findOne({
-        $expr: {
-          $eq: [
-            { $substrCP: [{ $toString: "$_id" }, 16, 8] },
-            cleanId.toLowerCase()
-          ]
-        }
-      })
-      .populate("user", "name email");
+      const orders = await Order.find()
+        .populate("user", "name email")
+        .populate("items.product");
+
+      order = orders.find((o) =>
+        o._id.toString().slice(-8).toLowerCase() === cleanId.toLowerCase()
+      );
     }
 
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
     }
 
-    // Manual Repair for legacy orders
+    // =========================
+    // CLEAN RESPONSE
+    // =========================
     const orderObj = order.toObject();
-    for (let item of orderObj.items) {
-      if (item.product) {
-        const product = await Product.findById(item.product);
-        if (product) {
-          item.product = product;
-        }
-      }
-    }
 
-    res.status(200).json({ success: true, order: orderObj });
+    orderObj.items = orderObj.items.map((item) => ({
+      ...item,
+      product: item.product || null,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      order: orderObj,
+    });
+
   } catch (error) {
     console.error("getOrderById Error:", error.message);
-    res.status(500).json({ success: false, message: error.message });
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 

@@ -1,67 +1,126 @@
 const Product = require("../../Schemas/Product");
+const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 const createProduct = async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      category,
-      stock,
-      colors,
-      oldprice,
-      specifications
-    } = req.body;
-    const files = req.files;
-
-    if (!title || !description || !price || !category || stock === undefined) {
+    console.log("CREATE PRODUCT REQUEST BODY:", JSON.stringify(req.body, null, 2));
+    console.log("CREATE PRODUCT FILES:", req.files);
+    
+    if (Object.keys(req.body).length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Required fields are missing"
+        message: "Request body is empty. Ensure multipart/form-data is sent correctly with boundary."
       });
     }
 
-    if (!files || files.length === 0) {
+    const { title, description, category, variants, specifications } = req.body;
+
+    if (!title || !description || !category || !variants) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields (title, description, category, variants)"
+      });
+    }
+
+    const images = req.files?.images || [];
+    const sizeChartFile = req.files?.sizeChart?.[0];
+    const sizeChart = sizeChartFile ? sizeChartFile.path : "";
+
+    if (images.length === 0) {
       return res.status(400).json({
         success: false,
         message: "At least one image is required"
       });
     }
 
-    if (oldprice && Number(oldprice) < Number(price)) {
+    const slug = slugify(title, { lower: true, strict: true }) + "-" + Date.now();
+    
+    // Parse variants and specifications safely
+    let parsedVariants;
+    try {
+      parsedVariants = typeof variants === "string" ? JSON.parse(variants) : variants;
+    } catch (e) {
+      return res.status(400).json({ success: false, message: "Invalid JSON format in variants" });
+    }
+
+    let parsedSpecifications;
+    try {
+      parsedSpecifications = typeof specifications === "string" ? JSON.parse(specifications) : (specifications || {});
+      if (parsedSpecifications === null) parsedSpecifications = {};
+    } catch (e) {
+      return res.status(400).json({ success: false, message: "Invalid JSON format in specifications" });
+    }
+
+    if (!Array.isArray(parsedVariants)) {
       return res.status(400).json({
         success: false,
-        message: "Old price must be greater than current price"
+        message: "Variants must be an array"
       });
     }
 
-    const imageURL = files.map((file) => file.path);
+    const allImages = images.map(file => file.path);
 
-    let parsedColors = [];
-    let parsedSpecs = {};
+    // Map image indexes to Cloudinary URLs for each variant/color
+    parsedVariants.forEach((variant) => {
+      if (!variant) return;
+      if (!variant.materials || !Array.isArray(variant.materials)) {
+        throw new Error(`Variant "${variant.name || 'Unknown'}" must have materials array`);
+      }
 
-    if (colors) {
-      parsedColors = typeof colors === "string" ? JSON.parse(colors) : colors;
-    }
+      variant.materials.forEach((material) => {
+        if (!material) return;
+        if (!material.colors || !Array.isArray(material.colors)) {
+          throw new Error(`Material "${material.name || 'Unknown'}" must have colors array`);
+        }
 
-    if (specifications) {
-      parsedSpecs =
-        typeof specifications === "string"
-          ? JSON.parse(specifications)
-          : specifications;
-    }
+        material.colors.forEach((color) => {
+          if (!color) return;
+          if (color.price === undefined || color.price === null || color.price === "") {
+            throw new Error(`Color "${color.name || 'Unknown'}" in variant "${variant.name || 'Unknown'}" must have a price`);
+          }
+
+          // Convert price and stock to numbers
+          color.price = Number(color.price);
+          color.oldPrice = color.oldPrice ? Number(color.oldPrice) : undefined;
+          color.stock = color.stock ? Number(color.stock) : 0;
+
+          if (color.oldPrice && color.oldPrice < color.price) {
+            throw new Error(`Old price for color "${color.name}" must be greater than current price`);
+          }
+
+          // Map the image indexes to actual URLs
+          const mappedImages = (color.imageIndexes || [])
+            .map(i => allImages[i])
+            .filter(Boolean);
+
+          // If no images were linked but images were uploaded, default to the first image
+          if (mappedImages.length === 0 && allImages.length > 0) {
+            color.images = [allImages[0]];
+          } else {
+            color.images = mappedImages;
+          }
+          
+          delete color.imageIndexes;
+        });
+      });
+    });
 
     const product = await Product.create({
       title,
+      slug,
       description,
-      price: Number(price),
-      oldprice: oldprice ? Number(oldprice) : undefined,
       category,
-      stock: stock ? Number(stock) : 0,
-      images: imageURL,
-      colors: parsedColors,
-      specifications: parsedSpecs
-});
+      images: allImages,
+      variants: parsedVariants,
+      specifications: {
+        ...parsedSpecifications,
+        dimensions: {
+          ...parsedSpecifications.dimensions,
+          sizeChart: sizeChart || parsedSpecifications.dimensions?.sizeChart
+        }
+      }
+    });
 
     res.status(201).json({
       success: true,
@@ -70,84 +129,116 @@ const createProduct = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("CREATE ERROR:", error);
+    console.error("CREATE PRODUCT ERROR:", error);
 
     if (error instanceof SyntaxError) {
       return res.status(400).json({
         success: false,
-        message: "Invalid JSON format in colors/specifications"
+        message: "Invalid JSON format in variants or specifications"
       });
     }
 
-    res.status(500).json({
+    res.status(error.name === 'ValidationError' ? 400 : 500).json({
       success: false,
-      message: error.message || "Internal server error"
+      message: error.message || "Internal Server Error",
+      error: process.env.NODE_ENV === 'development' ? error : undefined
     });
   }
 };
-  
-const getAllProducts = async(req,res) => {
+
+const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    if(products.length === 0){
-      return res.status(404).json({
-        success: false,
-        message: "Products not found",
-      });
+    const { category, page = 1, limit = 10 } = req.query;
+    let filter = {};
+    if (category) {
+      filter.category = category;
     }
+
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find(filter)
+      .populate("category", "name slug")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(Number(limit));
+
+    const total = await Product.countDocuments(filter);
+
     res.status(200).json({
       success: true,
-      message: "Products fetched successfully",
+      count: products.length,
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / limit),
       products,
-    });         
+    });
+
   } catch (error) {
+    console.error("GET PRODUCTS ERROR:", error);
+
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message || "Something went wrong",
     });
   }
-}
+};
 
-const deleteProduct = async(req,res) => {
+
+const deleteProduct = async (req, res) => {
   try {
-    const {id} = req.params;
-    const product = await Product.findByIdAndDelete(id);
-    if(!product){
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID",
+      });
+    }
+    const product = await Product.findById(id);
+
+    if (!product) {
       return res.status(404).json({
         success: false,
         message: "Product not found",
       });
     }
+
+    await Product.findByIdAndDelete(id);
+
     res.status(200).json({
       success: true,
       message: "Product deleted successfully",
-      product,
-    });         
+      deletedProduct: {
+        _id: product._id,
+        title: product.title
+      }
+    });
+
   } catch (error) {
+    console.error("DELETE PRODUCT ERROR:", error);
+
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message || "Something went wrong",
     });
   }
-}
+};
 
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      title,
-      description,
-      price,
-      category,
-      stock,
-      colors,
-      oldprice,
-      specifications
-    } = req.body;
+    const { title, description, category, variants, specifications } = req.body;
 
     const files = req.files;
 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID"
+      });
+    }
+
     const product = await Product.findById(id);
+
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -155,39 +246,74 @@ const updateProduct = async (req, res) => {
       });
     }
 
-    // 🔥 price validation
-    if (
-      oldprice !== undefined &&
-      price !== undefined &&
-      Number(oldprice) < Number(price)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Old price must be greater than current price"
-      });
+    if (title !== undefined) {
+      product.title = title;
+      product.slug = slugify(title, { lower: true }) + "-" + Date.now(); 
     }
 
-    if (title !== undefined) product.title = title;
     if (description !== undefined) product.description = description;
-    if (price !== undefined) product.price = price;
-    if (oldprice !== undefined) product.oldprice = oldprice; // ✅ added
     if (category !== undefined) product.category = category;
-    if (stock !== undefined) product.stock = stock;
 
-    if (colors !== undefined) {
-      product.colors =
-        typeof colors === "string" ? JSON.parse(colors) : colors;
+    let allImages = product.images;
+
+    if (files?.images?.length > 0) {
+      allImages = files.images.map(f => f.path);
+      product.images = allImages;
+    }
+
+
+    if (variants !== undefined) {
+      let parsedVariants =
+        typeof variants === "string" ? JSON.parse(variants) : variants;
+
+      if (!Array.isArray(parsedVariants)) {
+        return res.status(400).json({
+          success: false,
+          message: "Variants must be an array"
+        });
+      }
+
+      parsedVariants.forEach((variant) => {
+        variant.materials?.forEach((material) => {
+          material.colors?.forEach((color) => {
+
+            if (!color.price) {
+              throw new Error("Each color must have price");
+            }
+
+            if (color.oldPrice && color.oldPrice < color.price) {
+              throw new Error("Old price must be greater than price");
+            }
+
+            color.images = (color.imageIndexes || [])
+              .map(i => allImages[i])
+              .filter(Boolean);
+
+            delete color.imageIndexes;
+          });
+        });
+      });
+
+      product.variants = parsedVariants;
     }
 
     if (specifications !== undefined) {
-      product.specifications =
+      const parsedSpecs =
         typeof specifications === "string"
           ? JSON.parse(specifications)
           : specifications;
+
+      product.specifications = parsedSpecs;
     }
 
-    if (files && files.length > 0) {
-      product.images = files.map((file) => file.path);
+    const sizeChartImage = files?.sizeChart?.[0]?.path;
+
+    if (sizeChartImage) {
+      if (!product.specifications) product.specifications = {};
+      if (!product.specifications.dimensions)
+        product.specifications.dimensions = {};
+
+      product.specifications.dimensions.sizeChart = sizeChartImage;
     }
 
     await product.save();
@@ -199,85 +325,124 @@ const updateProduct = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("UPDATE ERROR:", error);
+    console.error("UPDATE PRODUCT ERROR:", error);
 
     if (error instanceof SyntaxError) {
       return res.status(400).json({
         success: false,
-        message: "Invalid JSON format in colors/specifications"
+        message: "Invalid JSON format in variants/specifications"
       });
     }
 
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message || "Something went wrong"
     });
   }
 };
 
-const getSingleProduct = async(req,res) => {
+const getSingleProduct = async (req, res) => {
   try {
-    const {id} = req.params;
-    const product = await Product.findById(id);
-    if(!product){
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID",
+      });
+    }
+
+    const product = await Product.findById(id)
+      .populate("category", "name slug");
+
+    if (!product) {
       return res.status(404).json({
         success: false,
         message: "Product not found",
       });
     }
+
+    const firstVariant = product.variants?.[0] || null;
+    const firstMaterial = firstVariant?.materials?.[0] || null;
+    const firstColor = firstMaterial?.colors?.[0] || null;
+
     res.status(200).json({
       success: true,
-      message: "Product fetched successfully",
       product,
-    });         
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-}
 
-const SearchProduct = async (req, res) => {
-  try {
-    const { query } = req.query;
-
-    if (!query) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide a search query"
-      });
-    }
-
-    const searchTerms = query.split(' ').filter(word => word.length > 0);
-    
-    // Create regex that handles optional trailing 's' or plural forms
-    const searchRegex = searchTerms.map(term => {
-      const baseTerm = term.toLowerCase().endsWith('s') ? term.slice(0, -1) : term;
-      const pattern = `(${term}|${baseTerm})`;
-      return {
-        $or: [
-          { title: { $regex: pattern, $options: "i" } },
-          { description: { $regex: pattern, $options: "i" } }
-        ]
-      };
-    });
-
-    const products = await Product.find({
-      $and: searchRegex
-    }).populate('category');
-
-    res.status(200).json({
-      success: true,
-      products 
+      defaultSelection: {
+        variant: firstVariant?.name || null,
+        material: firstMaterial?.name || null,
+        color: firstColor?.name || null,
+        images: firstColor?.images || product.images || []
+      }
     });
 
   } catch (error) {
+    console.error("GET SINGLE PRODUCT ERROR:", error);
+
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message || "Something went wrong",
     });
   }
 };
 
-module.exports = {createProduct,getAllProducts,deleteProduct,updateProduct,getSingleProduct,SearchProduct};
+const SearchProduct = async (req, res) => {
+  try {
+    const { query, page = 1, limit = 10 } = req.query;
+
+    if (!query) {
+      return res.status(400).json({
+        success: false,
+        message: "Search query is required"
+      });
+    }
+
+    const searchRegex = new RegExp(query, "i");
+
+    const skip = (page - 1) * limit;
+
+    const products = await Product.find({
+      $or: [
+        { title: searchRegex }
+      ]
+    })
+      .populate("category", "name slug")
+      .skip(skip)
+      .limit(Number(limit))
+      .sort({ createdAt: -1 });
+
+    const total = await Product.countDocuments({
+      $or: [
+        { title: searchRegex },
+      ]
+    });
+
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / limit),
+      products
+    });
+
+  } catch (error) {
+    console.error("SEARCH ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong"
+    });
+  }
+};
+
+module.exports = {
+  createProduct,
+  getAllProducts,
+  deleteProduct,
+  updateProduct,
+  getSingleProduct,
+  SearchProduct
+};

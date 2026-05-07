@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const {Schema,model} = require("mongoose");
+const { Schema, model } = mongoose;
 
 const CategorySchema = new Schema(
   {
@@ -10,19 +10,33 @@ const CategorySchema = new Schema(
       trim: true,
       minlength: [2, "Category name must be at least 2 characters"]
     },
-    image:{
-      type:String
+    image: {
+      type: String,
+      default: ""
     },
     slug: {
       type: String,
       unique: true,
-      lowercase: true
+      lowercase: true,
+      required: true
+    },
+    parent: {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+      default: null
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { versionKey: false },
+    toObject: { versionKey: false }
   }
 );
 
-const Category = model("Category", CategorySchema);
-module.exports = Category;
+CategorySchema.pre("save", async function () {
+  if (this.parent && this.parent.equals(this._id)) {
+    throw new Error("Category cannot be its own parent");
+  }
+});
+
+module.exports = model("Category", CategorySchema);
