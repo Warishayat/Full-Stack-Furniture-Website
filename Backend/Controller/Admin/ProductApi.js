@@ -23,19 +23,13 @@ const createProduct = async (req, res) => {
       });
     }
 
-    const images = req.files?.images || [];
+    const slug = slugify(title, { lower: true, strict: true }) + "-" + Date.now();
+
+    const allImages = (req.files?.images || []).map(file => file.path);
+    const allSwatches = (req.files?.swatches || []).map(file => file.path);
     const sizeChartFile = req.files?.sizeChart?.[0];
     const sizeChart = sizeChartFile ? sizeChartFile.path : "";
 
-    if (images.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "At least one image is required"
-      });
-    }
-
-    const slug = slugify(title, { lower: true, strict: true }) + "-" + Date.now();
-    
     // Parse variants and specifications safely
     let parsedVariants;
     try {
@@ -59,11 +53,48 @@ const createProduct = async (req, res) => {
       });
     }
 
-    const allImages = images.map(file => file.path);
-
-    // Map image indexes to Cloudinary URLs for each variant/color
-    parsedVariants.forEach((variant) => {
+    // Map image indexes and values for each variant
+    parsedVariants.forEach((variant, vIdx) => {
       if (!variant) return;
+
+      // Set unique variant slug
+      if (variant.name) {
+        variant.slug = slugify(variant.name, { lower: true, strict: true }) + "-" + Date.now() + "-" + vIdx;
+      }
+
+      // Convert pricing/stock to numbers
+      if (variant.price === undefined || variant.price === null || variant.price === "") {
+        throw new Error(`Variant "${variant.name || 'Unknown'}" must have a price`);
+      }
+      variant.price = Number(variant.price);
+      variant.oldPrice = variant.oldPrice ? Number(variant.oldPrice) : undefined;
+      variant.stock = variant.stock !== undefined && variant.stock !== "" ? Number(variant.stock) : 0;
+
+      if (variant.oldPrice && variant.oldPrice < variant.price) {
+        throw new Error(`Old price for variant "${variant.name}" must be greater than current price`);
+      }
+
+      // Map the variant image indexes to actual URLs
+      const mappedImages = (variant.imageIndexes || [])
+        .map(i => allImages[i])
+        .filter(Boolean);
+
+      // Default to first global image if no specific images are mapped
+      if (mappedImages.length === 0 && allImages.length > 0) {
+        variant.images = [allImages[0]];
+      } else {
+        variant.images = mappedImages;
+      }
+
+      delete variant.imageIndexes;
+
+      // Handle variant dimensions parsing
+      if (variant.dimensions) {
+        variant.dimensions.length = variant.dimensions.length ? Number(variant.dimensions.length) : undefined;
+        variant.dimensions.width = variant.dimensions.width ? Number(variant.dimensions.width) : undefined;
+        variant.dimensions.height = variant.dimensions.height ? Number(variant.dimensions.height) : undefined;
+      }
+
       if (!variant.materials || !Array.isArray(variant.materials)) {
         throw new Error(`Variant "${variant.name || 'Unknown'}" must have materials array`);
       }
@@ -76,31 +107,20 @@ const createProduct = async (req, res) => {
 
         material.colors.forEach((color) => {
           if (!color) return;
-          if (color.price === undefined || color.price === null || color.price === "") {
-            throw new Error(`Color "${color.name || 'Unknown'}" in variant "${variant.name || 'Unknown'}" must have a price`);
-          }
-
-          // Convert price and stock to numbers
-          color.price = Number(color.price);
-          color.oldPrice = color.oldPrice ? Number(color.oldPrice) : undefined;
-          color.stock = color.stock ? Number(color.stock) : 0;
-
-          if (color.oldPrice && color.oldPrice < color.price) {
-            throw new Error(`Old price for color "${color.name}" must be greater than current price`);
-          }
-
-          // Map the image indexes to actual URLs
-          const mappedImages = (color.imageIndexes || [])
-            .map(i => allImages[i])
-            .filter(Boolean);
-
-          // If no images were linked but images were uploaded, default to the first image
-          if (mappedImages.length === 0 && allImages.length > 0) {
-            color.images = [allImages[0]];
-          } else {
-            color.images = mappedImages;
-          }
           
+          // Map color swatch index to actual path
+          if (color.swatchImageIndex !== undefined && color.swatchImageIndex !== null && color.swatchImageIndex !== "") {
+            color.swatchImage = allSwatches[Number(color.swatchImageIndex)] || "";
+          } else {
+            color.swatchImage = color.swatchImage || "";
+          }
+
+          delete color.swatchImageIndex;
+          delete color.price;
+          delete color.oldPrice;
+          delete color.stock;
+          delete color.sku;
+          delete color.images;
           delete color.imageIndexes;
         });
       });
@@ -254,13 +274,8 @@ const updateProduct = async (req, res) => {
     if (description !== undefined) product.description = description;
     if (category !== undefined) product.category = category;
 
-    let allImages = product.images;
-
-    if (files?.images?.length > 0) {
-      allImages = files.images.map(f => f.path);
-      product.images = allImages;
-    }
-
+    const allImages = (files?.images || []).map(f => f.path);
+    const allSwatches = (files?.swatches || []).map(f => f.path);
 
     if (variants !== undefined) {
       let parsedVariants =
@@ -273,22 +288,58 @@ const updateProduct = async (req, res) => {
         });
       }
 
-      parsedVariants.forEach((variant) => {
+      parsedVariants.forEach((variant, vIdx) => {
+        if (!variant) return;
+
+        // Keep or regenerate slug
+        if (variant.name && !variant.slug) {
+          variant.slug = slugify(variant.name, { lower: true, strict: true }) + "-" + Date.now() + "-" + vIdx;
+        }
+
+        // Convert variant pricing / stock / dimensions to numbers
+        if (variant.price === undefined || variant.price === null || variant.price === "") {
+          throw new Error(`Variant "${variant.name || 'Unknown'}" must have a price`);
+        }
+        variant.price = Number(variant.price);
+        variant.oldPrice = variant.oldPrice ? Number(variant.oldPrice) : undefined;
+        variant.stock = variant.stock !== undefined && variant.stock !== "" ? Number(variant.stock) : 0;
+
+        if (variant.oldPrice && variant.oldPrice < variant.price) {
+          throw new Error("Old price must be greater than price");
+        }
+
+        // Handle variant images: combine existing strings and newly uploaded file paths
+        const existing = variant.existingImages || variant.images || [];
+        const uploaded = (variant.imageIndexes || [])
+          .map(i => allImages[i])
+          .filter(Boolean);
+        variant.images = [...existing.filter(img => typeof img === "string"), ...uploaded];
+
+        delete variant.imageIndexes;
+        delete variant.existingImages;
+
+        // Handle variant dimensions parsing
+        if (variant.dimensions) {
+          variant.dimensions.length = variant.dimensions.length ? Number(variant.dimensions.length) : undefined;
+          variant.dimensions.width = variant.dimensions.width ? Number(variant.dimensions.width) : undefined;
+          variant.dimensions.height = variant.dimensions.height ? Number(variant.dimensions.height) : undefined;
+        }
+
         variant.materials?.forEach((material) => {
           material.colors?.forEach((color) => {
-
-            if (!color.price) {
-              throw new Error("Each color must have price");
+            // Support swatch image updates
+            if (color.swatchImageIndex !== undefined && color.swatchImageIndex !== null && color.swatchImageIndex !== "") {
+              color.swatchImage = allSwatches[Number(color.swatchImageIndex)] || "";
+            } else {
+              color.swatchImage = color.swatchImage || "";
             }
 
-            if (color.oldPrice && color.oldPrice < color.price) {
-              throw new Error("Old price must be greater than price");
-            }
-
-            color.images = (color.imageIndexes || [])
-              .map(i => allImages[i])
-              .filter(Boolean);
-
+            delete color.swatchImageIndex;
+            delete color.price;
+            delete color.oldPrice;
+            delete color.stock;
+            delete color.sku;
+            delete color.images;
             delete color.imageIndexes;
           });
         });
@@ -374,7 +425,9 @@ const getSingleProduct = async (req, res) => {
         variant: firstVariant?.name || null,
         material: firstMaterial?.name || null,
         color: firstColor?.name || null,
-        images: firstColor?.images || product.images || []
+        images: firstVariant?.images || product.images || [],
+        price: firstVariant?.price || 0,
+        stock: firstVariant?.stock || 0
       }
     });
 

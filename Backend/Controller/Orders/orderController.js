@@ -25,24 +25,16 @@ const createCheckoutSession = async (req, res) => {
         (v) => v.name === item.variant
       );
 
-      const material = variant?.materials?.find(
-        (m) => m.name === item.material
-      );
-
-      const color = material?.colors?.find(
-        (c) => c.name === item.color
-      );
-
       return {
         price_data: {
           currency: "gbp",
           product_data: {
-            name: product.title,
-            images: color?.images?.length
-              ? color.images
+            name: `${product.title} - ${item.variant} (${item.color})`,
+            images: variant?.images?.length
+              ? variant.images
               : product.images || [],
           },
-          unit_amount: Math.round((color?.price || 0) * 100),
+          unit_amount: Math.round((variant?.price || 0) * 100),
         },
         quantity: item.quantity,
       };
@@ -145,27 +137,19 @@ const webhookHandler = async (req, res) => {
           (v) => v.name === item.variant
         );
 
-        const material = variant?.materials?.find(
-          (m) => m.name === item.material
-        );
-
-        const color = material?.colors?.find(
-          (c) => c.name === item.color
-        );
-
         return {
           product: product._id,
           title: product.title,
-          image: color?.images?.[0] || product.images?.[0] || "",
+          image: variant?.images?.[0] || product.images?.[0] || "",
 
           variant: { name: item.variant },
           material: { name: item.material },
           color: { name: item.color },
 
-          sku: color?.sku || "",
+          sku: variant?.sku || "",
 
           quantity: item.quantity,
-          price: color?.price || 0,
+          price: variant?.price || 0,
         };
       });
 

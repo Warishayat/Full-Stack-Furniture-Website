@@ -6,23 +6,10 @@ const ColorSchema = new Schema({
     required: true
   },
 
-  price: {
-    type: Number,
-    required: true
-  },
-
-  oldPrice: {
-    type: Number
-  },
-
-  stock: {
-    type: Number,
-    default: 0
-  },
-
-  images: [String], 
-
-  sku: String 
+  swatchImage: {
+    type: String,
+    default: ""
+  }
 });
 
 const MaterialSchema = new Schema({
@@ -38,6 +25,40 @@ const VariantSchema = new Schema({
   name: {
     type: String,
     required: true // 1 Seater, 2 Seater
+  },
+
+  slug: {
+    type: String
+  },
+
+  price: {
+    type: Number,
+    required: true
+  },
+
+  oldPrice: {
+    type: Number
+  },
+
+  stock: {
+    type: Number,
+    default: 0
+  },
+
+  sku: {
+    type: String
+  },
+
+  images: [String],
+
+  dimensions: {
+    length: Number,
+    width: Number,
+    height: Number,
+    unit: {
+      type: String,
+      default: "cm"
+    }
   },
 
   materials: [MaterialSchema]

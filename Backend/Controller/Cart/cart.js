@@ -65,10 +65,10 @@ const addToCart = async (req, res) => {
     const { productId, variant, material, color, quantity = 1 } = req.body;
     const userId = req.user.id;
 
-    if (!productId || !variant || !material || !color) {
+    if (!productId || !variant) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields"
+        message: "Missing required fields (productId, variant)"
       });
     }
 
@@ -82,33 +82,53 @@ const addToCart = async (req, res) => {
       });
     }
 
-    let selectedColor;
-
-    product.variants.forEach(v => {
-      if (v.name === variant) {
-        v.materials.forEach(m => {
-          if (m.name === material) {
-            m.colors.forEach(c => {
-              if (c.name === color) {
-                selectedColor = c;
-              }
-            });
-          }
-        });
-      }
-    });
-
-    if (!selectedColor) {
+    let selectedVariant = product.variants.find(v => v.name === variant);
+    if (!selectedVariant) {
       return res.status(400).json({
         success: false,
-        message: "Variant not found"
+        message: `Size variant "${variant}" is not valid for this product`
       });
     }
 
-    if (qty > selectedColor.stock) {
+    // Check if the variant actually defines any materials/colors in database
+    const hasMaterials = selectedVariant.materials && selectedVariant.materials.length > 0;
+    let colorFound = false;
+
+    if (hasMaterials) {
+      if (!material || !color) {
+        return res.status(400).json({
+          success: false,
+          message: "Material and Color finishes are required for this product"
+        });
+      }
+
+      selectedVariant.materials.forEach(m => {
+        if (m.name === material) {
+          m.colors.forEach(c => {
+            if (c.name === color) {
+              colorFound = true;
+            }
+          });
+        }
+      });
+
+      if (!colorFound) {
+        return res.status(400).json({
+          success: false,
+          message: "Specified material/color finish configuration is not valid"
+        });
+      }
+    } else {
+      colorFound = true; // No materials/colors matching needed
+    }
+
+    const finalMaterial = hasMaterials ? material : "Standard";
+    const finalColor = hasMaterials ? color : "Default";
+
+    if (qty > selectedVariant.stock) {
       return res.status(400).json({
         success: false,
-        message: "Not enough stock"
+        message: `Only ${selectedVariant.stock} items left in stock`
       });
     }
 
@@ -121,8 +141,8 @@ const addToCart = async (req, res) => {
     const index = cart.items.findIndex(item =>
       item.product.toString() === productId &&
       item.variant === variant &&
-      item.material === material &&
-      item.color === color
+      item.material === finalMaterial &&
+      item.color === finalColor
     );
 
     if (index > -1) {
@@ -131,10 +151,10 @@ const addToCart = async (req, res) => {
       cart.items.push({
         product: productId,
         variant,
-        material,
-        color,
-        price: selectedColor.price,
-        image: selectedColor.images?.[0],
+        material: finalMaterial,
+        color: finalColor,
+        price: selectedVariant.price,
+        image: selectedVariant.images?.[0] || product.images?.[0] || "",
         quantity: qty
       });
     }
