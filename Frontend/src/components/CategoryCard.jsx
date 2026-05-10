@@ -11,6 +11,7 @@ const CategoryCard = memo(({ category }) => {
       <img
         src={category.image || 'https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=1000&auto=format&fit=crop'}
         alt={category.name}
+        loading="lazy"
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s] ease-out"
       />
       
