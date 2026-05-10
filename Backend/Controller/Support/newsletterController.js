@@ -25,3 +25,25 @@ exports.subscribe = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getAllSubscribers = async (req, res) => {
+  try {
+    const subscribers = await Newsletter.find().sort({ subscribedAt: -1 });
+    res.status(200).json({ success: true, subscribers });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.deleteSubscriber = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const subscriber = await Newsletter.findByIdAndDelete(id);
+    if (!subscriber) {
+      return res.status(404).json({ message: "Subscriber not found" });
+    }
+    res.status(200).json({ success: true, message: "Subscriber removed successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

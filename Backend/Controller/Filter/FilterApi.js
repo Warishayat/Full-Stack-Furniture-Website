@@ -19,7 +19,17 @@ const getFilteredProducts = async (req, res) => {
       if (mongoose.Types.ObjectId.isValid(category)) {
         targetCategoryId = new mongoose.Types.ObjectId(category);
       } else {
-        const foundCategory = await Category.findOne({ slug: category.toLowerCase() });
+        const lowerSlug = category.toLowerCase();
+        const singularSlug = lowerSlug.endsWith('s') ? lowerSlug.slice(0, -1) : lowerSlug;
+        const pluralSlug = lowerSlug + 's';
+        
+        const foundCategory = await Category.findOne({
+          $or: [
+            { slug: lowerSlug },
+            { slug: singularSlug },
+            { slug: pluralSlug }
+          ]
+        });
         if (foundCategory) {
           targetCategoryId = foundCategory._id;
         }
@@ -83,7 +93,17 @@ const getFilterOptions = async (req, res) => {
       if (mongoose.Types.ObjectId.isValid(category)) {
         targetCategoryId = new mongoose.Types.ObjectId(category);
       } else {
-        const foundCategory = await Category.findOne({ slug: category.toLowerCase() });
+        const lowerSlug = category.toLowerCase();
+        const singularSlug = lowerSlug.endsWith('s') ? lowerSlug.slice(0, -1) : lowerSlug;
+        const pluralSlug = lowerSlug + 's';
+        
+        const foundCategory = await Category.findOne({
+          $or: [
+            { slug: lowerSlug },
+            { slug: singularSlug },
+            { slug: pluralSlug }
+          ]
+        });
         if (foundCategory) {
           targetCategoryId = foundCategory._id;
         }
