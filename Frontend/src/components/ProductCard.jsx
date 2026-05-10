@@ -18,17 +18,17 @@ const ProductCard = memo(({ product }) => {
 
     if (product.variants && product.variants.length > 0) {
       product.variants.forEach(variant => {
+        if (variant.price < min) {
+          min = variant.price;
+          old = variant.oldPrice || 0;
+        }
+        if (variant.images && variant.images.length > 0) {
+          img = variant.images[0];
+        }
         if (variant.materials) {
           variant.materials.forEach(material => {
             if (material.colors) {
               material.colors.forEach(color => {
-                if (color.price < min) {
-                  min = color.price;
-                  old = color.oldPrice || 0;
-                  if (color.images && color.images.length > 0) {
-                    img = color.images[0];
-                  }
-                }
                 if (color.name) colors.add(color.name);
               });
             }
@@ -40,7 +40,7 @@ const ProductCard = memo(({ product }) => {
     return { 
       minPrice: min === Infinity ? (product.price || 0) : min, 
       oldPrice: old || (product.oldPrice || 0), 
-      displayImage: img,
+      displayImage: img || product.images?.[0] || '',
       allColors: Array.from(colors)
     };
   }, [product]);
@@ -76,21 +76,6 @@ const ProductCard = memo(({ product }) => {
       
       {/* Content Area */}
       <div className="pt-4 flex flex-col flex-1">
-        {/* Real Color Swatches */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {allColors.slice(0, 5).map((color, i) => (
-            <div 
-              key={i} 
-              title={color}
-              className={`w-4 h-4 rounded-full border border-gray-200 cursor-pointer transition-transform hover:scale-110`}
-              style={{ backgroundColor: color.toLowerCase() }}
-            />
-          ))}
-          {allColors.length > 5 && (
-            <span className="text-[10px] text-gray-400 font-bold ml-1">+{allColors.length - 5}</span>
-          )}
-        </div>
-
         <Link to={`/product/${product._id}`} className="block mb-1">
           <h3 className="text-xl font-serif text-gray-900 hover:text-gray-600 transition-colors">
             {product.title}
@@ -98,7 +83,7 @@ const ProductCard = memo(({ product }) => {
         </Link>
         
         <p className="text-xs text-gray-500 mb-2 line-clamp-1">
-          {product.variants?.[0]?.name || 'Premium'} Sofa in {allColors[0] || 'Selection'}
+          {product.category?.name || 'Luxury Collection'}
         </p>
 
         {/* Real Ratings */}

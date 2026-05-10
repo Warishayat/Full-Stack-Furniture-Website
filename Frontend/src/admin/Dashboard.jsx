@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, Tags, ShoppingCart, Activity, ChevronRight, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ShoppingCart, Activity, ChevronRight, TrendingUp, Mail, Users } from 'lucide-react';
 import API from '../services/api';
 
 const AdminDashboard = () => {
@@ -8,17 +8,21 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     products: 0,
     categories: 0,
-    orders: 0
+    orders: 0,
+    messages: 0,
+    subscribers: 0
   });
   const [ordersResData, setOrdersResData] = useState([]);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [productsRes, categoriesRes, ordersRes] = await Promise.all([
+        const [productsRes, categoriesRes, ordersRes, messagesRes, subscribersRes] = await Promise.all([
           API.get('/product/getAllProducts'),
           API.get('/category/getallCategories'),
-          API.get('/api/order/getAllOrders') 
+          API.get('/api/order/getAllOrders'),
+          API.get('/support/all'),
+          API.get('/newsletter/all')
         ]);
 
         let oData = [];
@@ -33,6 +37,8 @@ const AdminDashboard = () => {
           products: productsRes.data.products?.length || productsRes.data?.length || 0,
           categories: categoriesRes.data.categories?.length || categoriesRes.data?.length || 0,
           orders: oData.length,
+          messages: messagesRes.data.messages?.length || 0,
+          subscribers: subscribersRes.data.subscribers?.length || 0
         });
       } catch (error) {
         console.error('Failed to fetch admin stats', error);
@@ -49,6 +55,8 @@ const AdminDashboard = () => {
     { name: 'Inventory', path: '/admin/products', icon: Package },
     { name: 'Departments', path: '/admin/categories', icon: Tags },
     { name: 'Logistics', path: '/admin/orders', icon: ShoppingCart },
+    { name: 'Inquiries', path: '/admin/messages', icon: Mail },
+    { name: 'Subscribers', path: '/admin/subscribers', icon: Users },
   ];
 
   return (
@@ -105,11 +113,13 @@ const AdminDashboard = () => {
                    </p>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-16">
                   {[
                     { label: 'Curated Pieces', val: stats.products, icon: Package, color: 'bg-gray-900' },
                     { label: 'Active Depts', val: stats.categories, icon: Tags, color: 'bg-gray-900' },
                     { label: 'Total Commissions', val: stats.orders, icon: ShoppingCart, color: 'bg-gray-900' },
+                    { label: 'Patron Inquiries', val: stats.messages, icon: Mail, color: 'bg-gray-900' },
+                    { label: 'Elite Circle', val: stats.subscribers, icon: Users, color: 'bg-gray-900' },
                     { label: 'Net Revenue', val: `£${ordersResData.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: TrendingUp, color: 'bg-[#D7282F]' }
                   ].map((stat, i) => (
                     <div key={i} className="bg-[#F2EDE7] p-10 border border-gray-100 group hover:border-[#D7282F] transition-all duration-500">

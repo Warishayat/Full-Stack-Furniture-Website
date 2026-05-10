@@ -10,6 +10,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     subject: 'Bespoke Consultation',
     message: ''
   });
@@ -20,7 +21,7 @@ const Contact = () => {
       setIsSubmitting(true);
       const { data } = await API.post('/support/submit', formData);
       toast.success(data.message);
-      setFormData({ name: '', email: '', subject: 'Bespoke Consultation', message: '' });
+      setFormData({ name: '', email: '', phone: '', subject: 'Bespoke Consultation', message: '' });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to send message');
     } finally {
@@ -112,7 +113,18 @@ const Contact = () => {
                   placeholder="Enter your email" 
                 />
               </div>
-              <div className="md:col-span-2 space-y-2">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Contact Number</label>
+                <input 
+                  type="tel" 
+                  required
+                  value={formData.phone}
+                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  className="w-full bg-white border border-gray-200 px-6 py-4 outline-none focus:border-gray-900 transition-all font-medium" 
+                  placeholder="Enter your contact number" 
+                />
+              </div>
+              <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Subject</label>
                 <select 
                   value={formData.subject}

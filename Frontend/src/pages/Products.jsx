@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { ShoppingCart, Filter, X, ChevronRight, Palette, Box, Layers, RefreshCcw, SlidersHorizontal, ArrowRight, Star } from 'lucide-react';
+import { ShoppingCart, Filter, X, ChevronRight, ChevronDown, Palette, Box, Layers, RefreshCcw, SlidersHorizontal, ArrowRight, Star } from 'lucide-react';
 import API from '../services/api';
 import ProductCard from '../components/ProductCard';
 
@@ -17,6 +17,43 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
+  const getCategoryIdBySlugOrId = (slugOrId, catsList) => {
+    if (!slugOrId) return '';
+    if (/^[0-9a-fA-F]{24}$/.test(slugOrId)) {
+      return slugOrId;
+    }
+    
+    const flatCats = [];
+    catsList.forEach(c => {
+      flatCats.push(c);
+      if (c.children && c.children.length > 0) {
+        flatCats.push(...c.children);
+      }
+    });
+
+    // Try exact slug match
+    let found = flatCats.find(c => (c.slug || '').toLowerCase() === slugOrId.toLowerCase());
+    if (found) return found._id;
+
+    // Try singular/plural match
+    const searchSlugSingular = slugOrId.toLowerCase().endsWith('s') ? slugOrId.toLowerCase().slice(0, -1) : slugOrId.toLowerCase();
+    const searchSlugPlural = slugOrId.toLowerCase() + 's';
+    
+    found = flatCats.find(c => {
+      const cSlug = (c.slug || '').toLowerCase();
+      const cName = (c.name || '').toLowerCase();
+      return cSlug === searchSlugSingular || 
+             cSlug === searchSlugPlural || 
+             cName === searchSlugSingular || 
+             cName === searchSlugPlural ||
+             cName === slugOrId.toLowerCase() ||
+             cSlug.includes(searchSlugSingular) ||
+             searchSlugSingular.includes(cSlug);
+    });
+
+    return found ? found._id : slugOrId;
+  };
+
   const [activeFilters, setActiveFilters] = useState({
     category: categoryId || '',
     material: material || '',
@@ -25,13 +62,14 @@ const Products = () => {
   });
 
   useEffect(() => {
+    const resolvedCategory = getCategoryIdBySlugOrId(categoryId, categories);
     setActiveFilters({
-      category: categoryId || '',
+      category: resolvedCategory || '',
       material: material || '',
       color: color || '',
       variant: searchParams.get('variant') || ''
     });
-  }, [categoryId, material, color, searchParams]);
+  }, [categoryId, material, color, searchParams, categories]);
 
   useEffect(() => {
     const fetchFilterOptions = async () => {
@@ -179,93 +217,160 @@ const Products = () => {
         <div className="flex flex-col lg:flex-row gap-12">
           
           {/* Sidebar Filters */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-40 space-y-10">
+          <aside className="hidden lg:block w-72 flex-shrink-0">
+            <div className="sticky top-40 space-y-8 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 shadow-sm">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                <h2 className="text-xs font-black uppercase tracking-widest text-gray-900 flex items-center gap-2">
+                  <SlidersHorizontal className="w-4 h-4 text-gray-400" /> Filter Curation
+                </h2>
+                {(activeFilters.category || activeFilters.material || activeFilters.color || activeFilters.variant) && (
+                  <button 
+                    onClick={clearFilters}
+                    className="text-[9px] font-black uppercase tracking-widest text-[#D7282F] hover:underline"
+                  >
+                    Clear All
+                  </button>
+                )}
+              </div>
+
+              {/* Collections Drill-Down */}
+              <div className="border-b border-gray-100 pb-6">
+                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Collections</h3>
+                <div className="space-y-2">
+                  <button 
+                    onClick={() => updateFilter('category', '')}
+                    className={`flex items-center justify-between w-full text-left text-xs font-bold uppercase tracking-widest py-1 transition-all ${!activeFilters.category ? 'text-[#D7282F]' : 'text-gray-500 hover:text-gray-900'}`}
+                  >
+                    <span>All Collections</span>
+                    <ChevronRight className="w-3 h-3 opacity-30" />
+                  </button>
+                  {categories.map((cat) => {
+                    const isSelected = activeFilters.category === cat._id;
+                    return (
+                      <div key={cat._id} className="space-y-1.5">
+                        <button 
+                          onClick={() => updateFilter('category', cat._id)}
+                          className={`flex items-center justify-between w-full text-left text-xs font-bold uppercase tracking-widest py-1 transition-all ${isSelected ? 'text-[#D7282F]' : 'text-gray-500 hover:text-gray-900'}`}
+                        >
+                          <span>{cat.name}</span>
+                          <ChevronRight className={`w-3.5 h-3.5 transition-transform ${isSelected ? 'rotate-90 text-[#D7282F]' : 'opacity-30'}`} />
+                        </button>
+                        
+                        {isSelected && cat.children?.length > 0 && (
+                          <div className="pl-3 space-y-1.5 border-l border-gray-200 py-1 ml-1 animate-fade-in">
+                            {cat.children.map((child) => {
+                              const isChildSelected = activeFilters.category === child._id;
+                              return (
+                                <button 
+                                  key={child._id}
+                                  onClick={() => updateFilter('category', child._id)}
+                                  className={`block w-full text-left text-[11px] font-bold transition-all ${isChildSelected ? 'text-gray-900 font-extrabold' : 'text-gray-400 hover:text-gray-700'}`}
+                                >
+                                  • {child.name}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Availability */}
-              <div className="border-b border-gray-100 pb-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Availability</h3>
+              <div className="border-b border-gray-100 pb-6">
+                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Availability</h3>
                 <label className="flex items-center justify-between cursor-pointer group">
                   <div className="flex items-center gap-3">
-                    <input type="checkbox" className="w-5 h-5 border-gray-300 rounded-sm accent-[#51823F]" defaultChecked />
-                    <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">In Stock</span>
+                    <input type="checkbox" className="w-5 h-5 border-gray-300 rounded-lg accent-[#D7282F]" defaultChecked />
+                    <span className="text-xs font-bold text-gray-600 group-hover:text-gray-900 transition-colors uppercase tracking-widest">In Stock Only</span>
                   </div>
-                  <span className="text-sm text-gray-400">{products.length}</span>
+                  <span className="text-xs font-black text-gray-400">{products.length}</span>
                 </label>
               </div>
 
-              {/* Variants */}
-              <div className="border-b border-gray-100 pb-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-6">
-                  {activeFilters.category ? `${categories.find(c => c._id === activeFilters.category)?.name || 'Product'} size` : 'Size'}
-                </h3>
-                <div className="space-y-4">
-                  {filterOptions.variants.map((variant) => (
-                    <label key={variant} className="flex items-center justify-between cursor-pointer group">
-                      <div className="flex items-center gap-3">
+              {/* Size Variants */}
+              {filterOptions.variants?.length > 0 && (
+                <div className="border-b border-gray-100 pb-6 animate-fade-in">
+                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">
+                    {activeFilters.category ? `${categories.find(c => c._id === activeFilters.category)?.name || 'Product'} Size` : 'Sizing Dimension'}
+                  </h3>
+                  <div className="space-y-3">
+                    {filterOptions.variants.map((variant) => (
+                      <label key={variant} className="flex items-center gap-3 cursor-pointer group">
                         <input 
                           type="checkbox" 
-                          className="w-5 h-5 border-gray-300 rounded-sm accent-[#51823F]" 
+                          className="w-5 h-5 border-gray-300 rounded-lg accent-[#D7282F]" 
                           checked={activeFilters.variant === variant}
                           onChange={() => updateFilter('variant', activeFilters.variant === variant ? '' : variant)}
                         />
-                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">{variant}</span>
-                      </div>
-                    </label>
-                  ))}
+                        <span className={`text-xs font-bold transition-colors uppercase tracking-widest ${activeFilters.variant === variant ? 'text-[#D7282F]' : 'text-gray-600 group-hover:text-gray-900'}`}>{variant}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Materials */}
-              <div className="border-b border-gray-100 pb-8">
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Material</h3>
-                <div className="space-y-4">
-                  {filterOptions.materials.map((material) => (
-                    <label key={material} className="flex items-center justify-between cursor-pointer group">
-                      <div className="flex items-center gap-3">
+              {filterOptions.materials?.length > 0 && (
+                <div className="border-b border-gray-100 pb-6 animate-fade-in">
+                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Material Curation</h3>
+                  <div className="space-y-3">
+                    {filterOptions.materials.map((mat) => (
+                      <label key={mat} className="flex items-center gap-3 cursor-pointer group">
                         <input 
                           type="checkbox" 
-                          className="w-5 h-5 border-gray-300 rounded-sm accent-[#51823F]" 
-                          checked={activeFilters.material === material}
-                          onChange={() => updateFilter('material', activeFilters.material === material ? '' : material)}
+                          className="w-5 h-5 border-gray-300 rounded-lg accent-[#D7282F]" 
+                          checked={activeFilters.material === mat}
+                          onChange={() => updateFilter('material', activeFilters.material === mat ? '' : mat)}
                         />
-                        <span className="text-sm text-gray-600 group-hover:text-gray-900 transition-colors">{material}</span>
-                      </div>
-                    </label>
-                  ))}
+                        <span className={`text-xs font-bold transition-colors uppercase tracking-widest ${activeFilters.material === mat ? 'text-[#D7282F]' : 'text-gray-600 group-hover:text-gray-900'}`}>{mat}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* Colour */}
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Colour</h3>
-                <div className="space-y-4">
-                  {filterOptions.colors.map((color) => (
-                    <button 
-                      key={color} 
-                      className="flex items-center gap-3 w-full text-left group"
-                      onClick={() => updateFilter('color', activeFilters.color === color ? '' : color)}
-                    >
-                      <div className="w-6 h-6 rounded-full border border-gray-200" style={{ backgroundColor: color.toLowerCase() }} />
-                      <span className={`text-sm transition-colors ${activeFilters.color === color ? 'text-[#D7282F] font-bold' : 'text-gray-600 group-hover:text-gray-900'}`}>
-                        {color}
-                      </span>
-                    </button>
-                  ))}
+              {/* Colours */}
+              {filterOptions.colors?.length > 0 && (
+                <div className="pb-2 animate-fade-in">
+                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Fabric Color Palette</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {filterOptions.colors.map((col) => {
+                      const isSelected = activeFilters.color === col;
+                      return (
+                        <button 
+                          key={col} 
+                          className={`flex items-center gap-2 p-1.5 rounded-xl border transition-all text-left group ${isSelected ? 'bg-white border-[#D7282F] shadow-sm' : 'border-gray-100 hover:border-gray-300'}`}
+                          onClick={() => updateFilter('color', activeFilters.color === col ? '' : col)}
+                        >
+                          <div 
+                            className="w-4 h-4 rounded-full border border-gray-300/50 flex-shrink-0 shadow-inner" 
+                            style={{ backgroundColor: col.toLowerCase() }} 
+                          />
+                          <span className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${isSelected ? 'text-[#D7282F]' : 'text-gray-500 group-hover:text-gray-900'}`}>
+                            {col}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </aside>
 
           {/* Product Grid */}
           <main className="flex-1">
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10">
+              <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-10">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="animate-pulse bg-gray-50 rounded-sm h-[30rem]" />
+                  <div key={i} className="animate-pulse bg-gray-50 rounded-sm h-[20rem] md:h-[30rem]" />
                 ))}
               </div>
             ) : products.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-10 gap-y-16 animate-fade-in">
+              <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 md:gap-x-10 md:gap-y-16 animate-fade-in">
                 {products.map(product => (
                   <ProductCard key={product._id} product={product} />
                 ))}

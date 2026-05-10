@@ -140,6 +140,11 @@ const Cart = () => {
                           <span className="text-[10px] font-bold uppercase tracking-widest text-primary-400">
                             Variant: <span className="text-primary-950">{item.variant || 'Standard'}</span>
                           </span>
+                          {item.material && (
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary-400">
+                              Material: <span className="text-primary-950">{item.material}</span>
+                            </span>
+                          )}
                           <span className="text-[10px] font-bold uppercase tracking-widest text-primary-400">
                             Color: <span className="text-primary-950">{item.color || 'Default'}</span>
                           </span>

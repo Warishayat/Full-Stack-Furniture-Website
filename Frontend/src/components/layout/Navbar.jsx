@@ -18,6 +18,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [expandedMobileCat, setExpandedMobileCat] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -100,7 +101,7 @@ const Navbar = () => {
               </Link>
             )}
             
-            <Link to={user ? "/account" : "/login"} className="p-2 text-gray-800 hover:text-red-600 transition-colors">
+            <Link to={user ? "/account" : "/login"} className="hidden lg:block p-2 text-gray-800 hover:text-red-600 transition-colors">
               <User className="w-6 h-6" />
             </Link>
             
@@ -195,25 +196,75 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-[200] lg:hidden">
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
-          <div className="absolute inset-y-0 right-0 w-72 bg-white flex flex-col p-10">
-            <div className="flex justify-between items-center mb-12">
+          <div className="absolute inset-y-0 right-0 w-72 bg-white flex flex-col p-10 overflow-y-auto">
+            <div className="flex justify-between items-center mb-8">
                <span className="font-bold tracking-tighter text-xl text-slate-900">EliteSeating Ltd.</span>
                <button onClick={() => setIsMobileMenuOpen(false)} className="text-slate-900"><X className="w-6 h-6" /></button>
             </div>
-            <nav className="flex flex-col gap-8">
+            <nav className="flex flex-col gap-6">
               <Link to="/products?sale=true" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#D7282F]">Flash Sale</Link>
-              <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-gray-700">All Products</Link>
-              <Link to="/track-order" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-gray-700">Track Order</Link>
-              <div className="pt-8 border-t border-gray-100">
+              <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-medium text-gray-700 pb-2 border-b border-gray-100">All Products</Link>
+              
+              {/* Dynamic Categories for Mobile */}
+              <div className="flex flex-col gap-5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Categories</p>
+                {categories.map(cat => (
+                  <div key={cat._id} className="flex flex-col">
+                    <div className="flex items-center justify-between text-base font-medium text-gray-800">
+                      <Link 
+                        to={`/products?category=${cat._id}`} 
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="hover:text-[#D7282F] transition-colors"
+                      >
+                        {cat.name}
+                      </Link>
+                      {cat.children?.length > 0 && (
+                        <button 
+                          onClick={() => setExpandedMobileCat(expandedMobileCat === cat._id ? null : cat._id)}
+                          className="p-1 focus:outline-none"
+                        >
+                          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${expandedMobileCat === cat._id ? 'rotate-180' : ''}`} />
+                        </button>
+                      )}
+                    </div>
+                    
+                    {cat.children?.length > 0 && expandedMobileCat === cat._id && (
+                      <div className="flex flex-col pl-4 gap-3 mt-3 border-l border-gray-100">
+                        {cat.children.map(child => (
+                          <Link 
+                            key={child._id}
+                            to={`/products?category=${child._id}`} 
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-xs font-bold text-gray-500 hover:text-[#D7282F] transition-colors"
+                          >
+                            {child.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="w-full h-[1px] bg-gray-100 my-2" />
+              <Link to={user ? "/account" : "/login"} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 text-base font-medium text-gray-700 hover:text-[#D7282F] transition-all">
+                <User className="w-5 h-5 text-gray-500" />
+                <span>{user ? "My Account" : "Sign In / Register"}</span>
+              </Link>
+              <Link to="/track-order" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-700">Track Order</Link>
+              <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-700">Our Heritage</Link>
+              <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium text-gray-700">Concierge</Link>
+              
+              <div className="pt-6 border-t border-gray-100">
                 {!user ? (
-                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-black text-white text-center rounded-lg font-bold">Sign In</Link>
+                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-black text-white text-center rounded-lg font-bold text-sm">Sign In</Link>
                 ) : (
                   <div className="flex flex-col gap-4">
                     {user.role === 'admin' && (
-                      <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-[#D7282F] text-white text-center rounded-lg font-bold">Admin Suite</Link>
+                      <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-[#D7282F] text-white text-center rounded-lg font-bold text-sm">Admin Suite</Link>
                     )}
-                    <Link to="/account" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-black text-white text-center rounded-lg font-bold">My Dashboard</Link>
-                    <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="text-red-500 font-bold">Sign Out</button>
+                    <Link to="/account" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-black text-white text-center rounded-lg font-bold text-sm">My Dashboard</Link>
+                    <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="text-red-500 font-bold text-left text-sm mt-2">Sign Out</button>
                   </div>
                 )}
               </div>

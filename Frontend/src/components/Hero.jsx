@@ -3,7 +3,7 @@ import { ArrowRight, ShoppingBag, Sparkles } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative h-[75vh] lg:h-[90vh] flex items-center overflow-hidden bg-gray-900">
+    <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center overflow-hidden bg-gray-900 py-16 lg:py-24">
       {/* Background Image with Parallax-like effect */}
       <div className="absolute inset-0">
         <img
@@ -16,14 +16,14 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80 md:hidden" />
       </div>
 
-      <div className="container mx-auto px-6 lg:px-24 relative z-10 pt-20 lg:pt-32">
+      <div className="container mx-auto px-6 lg:px-24 relative z-10 pt-24 lg:pt-32 pb-8">
         <div className="max-w-5xl">
-          <div className="inline-flex items-center gap-3 px-4 py-2 md:px-6 md:py-2.5 bg-white/5 backdrop-blur-md border border-white/10 text-white mb-8 md:mb-12 shadow-2xl animate-fade-in rounded-full">
+          <div className="inline-flex items-center gap-3 px-4 py-2 md:px-6 md:py-2.5 bg-white/5 backdrop-blur-md border border-white/10 text-white mb-6 md:mb-8 shadow-2xl animate-fade-in rounded-full">
              <Sparkles className="w-3 md:w-3.5 h-3 md:h-3.5 text-[#D7282F] animate-pulse" />
              <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] md:tracking-[0.5em]">The Signature Collection 2026</span>
           </div>
           
-          <h1 className="text-4xl md:text-8xl lg:text-[11rem] font-serif text-white leading-[0.9] md:leading-[0.8] mb-8 md:mb-14 tracking-tighter animate-fade-in-up drop-shadow-2xl font-black">
+          <h1 className="text-4xl md:text-7xl lg:text-[8rem] xl:text-[9.5rem] font-serif text-white leading-[0.9] md:leading-[0.8] mb-6 md:mb-8 lg:mb-10 tracking-tighter animate-fade-in-up drop-shadow-2xl font-black">
             Master <br />
             <span className="italic text-gray-400 relative inline-block">
               Atmosphere
@@ -31,12 +31,12 @@ const Hero = () => {
             </span>
           </h1>
 
-          <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start mb-12 md:mb-20 animate-fade-in-up delay-200">
-            <p className="text-white/80 text-sm md:text-xl font-medium max-w-lg leading-relaxed italic border-l-2 border-[#D7282F] pl-6 md:pl-8">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start mb-6 md:mb-10 lg:mb-12 animate-fade-in-up delay-200">
+            <p className="text-white/80 text-sm md:text-lg font-medium max-w-lg leading-relaxed italic border-l-2 border-[#D7282F] pl-6 md:pl-8">
               Handcrafted pieces designed to define your sanctuary. 
               Elevating the ordinary into the extraordinary through architectural precision.
             </p>
-            <div className="hidden lg:flex items-center gap-8 pt-4">
+            <div className="hidden lg:flex items-center gap-8 pt-2">
                <div className="flex flex-col">
                   <span className="text-white font-black text-2xl tracking-tighter">2.9k+</span>
                   <span className="text-white/40 text-[10px] font-black uppercase tracking-widest">Bespoke Pieces</span>

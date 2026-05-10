@@ -4,6 +4,61 @@ import { Trash2, Plus, Edit, Image as ImageIcon, X, ChevronDown, ChevronUp, Laye
 import { toast } from 'react-toastify';
 import API from '../services/api';
 
+const compressImage = (file, maxWidth = 1200, maxHeight = 1200, quality = 0.8) => {
+  return new Promise((resolve) => {
+    if (!file || !file.type.startsWith('image/')) {
+      resolve(file);
+      return;
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              resolve(file);
+              return;
+            }
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+    };
+    reader.onerror = () => resolve(file);
+  });
+};
+
 const ManageProducts = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -23,11 +78,17 @@ const ManageProducts = () => {
     variants: [
       {
         name: 'Standard',
+        price: '',
+        oldPrice: '',
+        stock: 0,
+        sku: '',
+        imageIndexes: [],
+        dimensions: { length: '', width: '', height: '', unit: 'cm' },
         materials: [
           {
             name: 'Fabric',
             colors: [
-              { name: 'Default', price: '', oldPrice: '', stock: 0, sku: '', imageIndexes: [] }
+              { name: 'Default', swatchImage: '', swatchImageIndex: null }
             ]
           }
         ]
@@ -46,6 +107,7 @@ const ManageProducts = () => {
 
   const [images, setImages] = useState([]); // File objects
   const [imagePreviews, setImagePreviews] = useState([]); // URLs for preview
+  const [swatches, setSwatches] = useState([]); // Swatch file objects
   const [sizeChart, setSizeChart] = useState(null);
   const [sizeChartPreview, setSizeChartPreview] = useState(null);
   
@@ -106,18 +168,12 @@ const ManageProducts = () => {
     newPreviews.splice(index, 1);
     setImagePreviews(newPreviews);
 
-    // Update imageIndexes in all colors
+    // Update imageIndexes in all variants
     const updatedVariants = formData.variants.map(v => ({
       ...v,
-      materials: v.materials.map(m => ({
-        ...m,
-        colors: m.colors.map(c => ({
-          ...c,
-          imageIndexes: c.imageIndexes
-            .filter(i => i !== index)
-            .map(i => i > index ? i - 1 : i)
-        }))
-      }))
+      imageIndexes: (v.imageIndexes || [])
+        .filter(i => i !== index)
+        .map(i => i > index ? i - 1 : i)
     }));
     setFormData(prev => ({ ...prev, variants: updatedVariants }));
   };
@@ -134,7 +190,16 @@ const ManageProducts = () => {
   const addVariant = () => {
     setFormData(prev => ({
       ...prev,
-      variants: [...prev.variants, { name: '', materials: [{ name: '', colors: [{ name: '', price: '', oldPrice: '', stock: 0, sku: '', imageIndexes: [] }] }] }]
+      variants: [...prev.variants, { 
+        name: '', 
+        price: '', 
+        oldPrice: '', 
+        stock: 0, 
+        sku: '', 
+        imageIndexes: [], 
+        dimensions: { length: '', width: '', height: '', unit: 'cm' },
+        materials: [{ name: '', colors: [{ name: '', swatchImage: '', swatchImageIndex: null }] }] 
+      }]
     }));
   };
 
@@ -146,7 +211,7 @@ const ManageProducts = () => {
 
   const addMaterial = (vIndex) => {
     const newVariants = [...formData.variants];
-    newVariants[vIndex].materials.push({ name: '', colors: [{ name: '', price: '', oldPrice: '', stock: 0, sku: '', imageIndexes: [] }] });
+    newVariants[vIndex].materials.push({ name: '', colors: [{ name: '', swatchImage: '', swatchImageIndex: null }] });
     setFormData(prev => ({ ...prev, variants: newVariants }));
   };
 
@@ -156,9 +221,34 @@ const ManageProducts = () => {
     setFormData(prev => ({ ...prev, variants: newVariants }));
   };
 
+  const copyMaterialsFromVariant = (sourceIdx, targetIdx) => {
+    const newVariants = [...formData.variants];
+    const sourceMaterials = newVariants[sourceIdx].materials;
+    // Perform deep clone to avoid shared reference bugs
+    newVariants[targetIdx].materials = JSON.parse(JSON.stringify(sourceMaterials));
+    setFormData(prev => ({ ...prev, variants: newVariants }));
+    toast.success(`Copied materials from "${newVariants[sourceIdx].name || `Variant ${sourceIdx + 1}`}" to "${newVariants[targetIdx].name || `Variant ${targetIdx + 1}`}"`);
+  };
+
+  const applyMaterialsToAll = (sourceIdx) => {
+    const sourceName = formData.variants[sourceIdx].name || `Variant ${sourceIdx + 1}`;
+    if (window.confirm(`Are you sure you want to apply materials of "${sourceName}" to all other variants? This will overwrite their existing materials.`)) {
+      const sourceMaterials = formData.variants[sourceIdx].materials;
+      const newVariants = formData.variants.map((v, idx) => {
+        if (idx === sourceIdx) return v;
+        return {
+          ...v,
+          materials: JSON.parse(JSON.stringify(sourceMaterials))
+        };
+      });
+      setFormData(prev => ({ ...prev, variants: newVariants }));
+      toast.success(`Applied materials of "${sourceName}" to all variants`);
+    }
+  };
+
   const addColor = (vIndex, mIndex) => {
     const newVariants = [...formData.variants];
-    newVariants[vIndex].materials[mIndex].colors.push({ name: '', price: '', oldPrice: '', stock: 0, sku: '', imageIndexes: [] });
+    newVariants[vIndex].materials[mIndex].colors.push({ name: '', swatchImage: '', swatchImageIndex: null });
     setFormData(prev => ({ ...prev, variants: newVariants }));
   };
 
@@ -168,14 +258,14 @@ const ManageProducts = () => {
     setFormData(prev => ({ ...prev, variants: newVariants }));
   };
 
-  const updateColorImageIndex = (vIndex, mIndex, cIndex, imgIndex) => {
+  const updateVariantImageIndex = (vIndex, imgIndex) => {
     const newVariants = [...formData.variants];
-    const currentIndexes = newVariants[vIndex].materials[mIndex].colors[cIndex].imageIndexes;
+    const currentIndexes = newVariants[vIndex].imageIndexes || [];
     
     if (currentIndexes.includes(imgIndex)) {
-      newVariants[vIndex].materials[mIndex].colors[cIndex].imageIndexes = currentIndexes.filter(i => i !== imgIndex);
+      newVariants[vIndex].imageIndexes = currentIndexes.filter(i => i !== imgIndex);
     } else {
-      newVariants[vIndex].materials[mIndex].colors[cIndex].imageIndexes = [...currentIndexes, imgIndex];
+      newVariants[vIndex].imageIndexes = [...currentIndexes, imgIndex];
     }
     
     setFormData(prev => ({ ...prev, variants: newVariants }));
@@ -186,7 +276,16 @@ const ManageProducts = () => {
       title: '',
       description: '',
       category: '',
-      variants: [{ name: 'Standard', materials: [{ name: 'Fabric', colors: [{ name: 'Default', price: '', oldPrice: '', stock: 0, sku: '', imageIndexes: [] }] }] }],
+      variants: [{ 
+        name: 'Standard', 
+        price: '', 
+        oldPrice: '', 
+        stock: 0, 
+        sku: '', 
+        imageIndexes: [], 
+        dimensions: { length: '', width: '', height: '', unit: 'cm' },
+        materials: [{ name: 'Fabric', colors: [{ name: 'Default', swatchImage: '', swatchImageIndex: null }] }] 
+      }],
       specifications: {
         general: { material: '', finish: '', warranty: '' },
         dimensions: { length: '', width: '', height: '', unit: 'cm' },
@@ -199,6 +298,7 @@ const ManageProducts = () => {
     });
     setImages([]);
     setImagePreviews([]);
+    setSwatches([]);
     setSizeChart(null);
     setSizeChartPreview(null);
     setEditingId(null);
@@ -225,14 +325,29 @@ const ManageProducts = () => {
       category: product.category?._id || product.category || '',
       variants: product.variants?.length ? product.variants.map(v => ({
         ...v,
-        materials: v.materials.map(m => ({
+        price: v.price !== undefined ? v.price : '',
+        oldPrice: v.oldPrice !== undefined ? v.oldPrice : '',
+        stock: v.stock !== undefined ? v.stock : 0,
+        sku: v.sku || '',
+        imageIndexes: [],
+        dimensions: v.dimensions || { length: '', width: '', height: '', unit: 'cm' },
+        materials: v.materials?.length ? v.materials.map(m => ({
           ...m,
-          colors: m.colors.map(c => ({
+          colors: m.colors?.length ? m.colors.map(c => ({
             ...c,
-            imageIndexes: [] 
-          }))
-        }))
-      })) : [{ name: 'Standard', materials: [{ name: 'Fabric', colors: [{ name: 'Default', price: '', oldPrice: '', stock: 0, sku: '', imageIndexes: [] }] }] }],
+            swatchImageIndex: null
+          })) : [{ name: 'Default', swatchImage: '', swatchImageIndex: null }]
+        })) : [{ name: 'Fabric', colors: [{ name: 'Default', swatchImage: '', swatchImageIndex: null }] }]
+      })) : [{ 
+        name: 'Standard', 
+        price: '', 
+        oldPrice: '', 
+        stock: 0, 
+        sku: '', 
+        imageIndexes: [], 
+        dimensions: { length: '', width: '', height: '', unit: 'cm' },
+        materials: [{ name: 'Fabric', colors: [{ name: 'Default', swatchImage: '', swatchImageIndex: null }] }] 
+      }],
       specifications: {
         ...defaultSpecs,
         ...product.specifications,
@@ -270,11 +385,23 @@ const ManageProducts = () => {
       submitData.append('specifications', JSON.stringify(formData.specifications));
 
       if (images.length > 0) {
-        images.forEach(img => submitData.append('images', img));
+        toast.info(`Compressing and optimizing ${images.length} images for fast upload...`, { autoClose: 2000 });
+        const compressedImages = await Promise.all(
+          images.map(img => compressImage(img))
+        );
+        compressedImages.forEach(img => submitData.append('images', img));
+      }
+
+      if (swatches.length > 0) {
+        const compressedSwatches = await Promise.all(
+          swatches.map(sw => compressImage(sw))
+        );
+        compressedSwatches.forEach(sw => submitData.append('swatches', sw));
       }
 
       if (sizeChart) {
-        submitData.append('sizeChart', sizeChart);
+        const compressedSizeChart = await compressImage(sizeChart);
+        submitData.append('sizeChart', compressedSizeChart);
       }
 
       if (editingId) {
@@ -342,83 +469,145 @@ const ManageProducts = () => {
             <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Registry Empty. Begin your first curation.</p>
           </div>
         ) : (
-          <div className="w-full overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 text-gray-400 text-[10px] font-black uppercase tracking-widest">
-                  <th className="p-8 w-40">Reference</th>
-                  <th className="p-8">Design Identity</th>
-                  <th className="p-8 text-center">Collection</th>
-                  <th className="p-8">Starting From</th>
-                  <th className="p-8">Stock Integrity</th>
-                  <th className="p-8 text-right">Orchestration</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {products.map((product) => {
-                  const displayPrice = product.variants?.[0]?.materials?.[0]?.colors?.[0]?.price || 0;
-                  const totalStock = product.variants?.reduce((acc, v) => 
-                    acc + v.materials?.reduce((mAcc, m) => 
-                      mAcc + m.colors?.reduce((cAcc, c) => cAcc + (c.stock || 0), 0)
-                    , 0)
-                  , 0) || 0;
+          <div className="w-full">
+            {/* Desktop View (Table) */}
+            <div className="hidden lg:block w-full overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50 text-gray-400 text-[10px] font-black uppercase tracking-widest">
+                    <th className="p-8 w-40">Reference</th>
+                    <th className="p-8">Design Identity</th>
+                    <th className="p-8 text-center">Collection</th>
+                    <th className="p-8">Starting From</th>
+                    <th className="p-8">Stock Integrity</th>
+                    <th className="p-8 text-right">Orchestration</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {products.map((product) => {
+                    const displayPrice = product.variants?.[0]?.price || 0;
+                    const totalStock = product.variants?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0;
 
-                  return (
-                    <tr key={product._id} className="hover:bg-[#F2EDE7]/20 transition-all group">
-                      <td className="p-8">
-                        <div className="w-24 h-32 bg-gray-50 border border-gray-100 relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
-                          <img 
-                            src={product.images?.[0] || 'https://placehold.co/200'} 
-                            alt={product.title} 
-                            className="w-full h-full object-cover"
-                          />
+                    return (
+                      <tr key={product._id} className="hover:bg-[#F2EDE7]/20 transition-all group">
+                        <td className="p-8">
+                          <div className="w-24 h-32 bg-gray-50 border border-gray-100 relative overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                            <img 
+                              src={product.images?.[0] || 'https://placehold.co/200'} 
+                              alt={product.title} 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        </td>
+                        <td className="p-8">
+                          <div className="font-serif font-black text-gray-900 text-2xl mb-1 tracking-tight">{product.title}</div>
+                          <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                            {product.variants?.length || 0} DIMENSIONS | {product.variants?.[0]?.materials?.length || 0} FINISHES
+                          </div>
+                        </td>
+                        <td className="p-8 text-center">
+                           <span className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest">
+                              {product.category?.name || 'Curated Collection'}
+                           </span>
+                        </td>
+                        <td className="p-8">
+                          <div className="font-serif font-black text-xl text-gray-900">£{displayPrice.toLocaleString()}</div>
+                        </td>
+                        <td className="p-8">
+                           <div className="flex items-center gap-3">
+                              <div className={`w-2 h-2 rounded-full ${totalStock > 10 ? 'bg-green-500' : totalStock > 0 ? 'bg-[#D7282F]' : 'bg-gray-300'}`}></div>
+                              <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">
+                                 {totalStock} in inventory
+                              </span>
+                           </div>
+                        </td>
+                        <td className="p-8 text-right">
+                          <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
+                            <button 
+                              onClick={() => handleEditClick(product)}
+                              className="p-4 text-gray-900 bg-white hover:bg-gray-900 hover:text-white transition-all border border-gray-100"
+                              title="Edit Piece"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(product._id)}
+                              className="p-4 text-[#D7282F] bg-white hover:bg-[#D7282F] hover:text-white transition-all border border-gray-100"
+                              title="Remove Piece"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile View (Cards) */}
+            <div className="lg:hidden divide-y divide-gray-100">
+              {products.map((product) => {
+                const displayPrice = product.variants?.[0]?.price || 0;
+                const totalStock = product.variants?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0;
+
+                return (
+                  <div key={product._id} className="p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
+                    <div className="flex gap-6 items-center w-full sm:w-auto">
+                      {/* Image Reference */}
+                      <div className="w-20 h-24 bg-gray-50 border border-gray-100 relative overflow-hidden shrink-0 rounded-sm">
+                        <img 
+                          src={product.images?.[0] || 'https://placehold.co/200'} 
+                          alt={product.title} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Information */}
+                      <div className="space-y-1.5 min-w-0 flex-1 sm:flex-none">
+                        <div className="flex flex-wrap gap-2 items-center">
+                          <span className="px-2.5 py-0.5 bg-gray-900 text-white rounded-full text-[8px] font-black uppercase tracking-widest">
+                            {product.category?.name || 'Curated'}
+                          </span>
                         </div>
-                      </td>
-                      <td className="p-8">
-                        <div className="font-serif font-black text-gray-900 text-2xl mb-1 tracking-tight">{product.title}</div>
-                        <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                        <h4 className="font-serif font-black text-gray-900 text-xl tracking-tight truncate">{product.title}</h4>
+                        <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest">
                           {product.variants?.length || 0} DIMENSIONS | {product.variants?.[0]?.materials?.length || 0} FINISHES
-                        </div>
-                      </td>
-                      <td className="p-8 text-center">
-                         <span className="px-4 py-1.5 bg-gray-900 text-white rounded-full text-[9px] font-black uppercase tracking-widest">
-                            {product.category?.name || 'Curated Collection'}
-                         </span>
-                      </td>
-                      <td className="p-8">
-                        <div className="font-serif font-black text-xl text-gray-900">£{displayPrice.toLocaleString()}</div>
-                      </td>
-                      <td className="p-8">
-                         <div className="flex items-center gap-3">
-                            <div className={`w-2 h-2 rounded-full ${totalStock > 10 ? 'bg-green-500' : totalStock > 0 ? 'bg-[#D7282F]' : 'bg-gray-300'}`}></div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">
-                               {totalStock} in inventory
+                        </p>
+                        <div className="flex items-center gap-4 pt-1">
+                          <span className="font-serif font-black text-gray-900 text-lg">£{displayPrice.toLocaleString()}</span>
+                          <div className="flex items-center gap-1.5">
+                            <div className={`w-1.5 h-1.5 rounded-full ${totalStock > 10 ? 'bg-green-500' : totalStock > 0 ? 'bg-[#D7282F]' : 'bg-gray-300'}`}></div>
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500">
+                               {totalStock} in stock
                             </span>
-                         </div>
-                      </td>
-                      <td className="p-8 text-right">
-                        <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
-                          <button 
-                            onClick={() => handleEditClick(product)}
-                            className="p-4 text-gray-900 bg-white hover:bg-gray-900 hover:text-white transition-all border border-gray-100"
-                            title="Edit Piece"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(product._id)}
-                            className="p-4 text-[#D7282F] bg-white hover:bg-[#D7282F] hover:text-white transition-all border border-gray-100"
-                            title="Remove Piece"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          </div>
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                      </div>
+                    </div>
+
+                    {/* Action buttons (always visible on touch screens) */}
+                    <div className="flex gap-3 w-full sm:w-auto justify-end pt-4 sm:pt-0 border-t border-gray-50 sm:border-transparent">
+                      <button 
+                        onClick={() => handleEditClick(product)}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-900 hover:text-white transition-all text-[9px] font-black uppercase tracking-widest text-gray-700 border border-gray-100"
+                        title="Edit Piece"
+                      >
+                        <Edit className="w-3.5 h-3.5" /> Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(product._id)}
+                        className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-red-50 hover:bg-[#D7282F] hover:text-white transition-all text-[9px] font-black uppercase tracking-widest text-[#D7282F] border border-red-100/50"
+                        title="Remove Piece"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -581,7 +770,7 @@ const ManageProducts = () => {
                                setFormData({ ...formData, variants: newVariants });
                              }}
                              className="bg-transparent border-none text-white text-xl font-bold placeholder:text-gray-600 outline-none w-full"
-                             placeholder="Dimension (e.g. 3 Seater)"
+                             placeholder="Variant Name (e.g. 3 Seater Sofa, King Size Bed)"
                            />
                         </div>
                         <button type="button" onClick={() => removeVariant(vIdx)} className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-red-400 transition-colors">
@@ -590,6 +779,162 @@ const ManageProducts = () => {
                       </div>
                       
                       <div className="p-10 space-y-10">
+                        {/* Variant-Level Fields: Price, Stock, SKU, Dimensions */}
+                        <div className="bg-gray-50/50 p-8 rounded-3xl border border-slate-200/60 space-y-6">
+                          <p className="text-[10px] font-black text-[#D7282F] uppercase tracking-widest">Variant Attributes (Pricing & Stock)</p>
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Price (£) *</label>
+                              <input
+                                type="number"
+                                value={variant.price}
+                                onChange={(e) => {
+                                  const newVariants = [...formData.variants];
+                                  newVariants[vIdx].price = e.target.value;
+                                  setFormData({ ...formData, variants: newVariants });
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm focus:border-slate-400"
+                                placeholder="1200"
+                                required
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Old Price (£)</label>
+                              <input
+                                type="number"
+                                value={variant.oldPrice}
+                                onChange={(e) => {
+                                  const newVariants = [...formData.variants];
+                                  newVariants[vIdx].oldPrice = e.target.value;
+                                  setFormData({ ...formData, variants: newVariants });
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm focus:border-slate-400"
+                                placeholder="1500"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Stock *</label>
+                              <input
+                                type="number"
+                                value={variant.stock}
+                                onChange={(e) => {
+                                  const newVariants = [...formData.variants];
+                                  newVariants[vIdx].stock = e.target.value;
+                                  setFormData({ ...formData, variants: newVariants });
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm focus:border-slate-400"
+                                placeholder="5"
+                                required
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">SKU *</label>
+                              <input
+                                type="text"
+                                value={variant.sku}
+                                onChange={(e) => {
+                                  const newVariants = [...formData.variants];
+                                  newVariants[vIdx].sku = e.target.value;
+                                  setFormData({ ...formData, variants: newVariants });
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm focus:border-slate-400"
+                                placeholder="SOFA-3S-FAB"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <p className="text-[10px] font-black text-[#D7282F] uppercase tracking-widest pt-4">Variant Metrics (Dimensions)</p>
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Width (cm)</label>
+                              <input
+                                type="number"
+                                value={variant.dimensions?.width || ''}
+                                onChange={(e) => {
+                                  const newVariants = [...formData.variants];
+                                  newVariants[vIdx].dimensions = { ...(newVariants[vIdx].dimensions || {}), width: e.target.value };
+                                  setFormData({ ...formData, variants: newVariants });
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm"
+                                placeholder="210"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Height (cm)</label>
+                              <input
+                                type="number"
+                                value={variant.dimensions?.height || ''}
+                                onChange={(e) => {
+                                  const newVariants = [...formData.variants];
+                                  newVariants[vIdx].dimensions = { ...(newVariants[vIdx].dimensions || {}), height: e.target.value };
+                                  setFormData({ ...formData, variants: newVariants });
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm"
+                                placeholder="85"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Depth/Length (cm)</label>
+                              <input
+                                type="number"
+                                value={variant.dimensions?.length || ''}
+                                onChange={(e) => {
+                                  const newVariants = [...formData.variants];
+                                  newVariants[vIdx].dimensions = { ...(newVariants[vIdx].dimensions || {}), length: e.target.value };
+                                  setFormData({ ...formData, variants: newVariants });
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm"
+                                placeholder="95"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Unit</label>
+                              <input
+                                type="text"
+                                value={variant.dimensions?.unit || 'cm'}
+                                onChange={(e) => {
+                                  const newVariants = [...formData.variants];
+                                  newVariants[vIdx].dimensions = { ...(newVariants[vIdx].dimensions || {}), unit: e.target.value };
+                                  setFormData({ ...formData, variants: newVariants });
+                                }}
+                                className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm"
+                                placeholder="cm"
+                              />
+                            </div>
+                          </div>
+
+                          <p className="text-[10px] font-black text-[#D7282F] uppercase tracking-widest pt-4">Variant Image Gallery Mapping</p>
+                          <div className="space-y-4">
+                            <p className="text-[10px] text-gray-400 italic">Select which product gallery assets from Step 2 belong to this specific size variant:</p>
+                            <div className="flex flex-wrap gap-3">
+                              {imagePreviews.map((url, imgIdx) => {
+                                const isSelected = (variant.imageIndexes || []).includes(imgIdx);
+                                return (
+                                  <button
+                                    key={imgIdx}
+                                    type="button"
+                                    onClick={() => updateVariantImageIndex(vIdx, imgIdx)}
+                                    className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                                      isSelected 
+                                        ? 'border-blue-600 ring-4 ring-blue-50' 
+                                        : 'border-transparent opacity-30 grayscale hover:opacity-60'
+                                    }`}
+                                  >
+                                    <img src={url} className="w-full h-full object-cover" />
+                                    {isSelected && (
+                                      <div className="absolute inset-0 bg-blue-600/30 flex items-center justify-center">
+                                        <Check className="w-5 h-5 text-white stroke-[4]" />
+                                      </div>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                              {imagePreviews.length === 0 && <p className="text-[10px] text-gray-400 italic">Please upload collection assets in Step 2 first to link them to this size.</p>}
+                            </div>
+                          </div>
+                        </div>
+
                         {variant.materials.map((material, mIdx) => (
                           <div key={mIdx} className="bg-white p-8 rounded-[2.5rem] border-2 border-indigo-50/50 shadow-xl shadow-indigo-500/5 space-y-8 relative overflow-hidden">
                              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/30 rounded-full -mr-16 -mt-16 blur-2xl" />
@@ -605,7 +950,7 @@ const ManageProducts = () => {
                                        setFormData({ ...formData, variants: newVariants });
                                      }}
                                      className="bg-transparent border-none text-2xl font-bold text-gray-900 outline-none w-full placeholder:text-gray-300"
-                                     placeholder="e.g. Luxury Chenille"
+                                     placeholder="e.g. Luxury Velvet Finish"
                                    />
                                 </div>
                                 <button type="button" onClick={() => removeMaterial(vIdx, mIdx)} className="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-red-500 transition-all">
@@ -614,107 +959,123 @@ const ManageProducts = () => {
                              </div>
 
                              <div className="grid grid-cols-1 gap-6 relative z-10">
-                                {material.colors.map((color, cIdx) => (
-                                  <div key={cIdx} className="bg-slate-50/50 p-8 rounded-3xl border border-slate-100 shadow-inner relative group/color hover:bg-white transition-all">
-                                    <button type="button" onClick={() => removeColor(vIdx, mIdx, cIdx)} className="absolute top-4 right-4 text-gray-200 hover:text-red-500 transition-all">
-                                      <X className="w-4 h-4" />
-                                    </button>
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                                      <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Finish Name</label>
-                                        <input
-                                          type="text"
-                                          value={color.name}
-                                          onChange={(e) => {
-                                            const newVariants = [...formData.variants];
-                                            newVariants[vIdx].materials[mIdx].colors[cIdx].name = e.target.value;
-                                            setFormData({ ...formData, variants: newVariants });
-                                          }}
-                                          className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl font-bold outline-none"
-                                          placeholder="Slate Grey"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Price (£)</label>
-                                        <input
-                                          type="number"
-                                          value={color.price}
-                                          onChange={(e) => {
-                                            const newVariants = [...formData.variants];
-                                            newVariants[vIdx].materials[mIdx].colors[cIdx].price = e.target.value;
-                                            setFormData({ ...formData, variants: newVariants });
-                                          }}
-                                          className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl font-bold outline-none"
-                                          placeholder="1200"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Stock</label>
-                                        <input
-                                          type="number"
-                                          value={color.stock}
-                                          onChange={(e) => {
-                                            const newVariants = [...formData.variants];
-                                            newVariants[vIdx].materials[mIdx].colors[cIdx].stock = e.target.value;
-                                            setFormData({ ...formData, variants: newVariants });
-                                          }}
-                                          className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl font-bold outline-none"
-                                          placeholder="5"
-                                        />
-                                      </div>
-                                      <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">SKU</label>
-                                        <input
-                                          type="text"
-                                          value={color.sku}
-                                          onChange={(e) => {
-                                            const newVariants = [...formData.variants];
-                                            newVariants[vIdx].materials[mIdx].colors[cIdx].sku = e.target.value;
-                                            setFormData({ ...formData, variants: newVariants });
-                                          }}
-                                          className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl font-bold outline-none"
-                                          placeholder="SOFA-SLT-3S"
-                                        />
-                                      </div>
-                                    </div>
-                                    
-                                    <div className="pt-6 border-t border-gray-50">
-                                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Link Visual Assets:</p>
-                                      <div className="flex flex-wrap gap-3">
-                                        {imagePreviews.map((url, imgIdx) => (
-                                          <button
-                                            key={imgIdx}
-                                            type="button"
-                                            onClick={() => updateColorImageIndex(vIdx, mIdx, cIdx, imgIdx)}
-                                            className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all ${
-                                              color.imageIndexes.includes(imgIdx) 
-                                                ? 'border-blue-600 ring-4 ring-blue-50' 
-                                                : 'border-transparent opacity-30 grayscale'
-                                            }`}
-                                          >
-                                            <img src={url} className="w-full h-full object-cover" />
-                                            {color.imageIndexes.includes(imgIdx) && (
-                                              <div className="absolute inset-0 bg-blue-600/30 flex items-center justify-center">
-                                                <Check className="w-6 h-6 text-white stroke-[4]" />
+                                {material.colors.map((color, cIdx) => {
+                                  const swatchSrc = color.swatchPreviewUrl || color.swatchImage;
+                                  return (
+                                    <div key={cIdx} className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100 shadow-inner relative group/color hover:bg-white transition-all">
+                                      <button type="button" onClick={() => removeColor(vIdx, mIdx, cIdx)} className="absolute top-4 right-4 text-gray-200 hover:text-red-500 transition-all">
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                      
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                                        <div className="space-y-2">
+                                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Fabric Colour / Finish Name</label>
+                                          <input
+                                            type="text"
+                                            value={color.name}
+                                            onChange={(e) => {
+                                              const newVariants = [...formData.variants];
+                                              newVariants[vIdx].materials[mIdx].colors[cIdx].name = e.target.value;
+                                              setFormData({ ...formData, variants: newVariants });
+                                            }}
+                                            className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none"
+                                            placeholder="Teal Blue"
+                                            required
+                                          />
+                                        </div>
+                                        
+                                        <div className="space-y-2">
+                                          <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Fabric Color Swatch Image</label>
+                                          <div className="flex items-center gap-4">
+                                            {swatchSrc ? (
+                                              <img 
+                                                src={swatchSrc} 
+                                                alt="Swatch Preview" 
+                                                className="w-12 h-12 object-cover rounded-full border border-gray-200 shadow-md"
+                                              />
+                                            ) : (
+                                              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-400 text-xs font-bold shadow-inner">
+                                                None
                                               </div>
                                             )}
-                                          </button>
-                                        ))}
-                                        {imagePreviews.length === 0 && <p className="text-[10px] text-gray-400 italic">Upload images in Step 2 first.</p>}
+                                            
+                                            <label className="flex items-center gap-1.5 px-3 py-1.5 bg-[#F2EDE7] text-gray-900 hover:bg-[#D7282F] hover:text-white transition-colors text-[9px] font-black uppercase tracking-widest cursor-pointer rounded-lg">
+                                              <UploadCloud className="w-3.5 h-3.5" /> Swatch Upload
+                                              <input 
+                                                type="file" 
+                                                className="hidden" 
+                                                onChange={(e) => {
+                                                  const file = e.target.files[0];
+                                                  if (!file) return;
+                                                  const currentSwatchesCount = swatches.length;
+                                                  setSwatches([...swatches, file]);
+                                                  
+                                                  const newVariants = [...formData.variants];
+                                                  newVariants[vIdx].materials[mIdx].colors[cIdx].swatchImageIndex = currentSwatchesCount;
+                                                  newVariants[vIdx].materials[mIdx].colors[cIdx].swatchPreviewUrl = URL.createObjectURL(file);
+                                                  setFormData({ ...formData, variants: newVariants });
+                                                  toast.success(`Swatch image loaded for ${color.name || 'Finish'}`);
+                                                }}
+                                                accept="image/*"
+                                              />
+                                            </label>
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
-                                <button type="button" onClick={() => addColor(vIdx, mIdx)} className="w-full py-5 border-2 border-dashed border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-blue-600 hover:border-blue-200 hover:bg-white transition-all">
-                                  + Add Finish/Color
+                                  );
+                                })}
+                                <button type="button" onClick={() => addColor(vIdx, mIdx)} className="w-full py-4 border-2 border-dashed border-gray-200 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-blue-600 hover:border-blue-200 hover:bg-white transition-all">
+                                  + Add Fabric Colour Finish
                                 </button>
                              </div>
                           </div>
                         ))}
-                        <button type="button" onClick={() => addMaterial(vIdx)} className="px-8 py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 transition-all shadow-xl">
-                          + Add Material Collection
-                        </button>
+                        <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-100">
+                          <button type="button" onClick={() => addMaterial(vIdx)} className="px-8 py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#D7282F] transition-all shadow-xl">
+                            + Add Material Collection
+                          </button>
+
+                          {formData.variants.length > 1 && (
+                            <>
+                              {/* Copy materials from another variant dropdown */}
+                              <div className="relative group flex items-center">
+                                <select
+                                  onChange={(e) => {
+                                    if (e.target.value !== "") {
+                                      copyMaterialsFromVariant(Number(e.target.value), vIdx);
+                                      e.target.value = ""; // reset choice
+                                    }
+                                  }}
+                                  className="px-6 py-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all outline-none border-none cursor-pointer appearance-none pr-10 font-sans"
+                                  defaultValue=""
+                                >
+                                  <option value="" disabled>📋 Copy Materials From...</option>
+                                  {formData.variants.map((otherV, otherIdx) => {
+                                    if (otherIdx === vIdx) return null;
+                                    return (
+                                      <option key={otherIdx} value={otherIdx}>
+                                        {otherV.name || `Variant ${otherIdx + 1}`}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                                <div className="pointer-events-none absolute right-4 flex items-center text-indigo-700">
+                                  <ChevronDown className="w-3.5 h-3.5" />
+                                </div>
+                              </div>
+
+                              {/* Apply to all variants button */}
+                              <button
+                                type="button"
+                                onClick={() => applyMaterialsToAll(vIdx)}
+                                className="px-6 py-4 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
+                              >
+                                ✨ Apply to All Other Variants
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}

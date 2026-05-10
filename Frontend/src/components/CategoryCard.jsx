@@ -9,7 +9,7 @@ const CategoryCard = memo(({ category }) => {
       className="group relative block overflow-hidden bg-white aspect-[4/5] transition-all duration-700 ease-in-out border border-gray-100"
     >
       <img
-        src={category.image || 'https://placehold.co/600x800?text=Category'}
+        src={category.image || 'https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=1000&auto=format&fit=crop'}
         alt={category.name}
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s] ease-out"
       />

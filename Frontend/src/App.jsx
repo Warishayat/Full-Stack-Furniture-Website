@@ -31,6 +31,8 @@ import AdminDashboard from './admin/Dashboard';
 import ManageProducts from './admin/ManageProducts';
 import ManageCategories from './admin/ManageCategories';
 import AdminOrders from './admin/ManageOrders';
+import ManageMessages from './admin/ManageMessages';
+import ManageSubscribers from './admin/ManageSubscribers';
 import ScrollToTop from './components/utils/ScrollToTop';
 
 function App() {
@@ -84,6 +86,8 @@ function App() {
               <Route path="products" element={<ManageProducts />} />
               <Route path="categories" element={<ManageCategories />} />
               <Route path="orders" element={<AdminOrders />} />
+              <Route path="messages" element={<ManageMessages />} />
+              <Route path="subscribers" element={<ManageSubscribers />} />
             </Route>
           </Route>
         </Route>

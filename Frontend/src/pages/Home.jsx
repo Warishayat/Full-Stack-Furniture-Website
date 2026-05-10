@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Truck, ShieldCheck, Star, Play, Award, Zap, Sparkles, ChevronLeft, ChevronRight, Crown } from 'lucide-react';
+import { ArrowRight, Truck, ShieldCheck, Star, Play, Award, Zap, Sparkles, ChevronLeft, ChevronRight, Crown, Plus, Minus } from 'lucide-react';
 import API from '../services/api';
 import ProductCard from '../components/ProductCard';
 import CategoryCard from '../components/CategoryCard';
@@ -12,6 +12,7 @@ const Home = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [openFaq, setOpenFaq] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,13 +20,13 @@ const Home = () => {
         setLoading(true);
         const [catRes, prodRes, reviewRes] = await Promise.all([
           API.get('/category/getallCategories'),
-          API.get('/product/getAllProducts'),
+          API.get('/product/getAllProducts', { params: { limit: 100 } }),
           API.get('/review/all-reviews')
         ]);
         
         setCategories(catRes.data.categories || catRes.data || []);
         const prodData = prodRes.data.products || prodRes.data || [];
-        setFeaturedProducts(prodData.slice(0, 8));
+        setFeaturedProducts(prodData);
         setReviews(reviewRes.data.reviews || []);
       } catch (error) {
         console.error('Error fetching home data:', error);
@@ -38,6 +39,49 @@ const Home = () => {
 
   const nextTestimonial = () => setCurrentTestimonial((prev) => (prev + 1) % (reviews.length || 1));
   const prevTestimonial = () => setCurrentTestimonial((prev) => (prev - 1 + (reviews.length || 1)) % (reviews.length || 1));
+
+  const sofaProducts = featuredProducts.filter(p => {
+    const catName = p.category?.name || p.category?.title || p.category?.slug || '';
+    const title = p.title || '';
+    const categoryId = p.category?._id || p.category || '';
+    
+    const catObj = categories.find(c => c._id === categoryId);
+    const parentId = catObj?.parent?._id || catObj?.parent || '';
+    const parentObj = parentId ? categories.find(c => c._id === parentId) : null;
+    
+    const isSofaCategory = 
+      catName.toLowerCase().includes('sofa') || 
+      (catObj?.slug || '').toLowerCase().includes('sofa') ||
+      (parentObj?.name || '').toLowerCase().includes('sofa') ||
+      (parentObj?.slug || '').toLowerCase().includes('sofa');
+
+    return isSofaCategory || title.toLowerCase().includes('sofa');
+  });
+
+  const diningProducts = featuredProducts.filter(p => {
+    const catName = p.category?.name || p.category?.title || p.category?.slug || '';
+    const title = p.title || '';
+    const categoryId = p.category?._id || p.category || '';
+    
+    const catObj = categories.find(c => c._id === categoryId);
+    const parentId = catObj?.parent?._id || catObj?.parent || '';
+    const parentObj = parentId ? categories.find(c => c._id === parentId) : null;
+    
+    const isDiningCategory = 
+      catName.toLowerCase().includes('dining') || 
+      catName.toLowerCase().includes('dinning') ||
+      (catObj?.slug || '').toLowerCase().includes('dining') ||
+      (catObj?.slug || '').toLowerCase().includes('dinning') ||
+      (parentObj?.name || '').toLowerCase().includes('dining') ||
+      (parentObj?.name || '').toLowerCase().includes('dinning') ||
+      (parentObj?.slug || '').toLowerCase().includes('dining') ||
+      (parentObj?.slug || '').toLowerCase().includes('dinning');
+
+    return isDiningCategory || title.toLowerCase().includes('dining') || title.toLowerCase().includes('dinning');
+  });
+
+  const displaySofaProducts = sofaProducts;
+  const displayDiningProducts = diningProducts;
 
   return (
     <div className="bg-white overflow-hidden pt-20 lg:pt-24">
@@ -96,13 +140,77 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Premium Category Showcase Section */}
+      <section className="py-24 bg-[#F2EDE7]/25 border-b border-gray-100">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="mb-16 text-center lg:text-left flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div>
+              <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">
+                The Curated Archive
+              </span>
+              <h3 className="text-4xl md:text-5xl font-serif font-black text-gray-900 tracking-tighter">
+                Shop by <span className="italic text-gray-400">Collection</span>
+              </h3>
+            </div>
+            <p className="text-xs text-gray-400 font-black uppercase tracking-widest max-w-xs lg:text-right leading-relaxed">
+              Explore our architectural series, handcrafted to define spaces and elevate environments.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
+            {categories.filter(cat => !cat.parent).map((cat) => (
+              <CategoryCard key={cat._id} category={cat} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mobile-visible Premium Craftsmanship Heritage Banner */}
+      <section className="lg:hidden py-24 bg-gray-900 text-white relative overflow-hidden">
+        {/* Subtle luxury abstract glow background */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#D7282F]/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-green-900/10 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <span className="text-[#D7282F] font-black text-[9px] uppercase tracking-[0.5em] mb-4 block">
+            Crafted for Royalty
+          </span>
+          <h3 className="text-3xl font-serif font-black text-white tracking-tight mb-4">
+            Handcrafted In <span className="italic text-gray-400">Great Britain</span>
+          </h3>
+          <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm mx-auto mb-8">
+            Every EliteSeating piece is meticulously hand-carved and custom upholstered using heritage fabrics, sustainable hardwood frames, and premium cushioning for lifetime longevity.
+          </p>
+          
+          {/* Key USPs styled beautifully */}
+          <div className="grid grid-cols-3 gap-3 mb-10 max-w-sm mx-auto">
+            <div className="p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-sm">
+              <p className="text-sm font-black text-white mb-0.5">100%</p>
+              <p className="text-[7px] font-bold text-gray-500 uppercase tracking-widest">Hardwood</p>
+            </div>
+            <div className="p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-sm">
+              <p className="text-sm font-black text-[#D7282F] mb-0.5">25 Yr</p>
+              <p className="text-[7px] font-bold text-gray-500 uppercase tracking-widest">Warranty</p>
+            </div>
+            <div className="p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-sm">
+              <p className="text-sm font-black text-white mb-0.5">Bespoke</p>
+              <p className="text-[7px] font-bold text-gray-500 uppercase tracking-widest">Finishes</p>
+            </div>
+          </div>
+
+          <Link to="/about" className="inline-flex items-center gap-2 px-10 py-4 bg-white text-gray-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-sm hover:bg-[#D7282F] hover:text-white transition-all shadow-xl active:scale-95">
+            Discover Our Story <ArrowRight className="w-4 h-4 text-[#D7282F]" />
+          </Link>
+        </div>
+      </section>
+
       {/* Flash Sofa Sale Section */}
-      <section className="py-32 bg-white">
+      <section className="py-32 bg-white hidden lg:block">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
             {/* Large Banner */}
             <div className="lg:w-1/2 relative group overflow-hidden">
-              <div className="aspect-[4/5] overflow-hidden">
+              <div className="aspect-[4/5] lg:aspect-[16/10] xl:aspect-[16/10] overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?q=80&w=2670&auto=format&fit=crop" 
                   alt="Flash Sofa Sale"
@@ -129,7 +237,7 @@ const Home = () => {
                   <h3 className="text-4xl font-serif font-black text-gray-900 tracking-tighter">Featured <span className="italic text-gray-400">Masterpieces</span></h3>
                </div>
                <div className="grid grid-cols-2 gap-8 lg:gap-12">
-                 {featuredProducts.slice(0, 4).map((product) => (
+                 {displaySofaProducts.slice(0, 4).map((product) => (
                    <ProductCard key={product._id} product={product} />
                  ))}
                </div>
@@ -139,12 +247,12 @@ const Home = () => {
       </section>
 
       {/* Flash Dining Sale Section */}
-      <section className="py-32 bg-[#F2EDE7]/30">
+      <section className="py-32 bg-[#F2EDE7]/30 hidden lg:block">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row-reverse gap-16 lg:gap-24">
             {/* Large Banner */}
             <div className="lg:w-1/2 relative group overflow-hidden">
-              <div className="aspect-[4/5] overflow-hidden">
+              <div className="aspect-[4/5] lg:aspect-[16/10] xl:aspect-[16/10] overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?q=80&w=2671&auto=format&fit=crop" 
                   alt="Flash Dining Sale"
@@ -171,7 +279,7 @@ const Home = () => {
                   <h3 className="text-4xl font-serif font-black text-gray-900 tracking-tighter">Luxury <span className="italic text-gray-400">Settings</span></h3>
                </div>
                <div className="grid grid-cols-2 gap-8 lg:gap-12">
-                 {featuredProducts.slice(4, 8).map((product) => (
+                 {displayDiningProducts.slice(0, 4).map((product) => (
                    <ProductCard key={product._id} product={product} />
                  ))}
                </div>
@@ -230,6 +338,69 @@ const Home = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Bespoke Showroom & FAQ Accordion Section */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
+          <div className="mb-16 text-center">
+            <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">
+              Curator Assistance
+            </span>
+            <h3 className="text-3xl md:text-5xl font-serif font-black text-gray-900 tracking-tighter">
+              Bespoke <span className="italic text-gray-400">Inquiries</span>
+            </h3>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: "What is your typical delivery timeframe?",
+                a: "Our standard premium white-glove shipping takes 7 to 14 working days. Our premier concierge logistics team will contact you directly to schedule a precise room-of-choice setup appointment and remove all packaging materials."
+              },
+              {
+                q: "Can I customize the upholstery, sizing, or fabrics?",
+                a: "Absolutely. We specialize in bespoke, hand-crafted master-tailoring. You can order complimentary fabric/leather swatches or customize details by contacting our London Concierge Desk directly."
+              },
+              {
+                q: "What warranty do you offer on frames?",
+                a: "Every single EliteSeating frame is backed by our signature 25-Year Quality Frame Guarantee, insuring your pieces against structural defects for generations to come."
+              },
+              {
+                q: "Do you offer flexible financing?",
+                a: "Yes, we support secure interest-free installments and premier credit terms during checkout, allowing you to invest in hand-crafted luxury with seamless flexibility."
+              }
+            ].map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div 
+                  key={idx} 
+                  className="border border-gray-100 rounded-sm hover:border-gray-200 transition-colors bg-white overflow-hidden"
+                >
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full flex items-center justify-between p-6 text-left outline-none"
+                  >
+                    <span className="text-sm font-bold uppercase tracking-wider text-gray-900 leading-snug">
+                      {faq.q}
+                    </span>
+                    <span className="p-2 bg-gray-50 rounded-full text-gray-500 group-hover:text-gray-900 shrink-0 ml-4 transition-colors">
+                      {isOpen ? <Minus className="w-3.5 h-3.5 text-[#D7282F]" /> : <Plus className="w-3.5 h-3.5" />}
+                    </span>
+                  </button>
+                  
+                  {isOpen && (
+                    <div className="p-6 pt-0 border-t border-gray-50 bg-[#F2EDE7]/10 animate-fade-in">
+                      <p className="text-xs text-gray-500 leading-relaxed font-medium">
+                        {faq.a}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

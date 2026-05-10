@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, Info, Ruler, Star, CreditCard, Sparkles } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, Info, Ruler, Star, CreditCard, Sparkles, Calendar } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import API from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -22,10 +23,50 @@ const ProductDetail = () => {
   const [activeAccordion, setActiveAccordion] = useState('description');
   const [reviews, setReviews] = useState([]);
 
+  const getEstimatedDeliveryRange = () => {
+    const currentDate = new Date();
+    
+    // Start date (8 days from now)
+    const startDate = new Date();
+    startDate.setDate(currentDate.getDate() + 8);
+    
+    // End date (10 days from now)
+    const endDate = new Date();
+    endDate.setDate(currentDate.getDate() + 10);
+    
+    const options = { day: 'numeric', month: 'long' };
+    const startStr = startDate.toLocaleDateString('en-GB', options); 
+    const endStr = endDate.toLocaleDateString('en-GB', options);     
+    
+    return `${startStr} - ${endStr}`;
+  };
+
   // Selection State
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [selectedMaterialIdx, setSelectedMaterialIdx] = useState(0);
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
+  const [hoveredSwatchIdx, setHoveredSwatchIdx] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const handleOutsideClick = (e) => {
+      if (!e.target.closest('.swatch-container')) {
+        setHoveredSwatchIdx(null);
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, [isMobile]);
 
   useEffect(() => {
     const fetchProductAndRelated = async () => {
@@ -67,11 +108,7 @@ const ProductDetail = () => {
       if (currentProduct.variants && currentProduct.variants.length > 0) {
         let min = Infinity;
         currentProduct.variants.forEach(v => {
-          v.materials?.forEach(m => {
-            m.colors?.forEach(c => {
-              if (c.price < min) min = c.price;
-            });
-          });
+          if (v.price < min) min = v.price;
         });
         if (min !== Infinity) minPrice = min;
       }
@@ -93,6 +130,9 @@ const ProductDetail = () => {
   }, [id]);
 
   useEffect(() => {
+    setSelectedVariantIdx(0);
+    setSelectedMaterialIdx(0);
+    setSelectedColorIdx(0);
     const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
     setRecentlyViewed(viewed.filter(p => p?._id !== id));
   }, [id]);
@@ -101,17 +141,35 @@ const ProductDetail = () => {
   const currentMaterial = currentVariant?.materials?.[selectedMaterialIdx];
   const currentColor = currentMaterial?.colors?.[selectedColorIdx];
 
-  const currentPrice = currentColor?.price || product?.price || 0;
-  const currentOldPrice = currentColor?.oldPrice || product?.oldprice || 0;
-  const currentStock = currentColor?.stock || 0;
+  const currentPrice = currentVariant?.price || product?.price || 0;
+  const currentOldPrice = currentVariant?.oldPrice || product?.oldprice || 0;
+  const currentStock = currentVariant?.stock || 0;
 
   useEffect(() => {
-    if (currentColor?.images?.length > 0) {
-      setActiveImage(currentColor.images[0]);
+    if (currentVariant?.images?.length > 0) {
+      setActiveImage(currentVariant.images[0]);
     } else if (product?.images?.length > 0) {
       setActiveImage(product.images[0]);
     }
-  }, [product, selectedVariantIdx, selectedMaterialIdx, selectedColorIdx]);
+  }, [product, currentVariant]);
+
+  const getCategoryLabel = () => {
+    if (!product) return 'Size';
+    const catName = product.category?.name?.toLowerCase() || '';
+    const title = product.title?.toLowerCase() || '';
+    
+    if (catName.includes('sofa') || title.includes('sofa')) return 'Sofa';
+    if (catName.includes('bed') || title.includes('bed')) return 'Bed';
+    if (catName.includes('dining') || catName.includes('dinning') || title.includes('dining') || title.includes('dinning')) return 'Dining Set';
+    if (catName.includes('table') || title.includes('table')) return 'Table';
+    if (catName.includes('chair') || title.includes('chair')) return 'Chair';
+    
+    if (product.category?.name) {
+        return product.category.name.charAt(0).toUpperCase() + product.category.name.slice(1);
+    }
+    
+    return 'Product';
+  };
 
   const handleAddToCart = () => {
     if (!user) {
@@ -178,7 +236,7 @@ const ProductDetail = () => {
             </div>
             
             <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-               {(currentColor?.images?.length > 0 ? currentColor.images : product.images || []).map((img, idx) => (
+               {(currentVariant?.images?.length > 0 ? currentVariant.images : product?.images || []).map((img, idx) => (
                  <button 
                    key={idx}
                    onClick={() => setActiveImage(img)}
@@ -227,10 +285,10 @@ const ProductDetail = () => {
 
               {/* Selection Sections */}
               <div className="space-y-8 border-t border-gray-100 pt-8">
-                {product.variants?.length > 0 && (
+                {product.variants?.length > 1 && (
                   <div className="space-y-3">
                     <label className="text-sm font-bold text-gray-900 flex justify-between">
-                       <span>Sofa size: <span className="text-gray-400 font-medium">{currentVariant?.name}</span></span>
+                       <span>{getCategoryLabel()} size: <span className="text-gray-400 font-medium">{currentVariant?.name}</span></span>
                        <span className="text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:text-gray-900 underline">Size guide</span>
                     </label>
                     <div className="relative">
@@ -248,32 +306,130 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                {currentMaterial?.colors?.length > 0 && (
-                  <div className="space-y-4">
-                    <p className="text-sm font-bold text-gray-900">Colour options: <span className="text-gray-400 font-medium">{currentColor?.name}</span></p>
+                {currentVariant?.materials?.length > 0 && (
+                  <div className="space-y-3">
+                    <label className="text-sm font-bold text-gray-900">
+                       Material: <span className="text-gray-400 font-medium">{currentMaterial?.name}</span>
+                    </label>
                     <div className="flex flex-wrap gap-2.5">
-                      {currentMaterial.colors.map((c, i) => (
+                      {currentVariant.materials.map((m, i) => (
                         <button 
                           key={i} 
-                          title={c.name}
-                          onClick={() => setSelectedColorIdx(i)}
-                          className={`w-8 h-8 rounded-full border transition-all p-0.5 ${
-                            selectedColorIdx === i ? 'border-gray-900' : 'border-gray-200 hover:border-gray-400'
+                          onClick={() => { setSelectedMaterialIdx(i); setSelectedColorIdx(0); }}
+                          className={`px-4 py-2 border rounded-sm text-xs font-black uppercase tracking-widest transition-all ${
+                            selectedMaterialIdx === i 
+                              ? 'border-gray-900 bg-gray-900 text-white shadow-sm' 
+                              : 'border-gray-200 text-gray-500 hover:border-gray-400 hover:bg-slate-50'
                           }`}
                         >
-                          <div className="w-full h-full rounded-full border border-gray-100" style={{ backgroundColor: c.name.toLowerCase() === 'beige' ? '#f5f5dc' : c.name.toLowerCase() === 'grey' ? '#808080' : c.name.toLowerCase() === 'black' ? '#000000' : c.name.toLowerCase().replace(/ /g, '') }} />
+                          {m.name}
                         </button>
                       ))}
                     </div>
                   </div>
                 )}
+
+                {currentMaterial?.colors?.length > 0 && (
+                  <div className="space-y-4">
+                    <p className="text-sm font-bold text-gray-900">
+                      Colour options: <span className="text-gray-400 font-medium">{currentColor?.name}</span>
+                    </p>
+                    <div className="flex flex-wrap gap-x-6 gap-y-8">
+                      {currentMaterial.colors.map((c, i) => {
+                        const isSelected = selectedColorIdx === i;
+                        const swatchUrl = c.swatchImage;
+                        const hasSwatch = !!swatchUrl;
+                        
+                        return (
+                          <div 
+                            key={i} 
+                            className="flex flex-col items-center relative swatch-container"
+                            onMouseEnter={() => !isMobile && setHoveredSwatchIdx(i)}
+                            onMouseLeave={() => !isMobile && setHoveredSwatchIdx(null)}
+                          >
+                            {/* Animated Enlarged Preview Popup */}
+                            <AnimatePresence>
+                              {hoveredSwatchIdx === i && (
+                                <motion.div 
+                                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                                  exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                  className="absolute bottom-full mb-3 z-30 bg-white p-2.5 rounded-xl border border-gray-100 shadow-xl flex flex-col items-center gap-1.5 pointer-events-none w-28"
+                                >
+                                  {hasSwatch ? (
+                                    <img 
+                                      src={swatchUrl} 
+                                      alt={c.name} 
+                                      className="w-16 h-16 object-cover rounded-lg border border-gray-50"
+                                    />
+                                  ) : (
+                                    <div 
+                                      className="w-16 h-16 rounded-lg border border-gray-100 shadow-inner" 
+                                      style={{ backgroundColor: c.name.toLowerCase() === 'beige' ? '#f5f5dc' : c.name.toLowerCase() === 'grey' ? '#808080' : c.name.toLowerCase() === 'black' ? '#000000' : c.name.toLowerCase().replace(/ /g, '') }}
+                                    />
+                                  )}
+                                  <span className="text-[10px] font-black uppercase text-gray-900 tracking-wider text-center line-clamp-1 w-full">{c.name}</span>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+
+                            <motion.button 
+                              type="button"
+                              title={c.name}
+                              onClick={() => {
+                                setSelectedColorIdx(i);
+                                if (isMobile) {
+                                  setHoveredSwatchIdx(hoveredSwatchIdx === i ? null : i);
+                                }
+                              }}
+                              whileHover={{ scale: 1.12 }}
+                              whileTap={{ scale: 0.95 }}
+                              className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all p-0.5 flex-shrink-0 shadow-sm relative ${
+                                isSelected 
+                                  ? 'border-gray-950 ring-2 ring-gray-950/20 ring-offset-1 scale-105' 
+                                  : 'border-gray-200 hover:border-gray-400'
+                              }`}
+                            >
+                              {hasSwatch ? (
+                                <img 
+                                  src={swatchUrl} 
+                                  alt={c.name} 
+                                  className="w-full h-full object-cover rounded-full"
+                                />
+                              ) : (
+                                <div 
+                                  className="w-full h-full rounded-full border border-gray-50 shadow-inner" 
+                                  style={{ backgroundColor: c.name.toLowerCase() === 'beige' ? '#f5f5dc' : c.name.toLowerCase() === 'grey' ? '#808080' : c.name.toLowerCase() === 'black' ? '#000000' : c.name.toLowerCase().replace(/ /g, '') }} 
+                                />
+                              )}
+                              
+                              {isSelected && (
+                                <div className="absolute inset-0 bg-black/10 flex items-center justify-center rounded-full">
+                                  <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md">
+                                    <Check className="w-3.5 h-3.5 text-gray-900 stroke-[3]" />
+                                  </div>
+                                </div>
+                              )}
+                            </motion.button>
+                            
+                            <span className="text-[9px] text-center text-gray-500 mt-2 font-black uppercase tracking-wider line-clamp-1 w-16 leading-tight">
+                              {c.name}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
               </div>
 
               {/* Checkout Block */}
               <div className="mt-10 p-6 bg-gray-50 border border-gray-100 space-y-6">
-                 <div className="flex items-center gap-4">
-                    <div className="flex items-center bg-white border border-gray-200">
-                      <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900"><Minus className="w-3 h-3" /></button>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center bg-white border border-gray-200">
+                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900"><Minus className="w-3 h-3" /></button>
                       <input type="text" readOnly value={quantity} className="w-8 text-center bg-transparent font-bold text-sm" />
                       <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900"><Plus className="w-3 h-3" /></button>
                     </div>
@@ -288,19 +444,29 @@ const ProductDetail = () => {
                  </button>
 
                  <div className="grid grid-cols-2 gap-y-4 pt-2">
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
-                       <Check className="w-3.5 h-3.5 text-[#51823F]" /> 0% APR AVAILABLE
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
-                       <Truck className="w-3.5 h-3.5 text-[#51823F]" /> FREE DELIVERY
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
-                       <ShieldCheck className="w-3.5 h-3.5 text-[#51823F]" /> 15 YEAR GUARANTEE
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
-                       <Info className="w-3.5 h-3.5 text-[#51823F]" /> BEST PRICE GUARANTEE
-                    </div>
-                 </div>
+                     <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
+                        <Check className="w-3.5 h-3.5 text-[#51823F]" /> 0% APR AVAILABLE
+                     </div>
+                     <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#51823F]" /> 15 YEAR GUARANTEE
+                     </div>
+                     <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
+                        <Info className="w-3.5 h-3.5 text-[#51823F]" /> BEST PRICE GUARANTEE
+                     </div>
+                     <div className="flex items-center gap-2 text-[10px] font-bold text-[#D7282F]">
+                        <Truck className="w-3.5 h-3.5 text-[#D7282F]" /> FREE DELIVERY
+                     </div>
+                  </div>
+
+                  <div className="mt-4 p-4 bg-gray-50 rounded-sm border border-primary-100/50 flex items-center gap-4 animate-fade-in">
+                     <div className="w-10 h-10 rounded-full bg-[#51823F]/10 flex items-center justify-center text-[#51823F] shrink-0 shadow-sm animate-pulse">
+                        <Calendar className="w-5 h-5" />
+                     </div>
+                     <div>
+                        <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest">Estimated Delivery</p>
+                        <p className="text-gray-900 font-bold text-sm font-serif italic">{getEstimatedDeliveryRange()}</p>
+                     </div>
+                  </div>
               </div>
             </div>
           </div>
@@ -345,14 +511,29 @@ const ProductDetail = () => {
                   {item.id === 'dimensions' && (
                     <div className="space-y-10">
                        <div className="grid grid-cols-3 gap-8">
-                          <div><p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Width</p><p className="text-gray-900 text-xl font-serif font-black italic">{product.specifications?.dimensions?.width || '--'} {product.specifications?.dimensions?.unit || 'cm'}</p></div>
-                          <div><p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Height</p><p className="text-gray-900 text-xl font-serif font-black italic">{product.specifications?.dimensions?.height || '--'} {product.specifications?.dimensions?.unit || 'cm'}</p></div>
-                          <div><p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Depth</p><p className="text-gray-900 text-xl font-serif font-black italic">{product.specifications?.dimensions?.length || '--'} {product.specifications?.dimensions?.unit || 'cm'}</p></div>
+                          <div>
+                            <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Width</p>
+                            <p className="text-gray-900 text-xl font-serif font-black italic">
+                              {currentVariant?.dimensions?.width || product.specifications?.dimensions?.width || '--'} {currentVariant?.dimensions?.unit || product.specifications?.dimensions?.unit || 'cm'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Height</p>
+                            <p className="text-gray-900 text-xl font-serif font-black italic">
+                              {currentVariant?.dimensions?.height || product.specifications?.dimensions?.height || '--'} {currentVariant?.dimensions?.unit || product.specifications?.dimensions?.unit || 'cm'}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Depth</p>
+                            <p className="text-gray-900 text-xl font-serif font-black italic">
+                              {currentVariant?.dimensions?.length || product.specifications?.dimensions?.length || '--'} {currentVariant?.dimensions?.unit || product.specifications?.dimensions?.unit || 'cm'}
+                            </p>
+                          </div>
                        </div>
-                       {product.specifications?.dimensions?.sizeChart && (
+                       {(currentVariant?.dimensions?.sizeChart || product.specifications?.dimensions?.sizeChart) && (
                          <div className="mt-10 border border-gray-100 p-8 bg-gray-50/50">
                             <p className="text-[10px] font-black text-gray-400 uppercase mb-6 tracking-[0.4em]">Technical Blueprint</p>
-                            <img src={product.specifications.dimensions.sizeChart} alt="Size Chart" className="max-w-xl mx-auto mix-blend-multiply" />
+                            <img src={currentVariant?.dimensions?.sizeChart || product.specifications.dimensions.sizeChart} alt="Size Chart" className="max-w-xl mx-auto mix-blend-multiply" />
                          </div>
                        )}
                     </div>
@@ -377,7 +558,8 @@ const ProductDetail = () => {
                        <div className="flex flex-col md:flex-row gap-12">
                           <div className="flex-1">
                              <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Lead Time</p>
-                             <p className="text-gray-900 text-3xl font-serif font-black italic">{product.specifications?.delivery?.time || 'Ex-Stock / 3-5 Days'}</p>
+                             <p className="text-gray-900 text-3xl font-serif font-black italic">{getEstimatedDeliveryRange()}</p>
+                             <p className="text-xs text-gray-400 mt-2">Calculated dynamically based on standard white-glove shipping queue.</p>
                           </div>
                           <div className="flex-1">
                              <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Service Level</p>
