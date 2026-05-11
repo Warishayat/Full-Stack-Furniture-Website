@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Package, Truck, CheckCircle, Clock, MapPin, CreditCard, ChevronLeft, Calendar, User, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'react-toastify';
 import API from '../services/api';
 
 const OrderDetail = () => {
@@ -28,6 +29,17 @@ const OrderDetail = () => {
 
     fetchOrderDetail();
   }, [id]);
+
+  const handleStatusChange = async (newStatus) => {
+    try {
+      await API.put(`/api/order/updateOrderStatus/${id}`, { orderStatus: newStatus });
+      setOrder(prev => ({ ...prev, orderStatus: newStatus }));
+      toast.success(`Order marked as ${newStatus}`);
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      toast.error('Failed to update status');
+    }
+  };
 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
@@ -84,8 +96,21 @@ const OrderDetail = () => {
               {getStatusIcon(order.orderStatus)}
             </div>
             <div>
-              <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest">Current Status</p>
-              <p className="text-sm font-bold text-primary-950 capitalize">{order.orderStatus || 'Processing'}</p>
+              <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-0.5">Current Status</p>
+              {user?.role === 'admin' || user?.isAdmin ? (
+                <select
+                  value={order.orderStatus || 'processing'}
+                  onChange={(e) => handleStatusChange(e.target.value)}
+                  className="bg-transparent text-sm font-black text-[#D7282F] outline-none cursor-pointer border-b border-dashed border-[#D7282F]/30 pb-0.5 focus:border-[#D7282F] capitalize"
+                >
+                  <option value="processing">Processing</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              ) : (
+                <p className="text-sm font-bold text-primary-950 capitalize">{order.orderStatus || 'Processing'}</p>
+              )}
             </div>
           </div>
         </div>
@@ -113,6 +138,17 @@ const OrderDetail = () => {
                         </div>
                         <div className="flex-1 min-w-0 space-y-2">
                           <h4 className="text-lg font-serif font-bold text-primary-950 truncate">{item.title || item.product?.title || item.product?.name || 'Handcrafted Piece'}</h4>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-primary-500 font-medium">
+                            {item.variant?.name && (
+                              <span>Variant: <strong className="text-primary-950">{item.variant.name}</strong></span>
+                            )}
+                            {item.material?.name && (
+                              <span>Fabric/Material: <strong className="text-primary-950">{item.material.name}</strong></span>
+                            )}
+                            {item.color?.name && (
+                              <span>Color: <strong className="text-primary-950">{item.color.name}</strong></span>
+                            )}
+                          </div>
                           <p className="text-xs text-primary-500 font-bold uppercase tracking-widest">Qty: {item.quantity}</p>
                           <p className="text-accent font-bold">£{(item.price || item.product?.price || 0).toLocaleString()}</p>
                         </div>
@@ -149,7 +185,14 @@ const OrderDetail = () => {
                      <div>
                         <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-1">Payment Method</p>
                         <p className="font-bold text-primary-950">Secure Card Payment</p>
-                        <p className="text-xs text-green-600 font-bold uppercase tracking-widest">Verified & Processed</p>
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 mt-1 text-[9px] font-black uppercase tracking-widest rounded-full ${
+                          order.paymentStatus === 'paid' 
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
+                            : 'bg-amber-50 text-amber-700 border border-amber-100'
+                        }`}>
+                          <div className={`w-1 h-1 rounded-full ${order.paymentStatus === 'paid' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                          {order.paymentStatus === 'paid' ? 'Paid / Completed' : order.paymentStatus || 'Pending'}
+                        </span>
                      </div>
                   </div>
                </div>
@@ -180,11 +223,17 @@ const OrderDetail = () => {
                    </div>
                    <div>
                       <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-1">Delivery Address</p>
-                      {order.customerDetails?.address ? (
+                      {order.shippingAddress?.address ? (
                         <address className="not-italic font-bold text-primary-950 text-sm leading-relaxed">
-                          {order.customerDetails.address.line1}<br />
-                          {order.customerDetails.address.city}, {order.customerDetails.address.postalCode}<br />
-                          {order.customerDetails.address.country}
+                          {order.shippingAddress.fullName && (
+                            <span className="block text-xs font-black text-primary-500 mb-1">Recipient: {order.shippingAddress.fullName}</span>
+                          )}
+                          {order.shippingAddress.address}<br />
+                          {order.shippingAddress.city}, {order.shippingAddress.postalCode}<br />
+                          {order.shippingAddress.country}
+                          {order.shippingAddress.phone && (
+                            <span className="block mt-2 text-xs text-primary-500 font-medium">Phone: {order.shippingAddress.phone}</span>
+                          )}
                         </address>
                       ) : (
                         <p className="text-sm font-bold text-primary-400 italic">Digital Delivery / Pick-up</p>

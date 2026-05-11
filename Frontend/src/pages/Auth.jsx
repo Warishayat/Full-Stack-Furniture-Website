@@ -106,13 +106,7 @@ const Auth = () => {
               />
             </div>
 
-            {isLogin && (
-              <div className="text-right">
-                <Link to="/forgot-password" size="sm" className="text-xs text-[#D7282F] hover:underline font-medium">
-                  Forgot your password?
-                </Link>
-              </div>
-            )}
+
 
             {!isLogin && (
               <div className="space-y-1">

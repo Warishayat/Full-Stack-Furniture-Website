@@ -16,6 +16,7 @@ const About = lazy(() => import('./pages/About'));
 const Success = lazy(() => import('./pages/Success'));
 const Cancel = lazy(() => import('./pages/Cancel'));
 const MyOrders = lazy(() => import('./pages/MyOrders'));
+const OrderDetail = lazy(() => import('./pages/OrderDetail'));
 const OrderTracking = lazy(() => import('./pages/OrderTracking'));
 const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy'));
 const Warranty = lazy(() => import('./pages/Warranty'));
@@ -89,6 +90,7 @@ function App() {
               <Route path="/success" element={<Success />} />
               <Route path="/cancel" element={<Cancel />} />
               <Route path="/orders" element={<MyOrders />} />
+              <Route path="/order/:id" element={<OrderDetail />} />
             </Route>
 
             {/* Admin Protected Routes */}

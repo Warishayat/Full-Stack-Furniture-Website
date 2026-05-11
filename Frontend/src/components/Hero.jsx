@@ -3,7 +3,7 @@ import { ArrowRight, ShoppingBag, Sparkles } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center overflow-hidden bg-gray-900 py-16 lg:py-24">
+    <section className="relative min-h-[70vh] lg:min-h-[90vh] flex items-center overflow-hidden bg-gray-900 py-8 lg:py-24">
       {/* Background Image with Parallax-like effect */}
       <div className="absolute inset-0">
         <img
@@ -16,7 +16,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80 md:hidden" />
       </div>
 
-      <div className="container mx-auto px-6 lg:px-24 relative z-10 pt-24 lg:pt-32 pb-8">
+      <div className="container mx-auto px-6 lg:px-24 relative z-10 pt-4 lg:pt-6 pb-8">
         <div className="max-w-5xl">
           <div className="inline-flex items-center gap-3 px-4 py-2 md:px-6 md:py-2.5 bg-white/5 backdrop-blur-md border border-white/10 text-white mb-6 md:mb-8 shadow-2xl animate-fade-in rounded-full">
              <Sparkles className="w-3 md:w-3.5 h-3 md:h-3.5 text-[#D7282F] animate-pulse" />

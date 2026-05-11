@@ -87,58 +87,7 @@ const Home = () => {
     <div className="bg-white overflow-hidden pt-20 lg:pt-24">
       <Hero />
 
-      {/* Trust Bar - Executive Standards */}
-      <section className="bg-white py-12 border-b border-gray-50">
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-12 items-center text-center">
-            <div className="flex flex-col items-center gap-4 group">
-              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
-                <Truck className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Global Logistics</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">White-Glove Delivery</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-4 group">
-              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
-                <ArrowRight className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Elite Returns</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">14-Day Assurance</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-4 group">
-              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
-                <Zap className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Capital Strategy</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">0% APR Available</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-4 group">
-              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
-                <Star className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Patron Rating</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">29,000+ Five-Star</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-4 group">
-              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
-                <Award className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">British Lineage</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">Family Operated</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* Premium Category Showcase Section */}
       <section className="py-24 bg-[#F2EDE7]/25 border-b border-gray-100">
@@ -338,6 +287,60 @@ const Home = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* Trust Bar - Executive Standards */}
+      <section className="bg-white py-16 border-t border-b border-gray-100">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-12 items-center text-center">
+            <div className="flex flex-col items-center gap-4 group">
+              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
+                <Truck className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Global Logistics</p>
+                <p className="text-[9px] font-bold text-gray-400 italic">White-Glove Delivery</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-4 group">
+              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
+                <ArrowRight className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Elite Returns</p>
+                <p className="text-[9px] font-bold text-gray-400 italic">14-Day Assurance</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-4 group">
+              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
+                <Zap className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Capital Strategy</p>
+                <p className="text-[9px] font-bold text-gray-400 italic">0% APR Available</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-4 group">
+              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
+                <Star className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Patron Rating</p>
+                <p className="text-[9px] font-bold text-gray-400 italic">29,000+ Five-Star</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center gap-4 group">
+              <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">British Lineage</p>
+                <p className="text-[9px] font-bold text-gray-400 italic">Family Operated</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

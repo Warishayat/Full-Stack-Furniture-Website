@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, Info, Ruler, Star, CreditCard, Sparkles, Calendar } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, Info, Ruler, Star, CreditCard, Sparkles, Calendar, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import API from '../services/api';
 import { useCart } from '../context/CartContext';
@@ -47,6 +47,8 @@ const ProductDetail = () => {
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
   const [hoveredSwatchIdx, setHoveredSwatchIdx] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [zoomScale, setZoomScale] = useState(1);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -289,7 +291,15 @@ const ProductDetail = () => {
                   <div className="space-y-3">
                     <label className="text-sm font-bold text-gray-900 flex justify-between">
                        <span>{getCategoryLabel()} size: <span className="text-gray-400 font-medium">{currentVariant?.name}</span></span>
-                       <span className="text-[10px] text-gray-400 uppercase tracking-widest cursor-pointer hover:text-gray-900 underline">Size guide</span>
+                       <span 
+                         onClick={() => {
+                           setIsSizeGuideOpen(true);
+                           setZoomScale(1);
+                         }}
+                         className="text-xs font-extrabold text-[#D7282F] uppercase tracking-widest cursor-pointer hover:text-gray-900 underline underline-offset-4 decoration-2 transition-colors"
+                       >
+                         Size guide
+                       </span>
                     </label>
                     <div className="relative">
                       <select 
@@ -385,7 +395,7 @@ const ProductDetail = () => {
                               }}
                               whileHover={{ scale: 1.12 }}
                               whileTap={{ scale: 0.95 }}
-                              className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all p-0.5 flex-shrink-0 shadow-sm relative ${
+                              className={`w-14 h-14 rounded-md overflow-hidden border-2 transition-all p-0.5 flex-shrink-0 shadow-sm relative ${
                                 isSelected 
                                   ? 'border-gray-950 ring-2 ring-gray-950/20 ring-offset-1 scale-105' 
                                   : 'border-gray-200 hover:border-gray-400'
@@ -395,18 +405,18 @@ const ProductDetail = () => {
                                 <img 
                                   src={swatchUrl} 
                                   alt={c.name} 
-                                  className="w-full h-full object-cover rounded-full"
+                                  className="w-full h-full object-cover rounded-md"
                                 />
                               ) : (
                                 <div 
-                                  className="w-full h-full rounded-full border border-gray-50 shadow-inner" 
+                                  className="w-full h-full rounded-md border border-gray-50 shadow-inner" 
                                   style={{ backgroundColor: c.name.toLowerCase() === 'beige' ? '#f5f5dc' : c.name.toLowerCase() === 'grey' ? '#808080' : c.name.toLowerCase() === 'black' ? '#000000' : c.name.toLowerCase().replace(/ /g, '') }} 
                                 />
                               )}
                               
                               {isSelected && (
-                                <div className="absolute inset-0 bg-black/10 flex items-center justify-center rounded-full">
-                                  <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-md">
+                                <div className="absolute inset-0 bg-black/10 flex items-center justify-center rounded-md">
+                                  <div className="w-5 h-5 bg-white rounded-md flex items-center justify-center shadow-md">
                                     <Check className="w-3.5 h-3.5 text-gray-900 stroke-[3]" />
                                   </div>
                                 </div>
@@ -610,6 +620,111 @@ const ProductDetail = () => {
             </div>
          </div>
       </div>
+
+       {/* Size Guide Lightbox Modal */}
+       <AnimatePresence>
+         {isSizeGuideOpen && (
+           <motion.div
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1 }}
+             exit={{ opacity: 0 }}
+             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+             onClick={() => setIsSizeGuideOpen(false)}
+           >
+             <motion.div
+               initial={{ scale: 0.95, opacity: 0 }}
+               animate={{ scale: 1, opacity: 1 }}
+               exit={{ scale: 0.95, opacity: 0 }}
+               transition={{ type: 'spring', duration: 0.4 }}
+               className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+               onClick={(e) => e.stopPropagation()}
+             >
+               {/* Header */}
+               <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+                 <div>
+                   <h3 className="text-lg font-serif font-black text-gray-900 uppercase tracking-wider">
+                     {product?.title} - Size Guide
+                   </h3>
+                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                     Interactive technical blueprint drawing
+                   </p>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   {/* Zoom Controls */}
+                   <button
+                     onClick={() => setZoomScale(prev => Math.min(prev + 0.25, 3))}
+                     disabled={zoomScale >= 3}
+                     className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 disabled:opacity-40 disabled:hover:bg-transparent transition-all"
+                     title="Zoom In"
+                   >
+                     <ZoomIn className="w-5 h-5" />
+                   </button>
+                   <button
+                     onClick={() => setZoomScale(prev => Math.max(prev - 0.25, 1))}
+                     disabled={zoomScale <= 1}
+                     className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 disabled:opacity-40 disabled:hover:bg-transparent transition-all"
+                     title="Zoom Out"
+                   >
+                     <ZoomOut className="w-5 h-5" />
+                   </button>
+                   <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
+                   <button
+                     onClick={() => setIsSizeGuideOpen(false)}
+                     className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-all"
+                     title="Close"
+                   >
+                     <X className="w-5 h-5" />
+                   </button>
+                 </div>
+               </div>
+
+               {/* Blueprint Image Content Area */}
+               <div className="flex-1 overflow-auto p-8 flex items-center justify-center min-h-[350px] bg-slate-50/30 relative">
+                 {(currentVariant?.dimensions?.sizeChart || product?.specifications?.dimensions?.sizeChart || product?.images?.[0]) ? (
+                   <div 
+                     className="transition-all duration-300 ease-out select-none relative"
+                     style={{ 
+                       transform: `scale(${zoomScale})`, 
+                       cursor: zoomScale > 1 ? 'zoom-out' : 'zoom-in',
+                       transformOrigin: 'center center'
+                     }}
+                     onClick={() => {
+                       if (zoomScale > 1) {
+                         setZoomScale(1);
+                       } else {
+                         setZoomScale(2);
+                       }
+                     }}
+                   >
+                     <img
+                       src={currentVariant?.dimensions?.sizeChart || product?.specifications?.dimensions?.sizeChart || product?.images?.[0]}
+                       alt="Size Chart Drawing"
+                       className="max-h-[60vh] max-w-full object-contain mx-auto mix-blend-multiply transition-shadow duration-300"
+                       style={{
+                         boxShadow: zoomScale > 1 ? '0 10px 30px rgba(0,0,0,0.08)' : 'none'
+                       }}
+                     />
+                   </div>
+                 ) : (
+                   <div className="text-center space-y-4">
+                     <Ruler className="w-12 h-12 text-gray-300 mx-auto animate-pulse" />
+                     <p className="text-gray-400 text-xs font-black uppercase tracking-widest">
+                       Technical drawing is being compiled by our artisans.
+                     </p>
+                   </div>
+                 )}
+               </div>
+
+               {/* Footer status / help */}
+               <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50 text-center">
+                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                   {zoomScale > 1 ? "Drag or scroll to pan. Click drawing to reset zoom." : "Click drawing to zoom 2x."} Current Zoom: {Math.round(zoomScale * 100)}%
+                 </p>
+               </div>
+             </motion.div>
+           </motion.div>
+         )}
+       </AnimatePresence>
 
     </div>
   );
