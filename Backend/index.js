@@ -20,24 +20,16 @@ const app = express();
 app.use(cors());
 connectDB();
 
-// ==========================
-// 🔥 STRIPE WEBHOOK (FIRST)
-// ==========================
 app.post(
   "/api/order/webhook",
   express.raw({ type: "application/json" }),
   webhookHandler
 );
 
-// ==========================
-// 👇 JSON PARSER (AFTER WEBHOOK)
-// ==========================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ==========================
-// ROUTES
-// ==========================
+
 app.use("/auth", authRouter);
 app.use("/product", product_router);
 app.use("/category", category_router);

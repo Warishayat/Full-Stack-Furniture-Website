@@ -119,7 +119,7 @@ const ProductSchema = new Schema(
           default: "cm"
         },
 
-        sizeChart: String // 🔥 image
+        sizeChart: String 
       },
 
       packaging: {
