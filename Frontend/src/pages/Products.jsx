@@ -364,9 +364,15 @@ const Products = () => {
           {/* Product Grid */}
           <main className="flex-1">
             {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-10">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="animate-pulse bg-gray-50 rounded-sm h-[20rem] md:h-[30rem]" />
+              <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-8 md:gap-x-10 md:gap-y-16">
+                {[...Array(6)].map((_, idx) => (
+                  <div key={idx} className="space-y-4 animate-pulse">
+                    <div className="aspect-[4/5] bg-slate-100 rounded-sm" />
+                    <div className="space-y-2">
+                      <div className="h-4 bg-slate-100 rounded w-3/4" />
+                      <div className="h-4 bg-slate-100 rounded w-1/4" />
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : products.length > 0 ? (

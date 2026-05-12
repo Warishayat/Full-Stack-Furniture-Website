@@ -1,13 +1,37 @@
 import { Link } from "react-router-dom";
 import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 import { MapPin, Phone, Mail, Sparkles, ShieldCheck, Send } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import API from '../../services/api';
 import { toast } from 'react-toastify';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ratingData, setRatingData] = useState({ averageRating: 4.6, totalReviews: 30069 });
+
+  useEffect(() => {
+    const fetchRating = async () => {
+      try {
+        const { data } = await API.get('/review/overall');
+        if (data.success) {
+          const dbRating = data.averageRating || 0;
+          const dbCount = data.totalReviews || 0;
+          
+          if (dbCount > 0) {
+            const blendedRating = ((30069 * 4.6) + (dbCount * dbRating)) / (30069 + dbCount);
+            setRatingData({
+              averageRating: parseFloat(blendedRating.toFixed(1)),
+              totalReviews: 30069 + dbCount
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch dynamic Trustpilot stats:', err);
+      }
+    };
+    fetchRating();
+  }, []);
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -80,12 +104,12 @@ const Footer = () => {
             </div>
             <div className="flex gap-1 mb-2">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className={`w-6 h-6 flex items-center justify-center ${i < 4 ? 'bg-green-500' : 'bg-gray-200'}`}>
+                <div key={i} className={`w-6 h-6 flex items-center justify-center ${i < Math.round(ratingData.averageRating) ? 'bg-green-500' : 'bg-gray-200'}`}>
                   <span className="text-white text-xs">★</span>
                 </div>
               ))}
             </div>
-            <p className="text-xs font-bold mb-8">TrustScore 4.6 | 30,069 reviews</p>
+            <p className="text-xs font-bold mb-8">TrustScore {ratingData.averageRating} | {ratingData.totalReviews.toLocaleString()} reviews</p>
             
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Payment options:</p>
             <div className="flex flex-wrap gap-2">

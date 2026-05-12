@@ -13,21 +13,35 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [openFaq, setOpenFaq] = useState(null);
+  const [ratingData, setRatingData] = useState({ averageRating: 4.6, totalReviews: 30069 });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [catRes, prodRes, reviewRes] = await Promise.all([
+        const [catRes, prodRes, reviewRes, overallRes] = await Promise.all([
           API.get('/category/getallCategories'),
           API.get('/product/getAllProducts', { params: { limit: 100 } }),
-          API.get('/review/all-reviews')
+          API.get('/review/all-reviews'),
+          API.get('/review/overall').catch(() => ({ data: { success: false } }))
         ]);
         
         setCategories(catRes.data.categories || catRes.data || []);
         const prodData = prodRes.data.products || prodRes.data || [];
         setFeaturedProducts(prodData);
         setReviews(reviewRes.data.reviews || []);
+
+        if (overallRes?.data?.success) {
+          const dbRating = overallRes.data.averageRating || 0;
+          const dbCount = overallRes.data.totalReviews || 0;
+          if (dbCount > 0) {
+            const blendedRating = ((30069 * 4.6) + (dbCount * dbRating)) / (30069 + dbCount);
+            setRatingData({
+              averageRating: parseFloat(blendedRating.toFixed(1)),
+              totalReviews: 30069 + dbCount
+            });
+          }
+        }
       } catch (error) {
         console.error('Error fetching home data:', error);
       } finally {
@@ -107,9 +121,18 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-8">
-            {categories.filter(cat => !cat.parent).map((cat) => (
-              <CategoryCard key={cat._id} category={cat} />
-            ))}
+            {loading ? (
+              [...Array(4)].map((_, idx) => (
+                <div key={idx} className="aspect-[4/5] bg-slate-100 rounded-sm animate-pulse flex flex-col justify-end p-6 space-y-3">
+                  <div className="h-4 bg-slate-200/60 rounded w-1/3" />
+                  <div className="h-6 bg-slate-200/60 rounded w-2/3" />
+                </div>
+              ))
+            ) : (
+              categories.filter(cat => !cat.parent).map((cat) => (
+                <CategoryCard key={cat._id} category={cat} />
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -185,11 +208,23 @@ const Home = () => {
                   <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Handcrafted Excellence</span>
                   <h3 className="text-4xl font-serif font-black text-gray-900 tracking-tighter">Featured <span className="italic text-gray-400">Masterpieces</span></h3>
                </div>
-               <div className="grid grid-cols-2 gap-8 lg:gap-12">
-                 {displaySofaProducts.slice(0, 4).map((product) => (
-                   <ProductCard key={product._id} product={product} />
-                 ))}
-               </div>
+                <div className="grid grid-cols-2 gap-8 lg:gap-12 animate-fade-in">
+                  {loading ? (
+                    [...Array(4)].map((_, idx) => (
+                      <div key={idx} className="space-y-4">
+                        <div className="aspect-[4/5] bg-slate-100 rounded-sm animate-pulse" />
+                        <div className="space-y-2">
+                          <div className="h-4 bg-slate-100 rounded w-3/4 animate-pulse" />
+                          <div className="h-4 bg-slate-100 rounded w-1/4 animate-pulse" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    displaySofaProducts.slice(0, 4).map((product) => (
+                      <ProductCard key={product._id} product={product} />
+                    ))
+                  )}
+                </div>
             </div>
           </div>
         </div>
@@ -227,11 +262,23 @@ const Home = () => {
                   <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Exquisite Artistry</span>
                   <h3 className="text-4xl font-serif font-black text-gray-900 tracking-tighter">Luxury <span className="italic text-gray-400">Settings</span></h3>
                </div>
-               <div className="grid grid-cols-2 gap-8 lg:gap-12">
-                 {displayDiningProducts.slice(0, 4).map((product) => (
-                   <ProductCard key={product._id} product={product} />
-                 ))}
-               </div>
+                <div className="grid grid-cols-2 gap-8 lg:gap-12 animate-fade-in">
+                  {loading ? (
+                    [...Array(4)].map((_, idx) => (
+                      <div key={idx} className="space-y-4">
+                        <div className="aspect-[4/5] bg-slate-100 rounded-sm animate-pulse" />
+                        <div className="space-y-2">
+                          <div className="h-4 bg-slate-100 rounded w-3/4 animate-pulse" />
+                          <div className="h-4 bg-slate-100 rounded w-1/4 animate-pulse" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    displayDiningProducts.slice(0, 4).map((product) => (
+                      <ProductCard key={product._id} product={product} />
+                    ))
+                  )}
+                </div>
             </div>
           </div>
         </div>
@@ -252,14 +299,14 @@ const Home = () => {
               <span className="text-3xl font-serif font-black italic">Excellent</span>
               <div className="flex gap-1.5">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className={`w-10 h-10 flex items-center justify-center ${i < 4 ? 'bg-green-600' : 'bg-gray-200'} shadow-sm`}>
+                  <div key={i} className={`w-10 h-10 flex items-center justify-center ${i < Math.round(ratingData.averageRating) ? 'bg-green-600' : 'bg-gray-200'} shadow-sm`}>
                     <span className="text-white text-xl">★</span>
                   </div>
                 ))}
               </div>
             </div>
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
-              Rated 4.6 / 5 based on 30,069 reviews on <span className="text-gray-900 font-black italic underline decoration-[#D7282F]">★ Trustpilot</span>
+              Rated {ratingData.averageRating} / 5 based on {ratingData.totalReviews.toLocaleString()} reviews on <span className="text-gray-900 font-black italic underline decoration-[#D7282F]">★ Trustpilot</span>
             </p>
           </div>
 

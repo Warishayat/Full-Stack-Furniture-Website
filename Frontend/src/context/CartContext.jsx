@@ -10,20 +10,52 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch cart when user logs in
+  // Sync / Fetch cart when user state changes
   useEffect(() => {
     if (user) {
-      fetchCart();
+      const storedGuestCart = JSON.parse(localStorage.getItem('guest_cart_items') || '[]');
+      if (storedGuestCart.length > 0) {
+        mergeGuestCart(storedGuestCart);
+      } else {
+        fetchCart();
+      }
     } else {
-      setCartItems([]);
+      const storedGuestCart = JSON.parse(localStorage.getItem('guest_cart_items') || '[]');
+      setCartItems(storedGuestCart);
     }
   }, [user]);
+
+  const mergeGuestCart = async (guestItems) => {
+    try {
+      setLoading(true);
+      for (const item of guestItems) {
+        try {
+          await API.post('/cart/addtocart', { 
+            productId: item.product, 
+            quantity: item.quantity,
+            variant: item.variant,
+            material: item.material,
+            color: item.color
+          });
+        } catch (err) {
+          console.error(`Failed to merge item ${item.product}:`, err);
+        }
+      }
+      localStorage.removeItem('guest_cart_items');
+      toast.success('Your guest cart was merged with your account!');
+      await fetchCart();
+    } catch (error) {
+      console.error('Error merging guest cart:', error);
+      fetchCart();
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchCart = async () => {
     try {
       setLoading(true);
       const { data } = await API.get('/cart/getallcart');
-      // Depending on how backend sends it, maybe data.cart.items
       setCartItems(data.cart?.items || []);
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -33,12 +65,43 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = async (productId, quantity = 1, options = {}) => {
+    const { variant, material, color, price, title, image } = options;
+    
     if (!user) {
-      toast.error('Please login to add items to cart');
+      // Guest mode: save to localStorage
+      const currentGuestCart = JSON.parse(localStorage.getItem('guest_cart_items') || '[]');
+      const existingItemIndex = currentGuestCart.findIndex(item => 
+        item.product === productId &&
+        item.variant === variant &&
+        item.material === material &&
+        item.color === color
+      );
+
+      if (existingItemIndex > -1) {
+        currentGuestCart[existingItemIndex].quantity += quantity;
+      } else {
+        const newItem = {
+          _id: `guest-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          product: productId,
+          title: title || 'Premium Piece',
+          image: image || 'https://placehold.co/400x400?text=Premium+Furniture',
+          variant: variant || 'Standard',
+          material: material || '',
+          color: color || 'Default',
+          quantity,
+          price: Number(price) || 0
+        };
+        currentGuestCart.push(newItem);
+      }
+
+      localStorage.setItem('guest_cart_items', JSON.stringify(currentGuestCart));
+      setCartItems(currentGuestCart);
+      toast.success('Item added to cart');
       return;
     }
+
+    // Logged in mode
     try {
-      const { variant, material, color } = options;
       await API.post('/cart/addtocart', { 
         productId, 
         quantity,
@@ -54,6 +117,21 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateCart = async (itemId, quantity) => {
+    if (!user) {
+      // Guest mode
+      const currentGuestCart = JSON.parse(localStorage.getItem('guest_cart_items') || '[]');
+      const updatedCart = currentGuestCart.map(item => {
+        if (item._id === itemId) {
+          return { ...item, quantity };
+        }
+        return item;
+      });
+      localStorage.setItem('guest_cart_items', JSON.stringify(updatedCart));
+      setCartItems(updatedCart);
+      return;
+    }
+
+    // Logged in mode
     try {
       await API.put(`/cart/item/${itemId}`, { quantity });
       fetchCart();
@@ -63,6 +141,17 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = async (itemId) => {
+    if (!user) {
+      // Guest mode
+      const currentGuestCart = JSON.parse(localStorage.getItem('guest_cart_items') || '[]');
+      const filteredCart = currentGuestCart.filter(item => item._id !== itemId);
+      localStorage.setItem('guest_cart_items', JSON.stringify(filteredCart));
+      setCartItems(filteredCart);
+      toast.success('Item removed');
+      return;
+    }
+
+    // Logged in mode
     try {
       await API.delete(`/cart/deleteFromCart/${itemId}`);
       toast.success('Item removed');
@@ -73,6 +162,14 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = async () => {
+    if (!user) {
+      // Guest mode
+      localStorage.removeItem('guest_cart_items');
+      setCartItems([]);
+      return;
+    }
+
+    // Logged in mode
     try {
       await API.delete('/cart/dltAllCart');
       setCartItems([]);

@@ -28,6 +28,7 @@ const Inspiration = lazy(() => import('./pages/Inspiration'));
 const ReturnsPolicy = lazy(() => import('./pages/ReturnsPolicy'));
 const Account = lazy(() => import('./pages/Account'));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
+const Checkout = lazy(() => import('./pages/Checkout'));
 
 // Lazy load admin pages
 const AdminDashboard = lazy(() => import('./admin/Dashboard'));
@@ -83,12 +84,13 @@ function App() {
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/inspiration" element={<Inspiration />} />
             <Route path="/returns-policy" element={<ReturnsPolicy />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/cancel" element={<Cancel />} />
             
             {/* User Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/account" element={<Account />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/cancel" element={<Cancel />} />
               <Route path="/orders" element={<MyOrders />} />
               <Route path="/order/:id" element={<OrderDetail />} />
             </Route>

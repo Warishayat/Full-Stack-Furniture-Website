@@ -174,27 +174,59 @@ const ProductDetail = () => {
   };
 
   const handleAddToCart = () => {
-    if (!user) {
-      toast.info('Please login to continue');
-      navigate('/login');
-      return;
-    }
     if (product) {
       addToCart(product._id, quantity, {
         variant: currentVariant?.name,
         material: currentMaterial?.name,
         color: currentColor?.name,
-        price: currentPrice
+        price: currentPrice,
+        title: product.title,
+        image: activeImage
       });
-      toast.success('Added to cart successfully');
     }
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-white pt-20">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">Loading Product...</p>
+    <div className="bg-white min-h-screen pt-28 lg:pt-36 animate-pulse">
+      <div className="container mx-auto px-6 lg:px-12">
+        {/* Breadcrumbs skeleton */}
+        <div className="h-3.5 bg-slate-100 rounded w-1/4 mb-8" />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+          {/* Gallery skeleton */}
+          <div className="lg:col-span-7 space-y-4">
+            <div className="aspect-[4/5] bg-slate-100 rounded-sm" />
+            <div className="grid grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="aspect-square bg-slate-100 rounded-sm" />
+              ))}
+            </div>
+          </div>
+          
+          {/* Info details skeleton */}
+          <div className="lg:col-span-5 space-y-8">
+            <div className="space-y-3">
+              <div className="h-3 bg-slate-100 rounded w-1/6" />
+              <div className="h-10 bg-slate-100 rounded w-4/5" />
+              <div className="h-5 bg-slate-100 rounded w-1/3" />
+            </div>
+            
+            <div className="h-28 bg-slate-100 rounded-sm w-full" />
+            
+            <div className="space-y-4 pt-4 border-t border-slate-100">
+              <div className="h-8 bg-slate-100 rounded w-1/2" />
+              <div className="grid grid-cols-3 gap-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-12 bg-slate-100 rounded-lg" />
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="h-16 bg-slate-100 rounded-xl w-full" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

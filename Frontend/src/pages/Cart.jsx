@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, ShieldCheck, Truck, RefreshCw, CreditCard } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -7,16 +7,10 @@ import API from '../services/api';
 const Cart = () => {
   const { cartItems, updateCart, removeFromCart, cartTotal, loading } = useCart();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleCheckout = async () => {
-    try {
-      const { data } = await API.post('/api/order/createCheckoutSession');
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Checkout error:', error);
-    }
+  const handleCheckout = () => {
+    navigate('/checkout');
   };
 
   if (loading) {
@@ -32,28 +26,7 @@ const Cart = () => {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-secondary flex items-center justify-center px-4">
-        <div className="max-w-xl w-full bg-white rounded-[2.5rem] p-12 text-center shadow-premium border border-primary-100 animate-fade-in-up">
-          <div className="w-24 h-24 mx-auto bg-secondary rounded-full flex items-center justify-center mb-10 text-accent ring-8 ring-secondary/50">
-            <ShoppingBag className="w-10 h-10" />
-          </div>
-          <h2 className="text-4xl font-serif font-bold text-primary-950 mb-6">Begin Your Selection</h2>
-          <p className="text-primary-600 mb-12 text-lg leading-relaxed">
-            Sign in to access your curated collection and complete your luxury home experience.
-          </p>
-          <Link 
-            to="/login" 
-            className="inline-flex items-center justify-center px-10 py-5 bg-primary-950 text-white font-bold rounded-full hover:bg-accent transition-all duration-300 shadow-xl hover:shadow-accent/30 group"
-          >
-            Access Your Account
-            <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-      </div>
-    );
-  }
+
 
   if (cartItems.length === 0) {
     return (
@@ -241,15 +214,15 @@ const Cart = () => {
                 <div className="flex justify-between items-start gap-4">
                   <span className="text-primary-300 font-medium tracking-wide">Delivery</span>
                   <div className="text-right">
-                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full ${cartTotal > 2000 ? 'bg-accent text-white' : 'bg-white/10 text-primary-300'}`}>
-                      {cartTotal > 2000 ? 'Complimentary' : '£150.00'}
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-accent text-white">
+                      Complimentary
                     </span>
-                    <p className="text-[9px] text-primary-400 mt-2 tracking-wider">Estimated for United Kingdom</p>
+                    <p className="text-[9px] text-primary-400 mt-2 tracking-wider">Free Delivery on all orders</p>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-primary-300 font-medium tracking-wide">Vat (20%)</span>
-                  <span className="font-bold text-primary-200">Included</span>
+                  <span className="text-primary-300 font-medium tracking-wide">Vat (0%)</span>
+                  <span className="font-bold text-primary-200">£0.00</span>
                 </div>
                 
                 <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent w-full my-8" />
@@ -258,7 +231,7 @@ const Cart = () => {
                   <div>
                     <span className="text-sm text-primary-400 font-bold uppercase tracking-widest block mb-1">Total Amount</span>
                     <span className="text-4xl lg:text-5xl font-bold text-white leading-none tracking-tighter">
-                      £{(cartTotal + (cartTotal > 2000 ? 0 : 150)).toLocaleString()}
+                      £{cartTotal.toLocaleString()}
                     </span>
                   </div>
                 </div>
