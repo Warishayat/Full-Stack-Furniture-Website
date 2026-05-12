@@ -184,7 +184,9 @@ const OrderDetail = () => {
                      </div>
                      <div>
                         <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-1">Payment Method</p>
-                        <p className="font-bold text-primary-950">Secure Card Payment</p>
+                        <p className="font-bold text-primary-950">
+                          {order.paymentMethod === 'afterpay_clearpay' ? 'Clearpay / Afterpay' : 'Secure Card Payment'}
+                        </p>
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 mt-1 text-[9px] font-black uppercase tracking-widest rounded-full ${
                           order.paymentStatus === 'paid' 
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 

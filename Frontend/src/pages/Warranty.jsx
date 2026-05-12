@@ -44,7 +44,7 @@ const Warranty = () => {
                  </li>
                  <li className="flex gap-6">
                     <span className="w-10 h-10 rounded-full bg-[#D7282F] flex items-center justify-center text-xs font-black shrink-0">2</span>
-                    <p className="text-gray-400 text-sm font-medium leading-relaxed">Email our dedicated concierge team at <span className="text-white underline underline-offset-4">warranty@eliteseating.com</span>.</p>
+                    <p className="text-gray-400 text-sm font-medium leading-relaxed">Email our dedicated concierge team at <span className="text-white underline underline-offset-4">eilteseatingltd@gmail.com</span>.</p>
                  </li>
                  <li className="flex gap-6">
                     <span className="w-10 h-10 rounded-full bg-[#D7282F] flex items-center justify-center text-xs font-black shrink-0">3</span>

@@ -40,7 +40,7 @@ const ReturnsPolicy = () => {
                 <div className="space-y-6">
                    <div className="flex gap-6 items-start">
                       <span className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-black shrink-0">1</span>
-                      <p className="text-gray-600 font-medium">Contact our concierge team at <span className="text-gray-900 font-bold">returns@eliteseating.com</span> with your order number and reason for return.</p>
+                      <p className="text-gray-600 font-medium">Contact our concierge team at <span className="text-gray-900 font-bold">eilteseatingltd@gmail.com</span> with your order number and reason for return.</p>
                    </div>
                    <div className="flex gap-6 items-start">
                       <span className="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center text-xs font-black shrink-0">2</span>

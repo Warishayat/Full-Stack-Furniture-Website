@@ -45,7 +45,7 @@ const PrivacyPolicy = () => {
              <div>
                 <h2 className="text-3xl font-serif font-black mb-6 tracking-tight">Your Rights</h2>
                 <p className="text-gray-600 leading-relaxed mb-6 font-medium">
-                   Under the UK GDPR, you have the right to access, correct, or delete your personal data at any time. If you wish to exercise these rights, please contact our Data Protection Officer at privacy@eliteseating.com.
+                   Under the UK GDPR, you have the right to access, correct, or delete your personal data at any time. If you wish to exercise these rights, please contact our Data Protection Officer at eilteseatingltd@gmail.com.
                 </p>
              </div>
 
