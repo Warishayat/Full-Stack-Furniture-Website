@@ -51,16 +51,16 @@ const getFilteredProducts = async (req, res) => {
     }
 
     if (variant) {
-      // Support matching size/variant names with safe regex escaping
-      query["variants.name"] = { $regex: new RegExp(`^${escapeRegex(variant)}$`, "i") };
+      // Support matching size/variant names with safe regex escaping and trim
+      query["variants.name"] = { $regex: new RegExp(`^\\s*${escapeRegex(variant.trim())}\\s*$`, "i") };
     }
 
     if (material) {
-      query["variants.materials.name"] = { $regex: new RegExp(`^${escapeRegex(material)}$`, "i") };
+      query["variants.materials.name"] = { $regex: new RegExp(`^\\s*${escapeRegex(material.trim())}\\s*$`, "i") };
     }
 
     if (color) {
-      query["variants.materials.colors.name"] = { $regex: new RegExp(`^${escapeRegex(color)}$`, "i") };
+      query["variants.materials.colors.name"] = { $regex: new RegExp(`^\\s*${escapeRegex(color.trim())}\\s*$`, "i") };
     }
 
     if (minPrice || maxPrice) {
@@ -120,29 +120,45 @@ const getFilterOptions = async (req, res) => {
 
     const products = await Product.find(query);
 
-    const variants = new Set();
-    const materials = new Set();
-    const colors = new Set();
+    const variants = [];
+    const materials = [];
+    const colors = [];
 
     products.forEach(product => {
       product.variants.forEach(v => {
-        if (v.name) variants.add(v.name);
+        if (v.name) variants.push(v.name);
 
         v.materials.forEach(m => {
-          if (m.name) materials.add(m.name);
+          if (m.name) materials.push(m.name);
 
           m.colors.forEach(c => {
-            if (c.name) colors.add(c.name);
+            if (c.name) colors.push(c.name);
           });
         });
       });
     });
 
+    // Helper to de-duplicate case-insensitively and trim spaces
+    const deduplicateOptions = (arr) => {
+      const seen = new Set();
+      const result = [];
+      for (const item of arr) {
+        if (!item) continue;
+        const trimmed = item.trim();
+        const lower = trimmed.toLowerCase();
+        if (!seen.has(lower)) {
+          seen.add(lower);
+          result.push(trimmed);
+        }
+      }
+      return result;
+    };
+
     res.json({
       success: true,
-      variants: [...variants].sort(),
-      materials: [...materials].sort(),
-      colors: [...colors].sort()
+      variants: deduplicateOptions(variants).sort(),
+      materials: deduplicateOptions(materials).sort(),
+      colors: deduplicateOptions(colors).sort()
     });
 
   } catch (error) {
