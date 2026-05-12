@@ -173,7 +173,6 @@ const addToCart = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("ADD TO CART ERROR:", error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -256,7 +255,6 @@ const deleteFromCart = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("DELETE CART ERROR:", error);
     res.status(500).json({
       success: false,
       message: error.message
@@ -290,7 +288,6 @@ const deleteAllCart = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("CLEAR CART ERROR:", error);
     res.status(500).json({
       success: false,
       message: error.message

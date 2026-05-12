@@ -4,9 +4,6 @@ const slugify = require("slugify");
 
 const createProduct = async (req, res) => {
   try {
-    console.log("CREATE PRODUCT REQUEST BODY:", JSON.stringify(req.body, null, 2));
-    console.log("CREATE PRODUCT FILES:", req.files);
-    
     if (Object.keys(req.body).length === 0) {
       return res.status(400).json({
         success: false,

@@ -152,6 +152,9 @@ const ProductSchema = new Schema(
   }
 );
 
+ProductSchema.index({ category: 1, createdAt: -1 });
+ProductSchema.index({ createdAt: -1 });
+
 const Product = model("Product", ProductSchema);
 
 module.exports = Product;

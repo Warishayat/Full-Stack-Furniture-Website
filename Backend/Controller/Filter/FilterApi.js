@@ -69,7 +69,6 @@ const getFilteredProducts = async (req, res) => {
       if (maxPrice) query["variants.price"].$lte = Number(maxPrice);
     }
 
-    console.log("FILTER QUERY:", JSON.stringify(query, null, 2));
     const products = await Product.find(query).populate("category").sort({ createdAt: -1 });
 
     res.json({
