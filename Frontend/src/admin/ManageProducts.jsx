@@ -246,6 +246,37 @@ const ManageProducts = () => {
     }
   };
 
+  const importMaterialsFromProduct = (e) => {
+    const productId = e.target.value;
+    if (!productId) return;
+    
+    const sourceProduct = products.find(p => p._id === productId);
+    if (!sourceProduct || !sourceProduct.variants || !sourceProduct.variants.length) {
+      toast.error('Selected product has no variants/materials.');
+      e.target.value = '';
+      return;
+    }
+    
+    if (window.confirm(`Import fabrics/materials from "${sourceProduct.title}"? This will overwrite materials in all current variants.`)) {
+      const sourceMaterials = sourceProduct.variants[0].materials || [];
+      const clonedMaterials = JSON.parse(JSON.stringify(sourceMaterials)).map(m => ({
+        ...m,
+        colors: m.colors.map(c => ({
+          ...c,
+          swatchImageIndex: null
+        }))
+      }));
+
+      const newVariants = formData.variants.map(v => ({
+        ...v,
+        materials: clonedMaterials
+      }));
+      setFormData(prev => ({ ...prev, variants: newVariants }));
+      toast.success(`Imported fabrics from ${sourceProduct.title}`);
+    }
+    e.target.value = ''; // Reset dropdown
+  };
+
   const addColor = (vIndex, mIndex) => {
     const newVariants = [...formData.variants];
     newVariants[vIndex].materials[mIndex].colors.push({ name: '', swatchImage: '', swatchImageIndex: null });
@@ -756,6 +787,31 @@ const ManageProducts = () => {
               {/* STEP 3: VARIANTS */}
               {activeTab === 'variants' && (
                 <div className="space-y-10 max-w-5xl mx-auto">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900">Variant Architecture</h3>
+                      <p className="text-xs text-gray-400 mt-1">Configure dimensions, pricing, and fabrics</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                      <select 
+                        onChange={importMaterialsFromProduct}
+                        className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-700 outline-none focus:border-blue-500 cursor-pointer flex-1 sm:flex-none"
+                      >
+                        <option value="">Import Fabrics From...</option>
+                        {products.map(p => (
+                          <option key={p._id} value={p._id}>{p.title}</option>
+                        ))}
+                      </select>
+                      <button 
+                        type="button" 
+                        onClick={addVariant} 
+                        className="px-6 py-3 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#D7282F] transition-all shadow-lg flex-1 sm:flex-none whitespace-nowrap flex items-center justify-center gap-2"
+                      >
+                        <Plus className="w-4 h-4" /> Add Variant
+                      </button>
+                    </div>
+                  </div>
+
                   {formData.variants.map((variant, vIdx) => (
                     <div key={vIdx} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
                       <div className="bg-gray-900 p-6 flex justify-between items-center">
