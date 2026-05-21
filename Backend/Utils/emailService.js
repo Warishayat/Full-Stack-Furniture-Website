@@ -121,9 +121,15 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                           </td>
                         </tr>
                         <tr>
-                          <td colspan="2" style="padding-top: 12px; border-top: 1px solid #cbd5e1; margin-top: 12px;">
+                          <td style="padding-top: 12px; border-top: 1px solid #cbd5e1; margin-top: 12px;">
                             <span style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; tracking: 0.05em; display: block; margin-bottom: 4px;">Order Tracking ID</span>
                             <span style="font-size: 13px; font-weight: bold; color: #1e293b; font-family: monospace; word-break: break-all;">${order._id}</span>
+                          </td>
+                          <td align="right" style="padding-top: 12px; border-top: 1px solid #cbd5e1; margin-top: 12px;">
+                            <span style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; tracking: 0.05em; display: block; margin-bottom: 4px;">Payment Status</span>
+                            <span style="font-size: 13px; font-weight: bold; color: ${order.paymentStatus === 'paid' ? '#10b981' : '#f59e0b'};">
+                              ${order.paymentStatus === 'paid' ? 'Paid / Confirmed' : (order.paymentMethod === 'cod' ? 'Pending (Cash on Delivery)' : 'Pending')}
+                            </span>
                           </td>
                         </tr>
                       </table>

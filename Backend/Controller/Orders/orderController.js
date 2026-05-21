@@ -295,7 +295,7 @@ const webhookHandler = async (req, res) => {
       console.log("Order Confirmed");
 
     } catch (err) {
-      console.log("Order Confirmation Failed");
+      console.log("Order Confirmation Failed (webhook catch):", err.message);
     }
   }
 
@@ -548,7 +548,7 @@ const jwt = require("jsonwebtoken");
 
 const createOrderAndSession = async (req, res) => {
   try {
-    const { items, shippingAddress, email, createAccount, deliveryDate } = req.body;
+    const { items, shippingAddress, email, createAccount, deliveryDate, paymentMethodType } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ success: false, message: "No items in checkout" });
@@ -620,13 +620,32 @@ const createOrderAndSession = async (req, res) => {
         postalCode: shippingAddress?.postalCode || "",
         country: shippingAddress?.country || "GB",
       },
-      paymentMethod: "card",
+      paymentMethod: paymentMethodType === "cod" ? "cod" : "card",
       paymentStatus: "pending",
-      orderStatus: "processing",
+      orderStatus: paymentMethodType === "cod" ? "confirmed" : "processing",
       notes: deliveryDate ? `Delivery Date: ${deliveryDate}` : "",
     });
 
     await order.save();
+
+    if (paymentMethodType === "cod") {
+      // Clear cart
+      if (resolvedUser) {
+        await Cart.findOneAndUpdate({ user: resolvedUser._id }, { items: [], totalPrice: 0 });
+      }
+      
+      // Send confirmation email
+      const finalEmail = email || resolvedUser?.email;
+      if (finalEmail) {
+        await sendOrderConfirmationEmail(finalEmail, order).catch(err => console.log("Email error:", err));
+      }
+      
+      return res.status(200).json({
+        success: true,
+        url: `http://localhost:5173/success?orderId=${order._id}`,
+        orderId: order._id,
+      });
+    }
 
     // Map to Stripe line items
     const lineItems = orderItems.map((item) => ({
@@ -669,7 +688,7 @@ const createOrderAndSession = async (req, res) => {
     });
 
   } catch (error) {
-    console.log("Order Confirmation Failed");
+    console.log("Order Confirmation Failed (createOrderAndSession catch):", error.message);
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to create checkout session",
@@ -681,23 +700,26 @@ const verifyPayment = async (req, res) => {
   try {
     const { orderId, sessionId } = req.body;
     if (!orderId) {
-      console.log("Order Confirmation Failed");
+      console.log("Order Confirmation Failed: Missing order ID in verifyPayment");
       return res.status(400).json({ success: false, message: "Missing order ID" });
     }
 
     const order = await Order.findById(orderId);
     if (!order) {
-      console.log("Order Confirmation Failed");
+      console.log(`Order Confirmation Failed: Order not found for ID ${orderId}`);
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
-    // If already marked as paid, return success directly
     if (order.paymentStatus === "paid") {
       console.log("Order Confirmed");
       return res.status(200).json({ success: true, order });
     }
 
-    // Retrieve Stripe Session to verify payment
+    if (order.paymentMethod === "cod") {
+      console.log("Order Confirmed (COD)");
+      return res.status(200).json({ success: true, order });
+    }
+
     const targetSessionId = sessionId || order.stripeSessionId;
     if (targetSessionId) {
       const session = await stripe.checkout.sessions.retrieve(targetSessionId);
@@ -743,11 +765,11 @@ const verifyPayment = async (req, res) => {
       }
     }
 
-    console.log("Order Confirmation Failed");
+    console.log(`Order Confirmation Failed: Stripe verification failed for order ${orderId} (paymentMethod: ${order.paymentMethod})`);
     return res.status(400).json({ success: false, message: "Payment has not been completed or verified yet" });
 
   } catch (error) {
-    console.log("Order Confirmation Failed");
+    console.log("Order Confirmation Failed (verifyPayment catch):", error.message);
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to verify payment",
