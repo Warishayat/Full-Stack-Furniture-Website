@@ -65,6 +65,7 @@ const Checkout = () => {
 
   // Save account & newsletters state
   const [createAccount, setCreateAccount] = useState(false);
+  const [checkoutPassword, setCheckoutPassword] = useState('');
   const [newsletter, setNewsletter] = useState(''); // Yes or No
 
   // Dynamic Delivery Dates Options (today + 9 days to today + 13 days)
@@ -146,6 +147,10 @@ const Checkout = () => {
       toast.error('Please fill in all delivery address fields.');
       return;
     }
+    if (createAccount && !checkoutPassword) {
+      toast.error('Please enter a password for your new account.');
+      return;
+    }
     // Advance to Step 2
     setCurrentStep(2);
   };
@@ -197,6 +202,7 @@ const Checkout = () => {
         shippingAddress: finalAddress,
         email,
         createAccount,
+        password: checkoutPassword,
         deliveryDate: selectedDeliveryDate,
         paymentMethodType: paymentMethod
       };
@@ -227,11 +233,11 @@ const Checkout = () => {
     <div className="bg-slate-50 min-h-screen text-slate-800 pt-24 lg:pt-36">
       
       {/* Branded Trustpilot Mini Header */}
-      <div className="border-b border-gray-100 bg-white py-4 px-6 md:px-12 flex justify-between items-center text-xs font-semibold text-gray-500">
-        <Link to="/" className="text-xl font-serif font-black tracking-widest text-slate-900 hover:text-green-700 transition-colors">
-          ELITESEATING <span className="text-sm font-sans font-light tracking-widest block md:inline text-slate-400">LTD</span>
+      <div className="border-b border-gray-100 bg-white py-4 px-6 md:px-12 flex flex-col justify-center items-center text-xs font-semibold text-gray-500 gap-2">
+        <Link to="/" className="text-2xl font-serif font-black tracking-widest text-slate-900 hover:text-green-700 transition-colors">
+          ELITESEATING <span className="text-sm font-sans font-light tracking-widest text-slate-400">LTD</span>
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between w-full max-w-sm px-4">
           <span>Excellent 4.6 out of 5</span>
           <span className="text-green-500 font-extrabold flex items-center">★ Trustpilot</span>
         </div>
@@ -371,7 +377,7 @@ const Checkout = () => {
                     <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${currentStep >= 1 ? 'bg-[#51823F] text-white' : 'bg-slate-200 text-slate-500'}`}>
                       {currentStep > 1 ? <Check className="w-3 h-3" /> : '1'}
                     </span>
-                    <span className={currentStep === 1 ? 'text-[#51823F] font-extrabold' : ''}>Contact details</span>
+                    <span className={currentStep === 1 ? 'text-[#51823F] font-extrabold' : ''}>Details</span>
                   </div>
 
                   {/* Step 2 */}
@@ -379,7 +385,7 @@ const Checkout = () => {
                     <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${currentStep >= 2 ? 'bg-[#51823F] text-white' : 'bg-slate-200 text-slate-500'}`}>
                       {currentStep > 2 ? <Check className="w-3 h-3" /> : '2'}
                     </span>
-                    <span className={currentStep === 2 ? 'text-[#51823F] font-extrabold' : ''}>Select delivery dates</span>
+                    <span className={currentStep === 2 ? 'text-[#51823F] font-extrabold' : ''}>Dates</span>
                   </div>
 
                   {/* Step 3 */}
@@ -595,15 +601,29 @@ const Checkout = () => {
                   <div className="space-y-4 pt-4 border-t border-slate-100 text-sm">
                     
                     {!user && (
-                      <label className="flex items-start gap-3 cursor-pointer font-medium text-slate-600">
-                        <input
-                          type="checkbox"
-                          checked={createAccount}
-                          onChange={() => setCreateAccount(!createAccount)}
-                          className="rounded text-green-600 focus:ring-green-500 w-4 h-4 mt-0.5 shrink-0"
-                        />
-                        <span>Create an account to save your details</span>
-                      </label>
+                      <div className="space-y-3">
+                        <label className="flex items-start gap-3 cursor-pointer font-medium text-slate-600">
+                          <input
+                            type="checkbox"
+                            checked={createAccount}
+                            onChange={() => setCreateAccount(!createAccount)}
+                            className="rounded text-green-600 focus:ring-green-500 w-4 h-4 mt-0.5 shrink-0"
+                          />
+                          <span>Create an account to save your details</span>
+                        </label>
+                        {createAccount && (
+                          <div className="animate-fade-in-up">
+                            <input
+                              type="password"
+                              required={createAccount}
+                              placeholder="Choose a secure password"
+                              value={checkoutPassword}
+                              onChange={(e) => setCheckoutPassword(e.target.value)}
+                              className="w-full md:w-1/2 px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
+                            />
+                          </div>
+                        )}
+                      </div>
                     )}
                   </div>
 
