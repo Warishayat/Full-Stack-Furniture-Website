@@ -41,6 +41,9 @@ const createCheckoutSession = async (req, res) => {
       };
     });
 
+    // Use req.headers.origin to dynamically get the frontend URL
+    const frontend_url = req.headers.origin || process.env.FRONTEND_URL || "http://localhost:5173";
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "afterpay_clearpay"],
 
@@ -63,8 +66,8 @@ const createCheckoutSession = async (req, res) => {
         userId: req.user._id.toString(),
       },
 
-      success_url: "http://localhost:5173/success",
-      cancel_url: "http://localhost:5173/cancel",
+      success_url: `${frontend_url}/success`,
+      cancel_url: `${frontend_url}/cancel`,
     });
 
     return res.status(200).json({
@@ -546,15 +549,14 @@ const getOrderById = async (req, res) => {
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const createOrderAndSession = async (req, res) => {
+  const createOrderAndSession = async (req, res) => {
   try {
-    const { items, shippingAddress, email, createAccount, deliveryDate, paymentMethodType } = req.body;
+    const { items, shippingAddress, email, createAccount, password, deliveryDate, paymentMethodType } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ success: false, message: "No items in checkout" });
     }
 
-    // Try to retrieve user from auth token (optional authentication)
     let orderUser = null;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
       try {
@@ -569,11 +571,10 @@ const createOrderAndSession = async (req, res) => {
     let resolvedUser = orderUser;
 
     // If guest and chose to create account, register them automatically
-    if (!resolvedUser && createAccount && email) {
+    if (!resolvedUser && createAccount && email && password) {
       const existingUser = await User.findOne({ email });
       if (!existingUser) {
-        const tempPassword = `ES-${Math.random().toString(36).substring(2, 10).toUpperCase()}!`;
-        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         const name = shippingAddress?.fullName || email.split("@")[0];
         
         const newUser = new User({
@@ -642,7 +643,7 @@ const createOrderAndSession = async (req, res) => {
       
       return res.status(200).json({
         success: true,
-        url: `http://localhost:5173/success?orderId=${order._id}`,
+        url: `/success?orderId=${order._id}`,
         orderId: order._id,
       });
     }
@@ -660,9 +661,10 @@ const createOrderAndSession = async (req, res) => {
       quantity: item.quantity,
     }));
 
-    // Generate success and cancel URLs
-    const success_url = `http://localhost:5173/success?orderId=${order._id}`;
-    const cancel_url = `http://localhost:5173/cancel`;
+    // Generate success and cancel URLs using the request origin
+    const frontend_url = req.headers.origin || "http://localhost:5173";
+    const success_url = `${frontend_url}/success?orderId=${order._id}`;
+    const cancel_url = `${frontend_url}/cancel`;
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "afterpay_clearpay"],
