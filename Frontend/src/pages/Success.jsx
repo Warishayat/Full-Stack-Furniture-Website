@@ -34,51 +34,65 @@ const Success = () => {
   }, [orderId]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-secondary pt-24 lg:pt-36 px-4 text-center">
-      <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-primary-100 max-w-lg w-full">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white pt-24 px-6 lg:px-12 text-center pb-32">
+      <div className="bg-[#F2EDE7]/20 p-10 md:p-16 rounded-sm border border-gray-100 max-w-2xl w-full">
         {verifying ? (
           <div className="flex flex-col items-center py-12">
-            <Loader className="w-12 h-12 text-[#51823F] animate-spin mb-4" />
-            <h2 className="text-xl font-bold font-serif text-slate-800">Verifying your secure payment...</h2>
+            <div className="w-10 h-10 border border-gray-200 border-t-[#D7282F] rounded-full animate-spin mb-6"></div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-900">Verifying secure payment...</p>
           </div>
         ) : (
-          <>
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-10 h-10 text-green-600" />
+          <div className="flex flex-col items-center animate-fade-in-up">
+            <div className="w-16 h-16 bg-[#D7282F]/10 rounded-full flex items-center justify-center mb-8 border border-[#D7282F]/20">
+              <CheckCircle className="w-8 h-8 text-[#D7282F]" />
             </div>
-            <h1 className="text-3xl font-serif font-medium text-primary-900 mb-4">Payment Successful!</h1>
-            <p className="text-primary-600 mb-8">
-              Thank you for your order. We've received your payment and will start processing your order right away. You will receive an email confirmation shortly.
+            
+            <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">
+              Transaction Approved
+            </span>
+            <h1 className="text-4xl md:text-5xl font-serif font-black text-gray-900 mb-6 tracking-tighter">
+              Payment <span className="italic text-gray-400">Successful</span>
+            </h1>
+            
+            <p className="text-sm text-gray-500 mb-8 max-w-md mx-auto leading-relaxed font-medium">
+              Thank you for your order. We've received your payment and will start processing your bespoke order right away. You will receive an email confirmation shortly.
             </p>
+            
             {orderId && (
-              <p className="text-xs text-slate-400 font-bold uppercase mb-6 tracking-widest">
-                Order Reference: <span className="text-slate-800 font-extrabold font-mono">{orderId.slice(-8).toUpperCase()}</span>
-              </p>
+              <div className="mb-10 p-4 border border-gray-100 bg-white">
+                <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.3em] mb-1">
+                  Order Reference
+                </p>
+                <p className="text-lg text-gray-900 font-serif font-black tracking-widest">
+                  {orderId.slice(-8).toUpperCase()}
+                </p>
+              </div>
             )}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
               {user ? (
                 <Link 
                   to="/orders" 
-                  className="px-6 py-3 bg-[#51823F] hover:bg-[#457036] text-white rounded-md font-medium transition-colors text-sm font-semibold"
+                  className="px-8 py-4 bg-gray-900 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-sm hover:bg-[#D7282F] transition-all shadow-md w-full sm:w-auto"
                 >
                   View My Orders
                 </Link>
               ) : (
                 <Link 
                   to={orderId ? `/track-order?orderId=${orderId}` : '/track-order'} 
-                  className="px-6 py-3 bg-[#51823F] hover:bg-[#457036] text-white rounded-md font-medium transition-colors text-sm font-semibold"
+                  className="px-8 py-4 bg-gray-900 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-sm hover:bg-[#D7282F] transition-all shadow-md w-full sm:w-auto"
                 >
                   Track My Order
                 </Link>
               )}
               <Link 
                 to="/products" 
-                className="px-6 py-3 bg-primary-50 text-primary-900 rounded-md font-medium hover:bg-primary-100 transition-colors text-sm font-semibold"
+                className="px-8 py-4 bg-white border border-gray-200 text-gray-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-sm hover:border-gray-900 hover:bg-gray-50 transition-all w-full sm:w-auto"
               >
                 Continue Shopping
               </Link>
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>

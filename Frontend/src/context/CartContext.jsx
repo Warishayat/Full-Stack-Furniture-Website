@@ -35,7 +35,8 @@ export const CartProvider = ({ children }) => {
             quantity: item.quantity,
             variant: item.variant,
             material: item.material,
-            color: item.color
+            color: item.color,
+            image: item.image
           });
         } catch (err) {
           console.error(`Failed to merge item ${item.product}:`, err);
@@ -107,7 +108,8 @@ export const CartProvider = ({ children }) => {
         quantity,
         variant,
         material,
-        color
+        color,
+        image
       });
       toast.success('Item added to cart');
       fetchCart();

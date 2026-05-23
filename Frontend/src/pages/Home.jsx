@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, ShieldCheck, Star, Play, Award, Zap, Sparkles, ChevronLeft, ChevronRight, Crown, Plus, Minus } from 'lucide-react';
 import API from '../services/api';
@@ -54,48 +54,49 @@ const Home = () => {
   const nextTestimonial = () => setCurrentTestimonial((prev) => (prev + 1) % (reviews.length || 1));
   const prevTestimonial = () => setCurrentTestimonial((prev) => (prev - 1 + (reviews.length || 1)) % (reviews.length || 1));
 
-  const sofaProducts = featuredProducts.filter(p => {
-    const catName = p.category?.name || p.category?.title || p.category?.slug || '';
-    const title = p.title || '';
-    const categoryId = p.category?._id || p.category || '';
-    
-    const catObj = categories.find(c => c._id === categoryId);
-    const parentId = catObj?.parent?._id || catObj?.parent || '';
-    const parentObj = parentId ? categories.find(c => c._id === parentId) : null;
-    
-    const isSofaCategory = 
-      catName.toLowerCase().includes('sofa') || 
-      (catObj?.slug || '').toLowerCase().includes('sofa') ||
-      (parentObj?.name || '').toLowerCase().includes('sofa') ||
-      (parentObj?.slug || '').toLowerCase().includes('sofa');
+  const displaySofaProducts = useMemo(() => {
+    return featuredProducts.filter(p => {
+      const catName = p.category?.name || p.category?.title || p.category?.slug || '';
+      const title = p.title || '';
+      const categoryId = p.category?._id || p.category || '';
+      
+      const catObj = categories.find(c => c._id === categoryId);
+      const parentId = catObj?.parent?._id || catObj?.parent || '';
+      const parentObj = parentId ? categories.find(c => c._id === parentId) : null;
+      
+      const isSofaCategory = 
+        catName.toLowerCase().includes('sofa') || 
+        (catObj?.slug || '').toLowerCase().includes('sofa') ||
+        (parentObj?.name || '').toLowerCase().includes('sofa') ||
+        (parentObj?.slug || '').toLowerCase().includes('sofa');
 
-    return isSofaCategory || title.toLowerCase().includes('sofa');
-  });
+      return isSofaCategory || title.toLowerCase().includes('sofa');
+    });
+  }, [featuredProducts, categories]);
 
-  const diningProducts = featuredProducts.filter(p => {
-    const catName = p.category?.name || p.category?.title || p.category?.slug || '';
-    const title = p.title || '';
-    const categoryId = p.category?._id || p.category || '';
-    
-    const catObj = categories.find(c => c._id === categoryId);
-    const parentId = catObj?.parent?._id || catObj?.parent || '';
-    const parentObj = parentId ? categories.find(c => c._id === parentId) : null;
-    
-    const isDiningCategory = 
-      catName.toLowerCase().includes('dining') || 
-      catName.toLowerCase().includes('dinning') ||
-      (catObj?.slug || '').toLowerCase().includes('dining') ||
-      (catObj?.slug || '').toLowerCase().includes('dinning') ||
-      (parentObj?.name || '').toLowerCase().includes('dining') ||
-      (parentObj?.name || '').toLowerCase().includes('dinning') ||
-      (parentObj?.slug || '').toLowerCase().includes('dining') ||
-      (parentObj?.slug || '').toLowerCase().includes('dinning');
+  const displayDiningProducts = useMemo(() => {
+    return featuredProducts.filter(p => {
+      const catName = p.category?.name || p.category?.title || p.category?.slug || '';
+      const title = p.title || '';
+      const categoryId = p.category?._id || p.category || '';
+      
+      const catObj = categories.find(c => c._id === categoryId);
+      const parentId = catObj?.parent?._id || catObj?.parent || '';
+      const parentObj = parentId ? categories.find(c => c._id === parentId) : null;
+      
+      const isDiningCategory = 
+        catName.toLowerCase().includes('dining') || 
+        catName.toLowerCase().includes('dinning') ||
+        (catObj?.slug || '').toLowerCase().includes('dining') ||
+        (catObj?.slug || '').toLowerCase().includes('dinning') ||
+        (parentObj?.name || '').toLowerCase().includes('dining') ||
+        (parentObj?.name || '').toLowerCase().includes('dinning') ||
+        (parentObj?.slug || '').toLowerCase().includes('dining') ||
+        (parentObj?.slug || '').toLowerCase().includes('dinning');
 
-    return isDiningCategory || title.toLowerCase().includes('dining') || title.toLowerCase().includes('dinning');
-  });
-
-  const displaySofaProducts = sofaProducts;
-  const displayDiningProducts = diningProducts;
+      return isDiningCategory || title.toLowerCase().includes('dining') || title.toLowerCase().includes('dinning');
+    });
+  }, [featuredProducts, categories]);
 
   return (
     <div className="bg-white overflow-hidden pt-20 lg:pt-24">

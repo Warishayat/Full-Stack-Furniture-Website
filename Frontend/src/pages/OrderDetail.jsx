@@ -52,7 +52,7 @@ const OrderDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-secondary">
+      <div className="min-h-screen flex items-center justify-center bg-secondary pt-32 lg:pt-40">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
       </div>
     );
@@ -60,7 +60,7 @@ const OrderDetail = () => {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-secondary flex items-center justify-center p-6">
+      <div className="min-h-screen bg-secondary flex items-center justify-center p-6 pt-32 lg:pt-40">
         <div className="bg-white p-12 rounded-[2.5rem] shadow-xl text-center max-w-lg border border-primary-100">
           <Package className="w-16 h-16 text-primary-200 mx-auto mb-6" />
           <h2 className="text-3xl font-serif font-bold text-primary-950 mb-4">Order Not Found</h2>
@@ -129,12 +129,24 @@ const OrderDetail = () => {
                   {order.items?.map((item, idx) => (
                     <li key={idx} className="py-8 first:pt-0 last:pb-0">
                       <div className="flex items-center gap-8">
-                        <div className="w-24 h-32 bg-primary-50 rounded-2xl overflow-hidden border border-primary-100 group shrink-0">
-                          <img 
-                            src={item.image || item.product?.images?.[0] || 'https://placehold.co/200x300'} 
-                            alt={item.title || item.product?.title || item.product?.name} 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
+                        <div className={`w-24 h-32 bg-primary-50 rounded-2xl overflow-hidden border border-primary-100 group shrink-0 ${item.variant?.name === "Fabric Swatches Bundle" ? 'flex flex-wrap p-1 gap-0.5' : ''}`}>
+                          {item.variant?.name === "Fabric Swatches Bundle" && item.image ? (
+                             item.image.split('|').slice(0, 4).map((imgUrl, i) => (
+                               <div key={i} className={`rounded-lg overflow-hidden border border-gray-200 shadow-sm ${item.image.split('|').length > 1 ? 'w-[calc(50%-0.125rem)] h-[calc(50%-0.125rem)]' : 'w-full h-full'}`}>
+                                  {imgUrl ? (
+                                    <img src={imgUrl} className="w-full h-full object-cover" alt="swatch" />
+                                  ) : (
+                                    <div className="w-full h-full bg-gray-200 flex items-center justify-center text-[6px] text-gray-500 font-bold uppercase">Swatch</div>
+                                  )}
+                               </div>
+                             ))
+                          ) : (
+                            <img 
+                              src={item.image || item.product?.images?.[0] || 'https://placehold.co/200x300'} 
+                              alt={item.title || item.product?.title || item.product?.name} 
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0 space-y-2">
                           <h4 className="text-lg font-serif font-bold text-primary-950 truncate">{item.title || item.product?.title || item.product?.name || 'Handcrafted Piece'}</h4>

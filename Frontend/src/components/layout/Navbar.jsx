@@ -19,6 +19,7 @@ const Navbar = () => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [expandedMobileCat, setExpandedMobileCat] = useState(null);
+  const [timeLeft, setTimeLeft] = useState({ days: 28, hours: 15, mins: 42, secs: 47 });
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -31,6 +32,34 @@ const Navbar = () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('mousedown', handleClickOutside);
     };
+  }, []);
+
+  useEffect(() => {
+    let endtime = localStorage.getItem('saleEndTime_28days');
+    if (!endtime) {
+      endtime = new Date().getTime() + (28 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000) + (42 * 60 * 1000) + (47 * 1000);
+      localStorage.setItem('saleEndTime_28days', endtime);
+    }
+
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = endtime - now;
+
+      if (distance < 0) {
+        const newEndtime = new Date().getTime() + (28 * 24 * 60 * 60 * 1000) + (15 * 60 * 60 * 1000);
+        localStorage.setItem('saleEndTime_28days', newEndtime);
+        endtime = newEndtime;
+      } else {
+        setTimeLeft({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          mins: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          secs: Math.floor((distance % (1000 * 60)) / 1000)
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -63,7 +92,17 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-100">
+      <header className="fixed top-0 left-0 right-0 z-[100] bg-white border-b border-gray-100 flex flex-col">
+        {/* Promotional Banner */}
+        <div className="bg-[#D7282F] text-white text-center py-2 px-4 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-red-700 transition-colors">
+          <div className="text-xs md:text-sm font-medium tracking-wide">
+            Spring Sale - Up to 50% off - ends in
+          </div>
+          <div className="text-[10px] md:text-xs font-bold tracking-wider flex items-center gap-1">
+            {timeLeft.days} days {timeLeft.hours} hrs {timeLeft.mins} mins {timeLeft.secs} secs <ArrowRight className="w-3 h-3" />
+          </div>
+        </div>
+
         {/* Top Row: Logo, Search, Icons */}
         <div className="container mx-auto px-4 lg:px-12 py-4 flex items-center justify-between gap-4 md:gap-8">
           

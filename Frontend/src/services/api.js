@@ -3,7 +3,8 @@ import axios from 'axios';
 const API = axios.create({
   baseURL: ['localhost', '127.0.0.1'].includes(window.location.hostname)
     ? 'http://localhost:8000' 
-    : 'https://full-stack-furniture-website-oxz9.onrender.com',
+    : 'http://localhost:1000',
+  timeout: 60000, // 60 seconds timeout
 });
 
 

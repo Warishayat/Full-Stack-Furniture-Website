@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, Info, Ruler, Star, CreditCard, Sparkles, Calendar, X, ZoomIn, ZoomOut } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { ShoppingCart, ArrowLeft, ArrowRight, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, Info, Ruler, Star, CreditCard, Sparkles, Calendar, X, ZoomIn, ZoomOut } from 'lucide-react';
 import API from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +11,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -48,6 +48,7 @@ const ProductDetail = () => {
   const [hoveredSwatchIdx, setHoveredSwatchIdx] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [isSwatchesModalOpen, setIsSwatchesModalOpen] = useState(false);
   const [zoomScale, setZoomScale] = useState(1);
 
   useEffect(() => {
@@ -107,7 +108,13 @@ const ProductDetail = () => {
       
       // Calculate min price for storage
       let minPrice = currentProduct.price || 0;
+      let variantName = currentProduct.variants?.[0]?.name || '';
+      let img = currentProduct.images?.[0] || '';
+      
       if (currentProduct.variants && currentProduct.variants.length > 0) {
+        if (currentProduct.variants[0].images && currentProduct.variants[0].images.length > 0) {
+          img = currentProduct.variants[0].images[0];
+        }
         let min = Infinity;
         currentProduct.variants.forEach(v => {
           if (v.price < min) min = v.price;
@@ -121,7 +128,8 @@ const ProductDetail = () => {
         title: currentProduct.title,
         price: minPrice,
         oldprice: currentProduct.oldprice || 0,
-        images: currentProduct.images
+        images: [img],
+        variantName: variantName
       });
       viewed = viewed.slice(0, 10);
       localStorage.setItem('recentlyViewed', JSON.stringify(viewed));
@@ -132,12 +140,79 @@ const ProductDetail = () => {
   }, [id]);
 
   useEffect(() => {
-    setSelectedVariantIdx(0);
-    setSelectedMaterialIdx(0);
-    setSelectedColorIdx(0);
+    let foundVariant = product?.variants?.length ? product.variants.length - 1 : 0;
+    let foundMaterial = 0;
+    let foundColor = 0;
+    
+    if (product?.variants) {
+      const targetColor = searchParams.get('color');
+      const targetVariant = searchParams.get('variant');
+      
+      if (targetColor || targetVariant) {
+        let matchFound = false;
+        
+        // Start searching from the last variant (default variant)
+        for (let v = product.variants.length - 1; v >= 0; v--) {
+          const variant = product.variants[v];
+          
+          const variantMatches = targetVariant ? variant.name === targetVariant : true;
+          
+          if (variantMatches) {
+            if (targetColor && variant.materials) {
+              for (let m = 0; m < variant.materials.length; m++) {
+                const material = variant.materials[m];
+                if (material.colors) {
+                  const colorIdx = material.colors.findIndex(c => c.name === targetColor);
+                  if (colorIdx !== -1) {
+                    foundVariant = v;
+                    foundMaterial = m;
+                    foundColor = colorIdx;
+                    matchFound = true;
+                    break;
+                  }
+                }
+              }
+            } else if (!targetColor) {
+              foundVariant = v;
+              matchFound = true;
+            }
+          }
+          if (matchFound) break;
+        }
+        
+        // Fallback: If targetColor was provided but not found in targetVariant, 
+        // just find any variant with that color
+        if (!matchFound && targetColor) {
+           for (let v = product.variants.length - 1; v >= 0; v--) {
+             const variant = product.variants[v];
+             if (variant.materials) {
+               for (let m = 0; m < variant.materials.length; m++) {
+                 const material = variant.materials[m];
+                 if (material.colors) {
+                   const colorIdx = material.colors.findIndex(c => c.name === targetColor);
+                   if (colorIdx !== -1) {
+                     foundVariant = v;
+                     foundMaterial = m;
+                     foundColor = colorIdx;
+                     matchFound = true;
+                     break;
+                   }
+                 }
+               }
+             }
+             if (matchFound) break;
+           }
+        }
+      }
+    }
+    
+    setSelectedVariantIdx(foundVariant);
+    setSelectedMaterialIdx(foundMaterial);
+    setSelectedColorIdx(foundColor);
+    
     const viewed = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
     setRecentlyViewed(viewed.filter(p => p?._id !== id));
-  }, [id]);
+  }, [id, product, searchParams]);
 
   const currentVariant = product?.variants?.[selectedVariantIdx];
   const currentMaterial = currentVariant?.materials?.[selectedMaterialIdx];
@@ -389,15 +464,10 @@ const ProductDetail = () => {
                             onMouseEnter={() => !isMobile && setHoveredSwatchIdx(i)}
                             onMouseLeave={() => !isMobile && setHoveredSwatchIdx(null)}
                           >
-                            {/* Animated Enlarged Preview Popup */}
-                            <AnimatePresence>
+                            {/* Enlarged Preview Popup */}
                               {hoveredSwatchIdx === i && (
-                                <motion.div 
-                                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                                  exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                  className="absolute bottom-full mb-3 z-30 bg-white p-2.5 rounded-xl border border-gray-100 shadow-xl flex flex-col items-center gap-1.5 pointer-events-none w-28"
+                                <div 
+                                  className="absolute bottom-full mb-3 z-30 bg-white p-2.5 rounded-xl border border-gray-100 shadow-xl flex flex-col items-center gap-1.5 pointer-events-none w-28 animate-fade-in-up"
                                 >
                                   {hasSwatch ? (
                                     <img 
@@ -412,11 +482,10 @@ const ProductDetail = () => {
                                     />
                                   )}
                                   <span className="text-[10px] font-black uppercase text-gray-900 tracking-wider text-center line-clamp-1 w-full">{c.name}</span>
-                                </motion.div>
+                                </div>
                               )}
-                            </AnimatePresence>
 
-                            <motion.button 
+                            <button 
                               type="button"
                               title={c.name}
                               onClick={() => {
@@ -425,9 +494,7 @@ const ProductDetail = () => {
                                   setHoveredSwatchIdx(hoveredSwatchIdx === i ? null : i);
                                 }
                               }}
-                              whileHover={{ scale: 1.12 }}
-                              whileTap={{ scale: 0.95 }}
-                              className={`w-14 h-14 rounded-md overflow-hidden border-2 transition-all p-0.5 flex-shrink-0 shadow-sm relative ${
+                              className={`w-14 h-14 rounded-md overflow-hidden border-2 transition-all hover:scale-110 active:scale-95 duration-200 p-0.5 flex-shrink-0 shadow-sm relative ${
                                 isSelected 
                                   ? 'border-gray-950 ring-2 ring-gray-950/20 ring-offset-1 scale-105' 
                                   : 'border-gray-200 hover:border-gray-400'
@@ -453,7 +520,7 @@ const ProductDetail = () => {
                                   </div>
                                 </div>
                               )}
-                            </motion.button>
+                            </button>
                             
                             <span className="text-[9px] text-center text-gray-500 mt-2 font-black uppercase tracking-wider line-clamp-1 w-16 leading-tight">
                               {c.name}
@@ -462,6 +529,15 @@ const ProductDetail = () => {
                         );
                       })}
                     </div>
+
+                    {/* Order Free Swatches Button */}
+                    <button 
+                      onClick={() => setIsSwatchesModalOpen(true)}
+                      className="w-full mt-6 py-4 border border-gray-300 rounded-sm flex flex-col items-center justify-center hover:bg-gray-50 transition-colors group"
+                    >
+                      <span className="text-sm font-bold text-gray-900 flex items-center gap-1">Order free swatches <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
+                      <span className="text-[10px] text-gray-500 font-medium mt-1">Free first-class delivery</span>
+                    </button>
                   </div>
                 )}
 
@@ -654,24 +730,15 @@ const ProductDetail = () => {
       </div>
 
        {/* Size Guide Lightbox Modal */}
-       <AnimatePresence>
          {isSizeGuideOpen && (
-           <motion.div
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1 }}
-             exit={{ opacity: 0 }}
-             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+           <div
+             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in"
              onClick={() => setIsSizeGuideOpen(false)}
            >
-             <motion.div
-               initial={{ scale: 0.95, opacity: 0 }}
-               animate={{ scale: 1, opacity: 1 }}
-               exit={{ scale: 0.95, opacity: 0 }}
-               transition={{ type: 'spring', duration: 0.4 }}
-               className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+             <div
+               className="relative w-full max-w-4xl bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-fade-in-up"
                onClick={(e) => e.stopPropagation()}
              >
-               {/* Header */}
                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50">
                  <div>
                    <h3 className="text-lg font-serif font-black text-gray-900 uppercase tracking-wider">
@@ -682,7 +749,6 @@ const ProductDetail = () => {
                    </p>
                  </div>
                  <div className="flex items-center gap-2">
-                   {/* Zoom Controls */}
                    <button
                      onClick={() => setZoomScale(prev => Math.min(prev + 0.25, 3))}
                      disabled={zoomScale >= 3}
@@ -753,11 +819,11 @@ const ProductDetail = () => {
                    {zoomScale > 1 ? "Drag or scroll to pan. Click drawing to reset zoom." : "Click drawing to zoom 2x."} Current Zoom: {Math.round(zoomScale * 100)}%
                  </p>
                </div>
-             </motion.div>
-           </motion.div>
+             </div>
+           </div>
          )}
-       </AnimatePresence>
 
+       <SwatchesModal isOpen={isSwatchesModalOpen} onClose={() => setIsSwatchesModalOpen(false)} product={product} addToCart={addToCart} />
     </div>
   );
 };
@@ -928,6 +994,148 @@ const ReviewsSection = ({ productId, reviews = [], setReviews }) => {
                 <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">No reviews yet for this masterpiece.</p>
              </div>
           )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SwatchesModal = ({ isOpen, onClose, product, addToCart }) => {
+  if (!isOpen) return null;
+
+  const [selectedSwatches, setSelectedSwatches] = useState([]);
+
+  // Group all unique colors by material
+  const groupedSwatches = {};
+  if (product?.variants) {
+    product.variants.forEach(v => {
+      if (v.materials) {
+        v.materials.forEach(m => {
+          if (m.colors) {
+            m.colors.forEach(c => {
+              if (!groupedSwatches[m.name]) groupedSwatches[m.name] = [];
+              if (!groupedSwatches[m.name].find(s => s.colorName === c.name)) {
+                groupedSwatches[m.name].push({
+                  materialName: m.name,
+                  colorName: c.name,
+                  swatchImage: c.swatchImage
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+
+  const toggleSwatch = (swatch) => {
+    const isSelected = selectedSwatches.find(s => s.colorName === swatch.colorName && s.materialName === swatch.materialName);
+    if (isSelected) {
+      setSelectedSwatches(prev => prev.filter(s => s.colorName !== swatch.colorName || s.materialName !== swatch.materialName));
+    } else {
+      if (selectedSwatches.length >= 10) {
+        toast.info("You can only select up to 10 free swatches.");
+        return;
+      }
+      setSelectedSwatches(prev => [...prev, swatch]);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (selectedSwatches.length === 0) {
+      toast.error("Please select at least one swatch.");
+      return;
+    }
+    
+    const imageString = selectedSwatches.map(s => s.swatchImage || "").join('|');
+    const colorString = selectedSwatches.map(s => `${s.materialName}: ${s.colorName}`).join(' • ');
+    
+    addToCart(
+      product._id,
+      1,
+      {
+        title: `Free Swatches Bundle (${selectedSwatches.length}) - ${product.title}`,
+        image: imageString || product.images?.[0] || "",
+        variant: "Fabric Swatches Bundle",
+        material: "Mixed Fabrics",
+        color: colorString,
+        price: 0
+      }
+    );
+    
+    toast.success(`${selectedSwatches.length} Swatches added to cart!`);
+    onClose();
+    setSelectedSwatches([]);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="p-8 border-b border-gray-100 bg-gray-50/50 relative">
+          <button onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+          <div className="flex justify-between items-center pr-8">
+            <h3 className="text-2xl font-serif text-gray-900">Select Free Swatches</h3>
+            <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 bg-white px-2 py-1 rounded shadow-sm">
+              {selectedSwatches.length}/10 Selected
+            </span>
+          </div>
+        </div>
+
+        {/* Swatches Selection */}
+        <div className="p-8 flex-1">
+          <div className="space-y-8">
+            {Object.keys(groupedSwatches).map((material, mIdx) => (
+              <div key={mIdx}>
+                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">{material}</h4>
+                <div className="grid grid-cols-4 sm:grid-cols-6 gap-4">
+                  {groupedSwatches[material].map((swatch, idx) => {
+                    const isSelected = selectedSwatches.find(s => s.colorName === swatch.colorName && s.materialName === swatch.materialName);
+                    const swatchUrl = swatch.swatchImage;
+                    return (
+                      <div 
+                        key={idx}
+                        onClick={() => toggleSwatch(swatch)}
+                        className={`flex flex-col items-center gap-2 cursor-pointer group`}
+                      >
+                        <div className={`w-16 h-16 rounded-md overflow-hidden border-2 transition-all p-0.5 relative ${isSelected ? 'border-gray-950 ring-2 ring-gray-950/20 scale-105' : 'border-gray-200 group-hover:border-gray-400'}`}>
+                          {swatchUrl ? (
+                            <img src={swatchUrl} className="w-full h-full object-cover rounded-md" />
+                          ) : (
+                            <div className="w-full h-full rounded-md border border-gray-50 shadow-inner" style={{ backgroundColor: swatch.colorName.toLowerCase() === 'beige' ? '#f5f5dc' : swatch.colorName.toLowerCase() === 'grey' ? '#808080' : swatch.colorName.toLowerCase() === 'black' ? '#000000' : swatch.colorName.toLowerCase().replace(/ /g, '') }} />
+                          )}
+                          {isSelected && (
+                            <div className="absolute inset-0 bg-black/10 flex items-center justify-center rounded-md">
+                              <div className="w-5 h-5 bg-white rounded-md flex items-center justify-center shadow-md">
+                                <Check className="w-3.5 h-3.5 text-gray-900 stroke-[3]" />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-[9px] text-center text-gray-500 font-black uppercase tracking-wider line-clamp-2 leading-tight">
+                          {swatch.colorName}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Footer Actions */}
+        <div className="p-8 border-t border-gray-100 bg-white">
+          <p className="text-xs text-gray-400 mb-4 font-medium uppercase tracking-widest text-center">Add swatches to your cart to checkout for free.</p>
+          <button 
+            onClick={handleAddToCart}
+            disabled={selectedSwatches.length === 0}
+            className="w-full py-4 bg-[#51823F] hover:bg-[#457036] text-white font-black uppercase tracking-[0.2em] text-xs rounded-sm shadow-md transition-all disabled:opacity-50"
+          >
+            Add Swatches To Cart
+          </button>
         </div>
       </div>
     </div>

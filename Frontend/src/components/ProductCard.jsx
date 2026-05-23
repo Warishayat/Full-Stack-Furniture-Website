@@ -10,26 +10,43 @@ const ProductCard = memo(({ product }) => {
   const activeInWishlist = isInWishlist(product._id);
 
   // Calculate "Starting From" Price and extract unique colors
-  const { minPrice, oldPrice, displayImage, allColors } = useMemo(() => {
+  const { minPrice, oldPrice, displayImage, allColors, defaultVariantName, defaultMaterialName } = useMemo(() => {
     let min = Infinity;
     let old = 0;
     let img = product.images?.[0] || '';
-    let colors = new Set();
+    let colors = new Map();
+    let defaultVariantName = '';
+    let defaultMaterialName = '';
 
     if (product.variants && product.variants.length > 0) {
+      const lastVariant = product.variants[product.variants.length - 1];
+      defaultVariantName = lastVariant.name || '';
+      
+      if (lastVariant.images && lastVariant.images.length > 0) {
+        img = lastVariant.images[0];
+      } else if (product.images && product.images.length > 0) {
+        img = product.images[product.images.length - 1]; // Fallback to last product image
+      }
+
+      if (lastVariant.materials && lastVariant.materials.length > 0) {
+        defaultMaterialName = lastVariant.materials[0].name || '';
+      }
+
       product.variants.forEach(variant => {
         if (variant.price < min) {
           min = variant.price;
           old = variant.oldPrice || 0;
         }
-        if (variant.images && variant.images.length > 0) {
-          img = variant.images[0];
-        }
         if (variant.materials) {
           variant.materials.forEach(material => {
             if (material.colors) {
               material.colors.forEach(color => {
-                if (color.name) colors.add(color.name);
+                if (color.name) {
+                  // Only add if not present, or if current has a swatch image
+                  if (!colors.has(color.name) || (color.swatchImage && !colors.get(color.name).swatchImage)) {
+                    colors.set(color.name, { name: color.name, swatchImage: color.swatchImage });
+                  }
+                }
               });
             }
           });
@@ -41,7 +58,9 @@ const ProductCard = memo(({ product }) => {
       minPrice: min === Infinity ? (product.price || 0) : min, 
       oldPrice: old || (product.oldPrice || 0), 
       displayImage: img || product.images?.[0] || '',
-      allColors: Array.from(colors)
+      allColors: Array.from(colors.values()),
+      defaultVariantName,
+      defaultMaterialName
     };
   }, [product]);
 
@@ -65,26 +84,50 @@ const ProductCard = memo(({ product }) => {
       </button>
 
       {/* Image Container */}
-      <Link to={`/product/${product._id}`} className="relative aspect-[4/5] overflow-hidden bg-gray-50">
+      <Link to={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-gray-50 flex items-center justify-center">
         <img
           src={displayImage}
           alt={product.title}
           loading="lazy"
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
       </Link>
       
       {/* Content Area */}
       <div className="pt-4 flex flex-col flex-1">
+        
+        {/* Colors */}
+        {allColors.length > 0 && (
+          <div className="flex items-center gap-1.5 mb-3">
+            {allColors.slice(0, 5).map((color, idx) => (
+              <Link 
+                key={idx}
+                to={`/product/${product._id}?color=${encodeURIComponent(color.name)}`}
+                className="w-5 h-5 rounded-full border border-gray-300 overflow-hidden hover:border-[#D7282F] transition-colors"
+                title={color.name}
+              >
+                {color.swatchImage ? (
+                  <img src={color.swatchImage} alt={color.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gray-200" />
+                )}
+              </Link>
+            ))}
+            {allColors.length > 5 && (
+              <span className="text-[10px] text-gray-500 font-medium ml-1">+{allColors.length - 5}</span>
+            )}
+          </div>
+        )}
+
         <Link to={`/product/${product._id}`} className="block mb-1">
           <h3 className="text-xl font-serif text-gray-900 hover:text-gray-600 transition-colors">
             {product.title}
           </h3>
         </Link>
         
-        <p className="text-xs text-gray-500 mb-2 line-clamp-1">
-          {product.category?.name || 'Luxury Collection'}
+        <p className="text-xs text-gray-500 mb-2 line-clamp-2">
+          {defaultVariantName ? `${product.title} ${defaultVariantName}, ${defaultMaterialName}` : product.category?.name || 'Luxury Collection'}
         </p>
 
         {/* Real Ratings */}

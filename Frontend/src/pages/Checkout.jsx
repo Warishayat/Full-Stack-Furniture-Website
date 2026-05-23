@@ -808,8 +808,16 @@ const Checkout = () => {
                     <div key={item._id} className="flex gap-4 items-center">
                       
                       {/* Thumbnail Image */}
-                      <div className="w-16 h-16 rounded-xl bg-slate-50 overflow-hidden border border-slate-100 shrink-0">
-                        <img src={item.image || 'https://placehold.co/100x100?text=Sofa'} className="w-full h-full object-cover" alt={item.title} />
+                      <div className={`w-16 h-16 rounded-xl bg-slate-50 overflow-hidden border border-slate-100 shrink-0 ${item.variant === "Fabric Swatches Bundle" ? 'flex flex-wrap p-0.5' : ''}`}>
+                        {item.variant === "Fabric Swatches Bundle" ? (
+                           item.image.split('|').slice(0, 4).map((imgUrl, i) => (
+                             <div key={i} className={`w-1/2 h-1/2 p-0.5`}>
+                               {imgUrl ? <img src={imgUrl} className="w-full h-full object-cover rounded" /> : <div className="w-full h-full bg-slate-200 rounded" />}
+                             </div>
+                           ))
+                        ) : (
+                          <img src={item.image || 'https://placehold.co/100x100?text=Sofa'} className="w-full h-full object-cover" alt={item.title} />
+                        )}
                       </div>
 
                       {/* Details */}
@@ -820,6 +828,11 @@ const Checkout = () => {
                           <span>•</span>
                           <span>{item.variant || 'Standard'}</span>
                         </div>
+                        {item.variant === "Fabric Swatches Bundle" && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 line-clamp-1">
+                             {item.color}
+                          </div>
+                        )}
                         <div className="flex items-center gap-1.5 text-green-700 text-[10px] font-black uppercase tracking-widest">
                           <Truck className="w-3.5 h-3.5 shrink-0" />
                           <span>In stock. Fast delivery.</span>
