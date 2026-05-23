@@ -129,9 +129,9 @@ const Navbar = () => {
           </div>
 
           {/* Right: Icons */}
-          <div className="flex items-center gap-4 md:gap-6">
-            <button onClick={() => setIsSearchVisible(!isSearchVisible)} className="md:hidden p-2 text-gray-600">
-              <Search className="w-6 h-6" />
+          <div className="flex items-center gap-3 sm:gap-4 md:gap-6 ml-auto">
+            <button onClick={() => setIsSearchVisible(!isSearchVisible)} className="md:hidden p-1 sm:p-2 text-gray-600">
+              <Search className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
             
             {user?.role === 'admin' && (
@@ -140,25 +140,25 @@ const Navbar = () => {
               </Link>
             )}
             
-            <Link to={user ? "/account" : "/login"} className="hidden lg:block p-2 text-gray-800 hover:text-red-600 transition-colors">
-              <User className="w-6 h-6" />
+            <Link to={user ? "/account" : "/login"} className="hidden lg:block p-1 sm:p-2 text-gray-800 hover:text-red-600 transition-colors">
+              <User className="w-5 h-5 sm:w-6 sm:h-6" />
             </Link>
             
-            <Link to="/wishlist" className="hidden sm:block p-2 text-gray-800 hover:text-red-600 transition-colors">
-              <Heart className="w-6 h-6" />
+            <Link to="/wishlist" className="hidden sm:block p-1 sm:p-2 text-gray-800 hover:text-red-600 transition-colors">
+              <Heart className="w-5 h-5 sm:w-6 sm:h-6" />
             </Link>
             
-            <Link to="/cart" className="relative p-2 text-gray-800 hover:text-red-600 transition-colors">
-              <ShoppingCart className="w-6 h-6" />
+            <Link to="/cart" className="relative p-1 sm:p-2 text-gray-800 hover:text-red-600 transition-colors">
+              <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
               {cartCount > 0 && (
-                <span className="absolute top-0 right-0 bg-black text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute -top-1 -right-1 sm:top-0 sm:right-0 bg-black text-white text-[9px] sm:text-[10px] font-bold w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center rounded-full">
                   {cartCount}
                 </span>
               )}
             </Link>
 
-            <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 text-gray-900">
-              <Menu className="w-6 h-6" />
+            <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-1 sm:p-2 text-gray-900">
+              <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
         </div>
