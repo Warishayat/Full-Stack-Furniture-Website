@@ -778,7 +778,7 @@ const ProductDetail = () => {
 
                {/* Blueprint Image Content Area */}
                <div className="flex-1 overflow-auto p-8 flex items-center justify-center min-h-[350px] bg-slate-50/30 relative">
-                 {(currentVariant?.dimensions?.sizeChart || product?.specifications?.dimensions?.sizeChart || product?.images?.[0]) ? (
+                 {(currentVariant?.dimensions?.sizeChart || product?.specifications?.dimensions?.sizeChart ) ? (
                    <div 
                      className="transition-all duration-300 ease-out select-none relative"
                      style={{ 
@@ -795,7 +795,7 @@ const ProductDetail = () => {
                      }}
                    >
                      <img
-                       src={currentVariant?.dimensions?.sizeChart || product?.specifications?.dimensions?.sizeChart || product?.images?.[0]}
+                       src={currentVariant?.dimensions?.sizeChart || product?.specifications?.dimensions?.sizeChart }
                        alt="Size Chart Drawing"
                        className="max-h-[60vh] max-w-full object-contain mx-auto mix-blend-multiply transition-shadow duration-300"
                        style={{

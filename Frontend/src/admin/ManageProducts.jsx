@@ -108,6 +108,7 @@ const ManageProducts = () => {
   const [images, setImages] = useState([]); // File objects
   const [imagePreviews, setImagePreviews] = useState([]); // URLs for preview
   const [swatches, setSwatches] = useState([]); // Swatch file objects
+  const [variantSizeCharts, setVariantSizeCharts] = useState([]); // Variant size chart file objects
   const [sizeChart, setSizeChart] = useState(null);
   const [sizeChartPreview, setSizeChartPreview] = useState(null);
   
@@ -118,7 +119,7 @@ const ManageProducts = () => {
     try {
       setLoading(true);
       const [prodRes, catRes] = await Promise.all([
-        API.get('/product/getAllProducts'),
+        API.get('/product/getAllProducts?limit=1000'),
         API.get('/category/getallCategories')
       ]);
 
@@ -246,33 +247,97 @@ const ManageProducts = () => {
     }
   };
 
-  const importMaterialsFromProduct = (e) => {
+  const importMaterialsFromProduct = async (e) => {
     const productId = e.target.value;
     if (!productId) return;
     
-    const sourceProduct = products.find(p => p._id === productId);
-    if (!sourceProduct || !sourceProduct.variants || !sourceProduct.variants.length) {
-      toast.error('Selected product has no variants/materials.');
-      e.target.value = '';
-      return;
-    }
-    
-    if (window.confirm(`Import fabrics/materials from "${sourceProduct.title}"? This will overwrite materials in all current variants.`)) {
-      const sourceMaterials = sourceProduct.variants[0].materials || [];
-      const clonedMaterials = JSON.parse(JSON.stringify(sourceMaterials)).map(m => ({
-        ...m,
-        colors: m.colors.map(c => ({
-          ...c,
-          swatchImageIndex: null
-        }))
-      }));
+    const sourceProductBase = products.find(p => p._id === productId);
+    if (!sourceProductBase) return;
 
-      const newVariants = formData.variants.map(v => ({
-        ...v,
-        materials: clonedMaterials
-      }));
-      setFormData(prev => ({ ...prev, variants: newVariants }));
-      toast.success(`Imported fabrics from ${sourceProduct.title}`);
+    try {
+      toast.info(`Fetching materials for ${sourceProductBase.title}...`, { autoClose: 1000 });
+      const { data } = await API.get(`/product/getSingleProduct/${productId}`);
+      const sourceProduct = data.product;
+
+      if (!sourceProduct || !sourceProduct.variants || !sourceProduct.variants.length) {
+        toast.error('Selected product has no variants/materials.');
+        e.target.value = '';
+        return;
+      }
+      
+      if (window.confirm(`Import fabrics/materials from "${sourceProduct.title}"? This will overwrite materials in all current variants.`)) {
+        const sourceMaterials = sourceProduct.variants[0].materials || [];
+        const clonedMaterials = JSON.parse(JSON.stringify(sourceMaterials)).map(m => ({
+          ...m,
+          colors: m.colors.map(c => ({
+            ...c,
+            swatchImageIndex: null
+          }))
+        }));
+
+        const newVariants = formData.variants.map(v => ({
+          ...v,
+          materials: clonedMaterials
+        }));
+        setFormData(prev => ({ ...prev, variants: newVariants }));
+        toast.success(`Imported fabrics from ${sourceProduct.title}`);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to import materials');
+    }
+    e.target.value = ''; // Reset dropdown
+  };
+
+  const importDimensionsFromProduct = async (e) => {
+    const productId = e.target.value;
+    if (!productId) return;
+    
+    const sourceProductBase = products.find(p => p._id === productId);
+    if (!sourceProductBase) return;
+
+    try {
+      toast.info(`Fetching dimensions for ${sourceProductBase.title}...`, { autoClose: 1000 });
+      const { data } = await API.get(`/product/getSingleProduct/${productId}`);
+      const sourceProduct = data.product;
+
+      if (!sourceProduct || !sourceProduct.variants || !sourceProduct.variants.length) {
+        toast.error('Selected product has no variants/dimensions.');
+        e.target.value = '';
+        return;
+      }
+      
+      if (window.confirm(`Import dimensions from "${sourceProduct.title}"? This will overwrite dimensions for variants with matching names.`)) {
+        let matchCount = 0;
+        const newVariants = formData.variants.map(v => {
+          const match = sourceProduct.variants.find(sv => 
+            sv.name && v.name && sv.name.trim().toLowerCase() === v.name.trim().toLowerCase()
+          );
+
+          if (match && match.dimensions) {
+            matchCount++;
+            return {
+              ...v,
+              dimensions: {
+                ...match.dimensions,
+                sizeChartIndex: null,
+                sizeChartPreviewUrl: match.dimensions.sizeChart || null
+              }
+            };
+          }
+          return v;
+        });
+
+        setFormData(prev => ({ ...prev, variants: newVariants }));
+        if (matchCount > 0) {
+          toast.success(`Imported dimensions for ${matchCount} variants from ${sourceProduct.title}`);
+        } else {
+          toast.warning(`No matching variant names found. Dimensions not imported.`);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to import dimensions');
     }
     e.target.value = ''; // Reset dropdown
   };
@@ -330,6 +395,7 @@ const ManageProducts = () => {
     setImages([]);
     setImagePreviews([]);
     setSwatches([]);
+    setVariantSizeCharts([]);
     setSizeChart(null);
     setSizeChartPreview(null);
     setEditingId(null);
@@ -337,8 +403,11 @@ const ManageProducts = () => {
     setIsModalOpen(false);
   };
 
-  const handleEditClick = (product) => {
-    setEditingId(product._id);
+  const handleEditClick = async (productInfo) => {
+    try {
+      const { data } = await API.get(`/product/getSingleProduct/${productInfo._id}`);
+      const product = data.product;
+      setEditingId(product._id);
     
     const defaultSpecs = {
       general: { material: '', finish: '', warranty: '' },
@@ -361,7 +430,7 @@ const ManageProducts = () => {
         stock: v.stock !== undefined ? v.stock : 0,
         sku: v.sku || '',
         imageIndexes: [],
-        dimensions: v.dimensions || { length: '', width: '', height: '', unit: 'cm' },
+        dimensions: { ...v.dimensions, sizeChartIndex: null, sizeChartPreviewUrl: v.dimensions?.sizeChart || null },
         materials: v.materials?.length ? v.materials.map(m => ({
           ...m,
           colors: m.colors?.length ? m.colors.map(c => ({
@@ -395,6 +464,10 @@ const ManageProducts = () => {
     setImages([]); 
     setSizeChartPreview(product.specifications?.dimensions?.sizeChart || null);
     setIsModalOpen(true);
+    } catch(err) {
+      console.error(err);
+      toast.error('Failed to fetch full product details');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -428,6 +501,13 @@ const ManageProducts = () => {
           swatches.map(sw => compressImage(sw))
         );
         compressedSwatches.forEach(sw => submitData.append('swatches', sw));
+      }
+
+      if (variantSizeCharts.length > 0) {
+        const compressedVariantSizeCharts = await Promise.all(
+          variantSizeCharts.map(sw => compressImage(sw))
+        );
+        compressedVariantSizeCharts.forEach(sw => submitData.append('variantSizeCharts', sw));
       }
 
       if (sizeChart) {
@@ -799,16 +879,18 @@ const ManageProducts = () => {
                       >
                         <option value="">Import Fabrics From...</option>
                         {products.map(p => (
-                          <option key={p._id} value={p._id}>{p.title}</option>
+                          <option key={`fab-${p._id}`} value={p._id}>{p.title}</option>
                         ))}
                       </select>
-                      <button 
-                        type="button" 
-                        onClick={addVariant} 
-                        className="px-6 py-3 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#D7282F] transition-all shadow-lg flex-1 sm:flex-none whitespace-nowrap flex items-center justify-center gap-2"
+                      <select 
+                        onChange={importDimensionsFromProduct}
+                        className="px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-700 outline-none focus:border-blue-500 cursor-pointer flex-1 sm:flex-none"
                       >
-                        <Plus className="w-4 h-4" /> Add Variant
-                      </button>
+                        <option value="">Import Dimensions From...</option>
+                        {products.map(p => (
+                          <option key={`dim-${p._id}`} value={p._id}>{p.title}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
@@ -957,6 +1039,56 @@ const ManageProducts = () => {
                                 className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl font-bold outline-none shadow-sm"
                                 placeholder="cm"
                               />
+                            </div>
+                          </div>
+
+                          <div className="mt-6 flex flex-col gap-2">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Variant Specific Size Chart Drawing (Optional)</label>
+                            <div className="flex items-center gap-4">
+                              {variant.dimensions?.sizeChartPreviewUrl ? (
+                                <div className="relative w-24 h-24 rounded-xl border border-gray-200 overflow-hidden group shadow-sm bg-white p-1">
+                                  <img src={variant.dimensions.sizeChartPreviewUrl} alt="Size Chart Preview" className="w-full h-full object-contain mix-blend-multiply" />
+                                  <button 
+                                    type="button"
+                                    onClick={() => {
+                                      const newVariants = [...formData.variants];
+                                      newVariants[vIdx].dimensions.sizeChartPreviewUrl = null;
+                                      newVariants[vIdx].dimensions.sizeChartIndex = null;
+                                      setFormData({ ...formData, variants: newVariants });
+                                    }}
+                                    className="absolute inset-0 bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg"
+                                  >
+                                    <Trash2 className="w-5 h-5" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="w-24 h-24 bg-gray-50 rounded-xl flex flex-col items-center justify-center border border-dashed border-gray-300">
+                                  <Ruler className="w-6 h-6 text-gray-300 mb-1" />
+                                  <span className="text-[8px] text-gray-400 font-bold uppercase">No Blueprint</span>
+                                </div>
+                              )}
+                              
+                              <label className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 text-gray-700 hover:border-blue-500 hover:text-blue-600 transition-colors text-[10px] font-black uppercase tracking-widest cursor-pointer rounded-lg shadow-sm">
+                                <UploadCloud className="w-4 h-4" /> Upload Variant Blueprint
+                                <input 
+                                  type="file" 
+                                  className="hidden" 
+                                  onChange={(e) => {
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+                                    const currentCount = variantSizeCharts.length;
+                                    setVariantSizeCharts([...variantSizeCharts, file]);
+                                    
+                                    const newVariants = [...formData.variants];
+                                    if(!newVariants[vIdx].dimensions) newVariants[vIdx].dimensions = {};
+                                    newVariants[vIdx].dimensions.sizeChartIndex = currentCount;
+                                    newVariants[vIdx].dimensions.sizeChartPreviewUrl = URL.createObjectURL(file);
+                                    setFormData({ ...formData, variants: newVariants });
+                                    toast.success(`Blueprint loaded for variant ${variant.name || 'Size'}`);
+                                  }}
+                                  accept="image/*"
+                                />
+                              </label>
                             </div>
                           </div>
 
