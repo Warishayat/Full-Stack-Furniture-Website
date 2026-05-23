@@ -649,9 +649,9 @@ const ProductDetail = () => {
                           </div>
                        </div>
                        {(currentVariant?.dimensions?.sizeChart || product.specifications?.dimensions?.sizeChart) && (
-                         <div className="mt-10 border border-gray-100 p-8 bg-gray-50/50">
+                         <div className="mt-10 border border-gray-100 p-2 md:p-8 bg-gray-50/50">
                             <p className="text-[10px] font-black text-gray-400 uppercase mb-6 tracking-[0.4em]">Technical Blueprint</p>
-                            <img src={currentVariant?.dimensions?.sizeChart || product.specifications.dimensions.sizeChart} alt="Size Chart" className="max-w-xl mx-auto mix-blend-multiply" />
+                            <img src={currentVariant?.dimensions?.sizeChart || product.specifications.dimensions.sizeChart} alt="Size Chart" className="w-full h-auto max-w-xl mx-auto mix-blend-multiply object-contain" />
                          </div>
                        )}
                     </div>
