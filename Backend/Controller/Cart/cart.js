@@ -30,10 +30,17 @@ const getCart = async (req, res) => {
       const itemTotal = item.price * item.quantity;
       total += itemTotal;
 
+      let itemTitle = item.product?.title;
+      if (item.variant === "Fabric Swatches Bundle") {
+         itemTitle = `Free Swatches Bundle - ${item.product?.title}`;
+      } else if (item.variant === "Fabric Swatch") {
+         itemTitle = `Free Swatch - ${item.product?.title}`;
+      }
+
       return {
         _id: item._id,
         product: item.product?._id,
-        title: item.product?.title,
+        title: itemTitle,
         variant: item.variant,
         material: item.material,
         color: item.color,
@@ -82,54 +89,69 @@ const addToCart = async (req, res) => {
       });
     }
 
-    let selectedVariant = product.variants.find(v => v.name === variant);
-    if (!selectedVariant) {
-      return res.status(400).json({
-        success: false,
-        message: `Size variant "${variant}" is not valid for this product`
-      });
-    }
+    const isSwatch = variant === "Fabric Swatches Bundle" || variant === "Fabric Swatch";
 
-    // Check if the variant actually defines any materials/colors in database
-    const hasMaterials = selectedVariant.materials && selectedVariant.materials.length > 0;
-    let colorFound = false;
+    let finalMaterial = material;
+    let finalColor = color;
+    let finalPrice = 0;
+    let finalImage = req.body.image || product.images?.[0] || "";
 
-    if (hasMaterials) {
-      if (!material || !color) {
+    if (!isSwatch) {
+      let selectedVariant = product.variants.find(v => v.name === variant);
+      if (!selectedVariant) {
         return res.status(400).json({
           success: false,
-          message: "Material and Color finishes are required for this product"
+          message: `Size variant "${variant}" is not valid for this product`
         });
       }
 
-      selectedVariant.materials.forEach(m => {
-        if (m.name === material) {
-          m.colors.forEach(c => {
-            if (c.name === color) {
-              colorFound = true;
-            }
+      const hasMaterials = selectedVariant.materials && selectedVariant.materials.length > 0;
+      let colorFound = false;
+
+      if (hasMaterials) {
+        if (!material || !color) {
+          return res.status(400).json({
+            success: false,
+            message: "Material and Color finishes are required for this product"
           });
         }
-      });
 
-      if (!colorFound) {
+        selectedVariant.materials.forEach(m => {
+          if (m.name === material) {
+            m.colors.forEach(c => {
+              if (c.name === color) {
+                colorFound = true;
+              }
+            });
+          }
+        });
+
+        if (!colorFound) {
+          return res.status(400).json({
+            success: false,
+            message: "Specified material/color finish configuration is not valid"
+          });
+        }
+      } else {
+        colorFound = true;
+      }
+
+      finalMaterial = hasMaterials ? material : "Standard";
+      finalColor = hasMaterials ? color : "Default";
+
+      if (qty > selectedVariant.stock) {
         return res.status(400).json({
           success: false,
-          message: "Specified material/color finish configuration is not valid"
+          message: `Only ${selectedVariant.stock} items left in stock`
         });
       }
+      
+      finalPrice = selectedVariant.price;
+      finalImage = selectedVariant.images?.[0] || product.images?.[0] || "";
     } else {
-      colorFound = true; // No materials/colors matching needed
-    }
-
-    const finalMaterial = hasMaterials ? material : "Standard";
-    const finalColor = hasMaterials ? color : "Default";
-
-    if (qty > selectedVariant.stock) {
-      return res.status(400).json({
-        success: false,
-        message: `Only ${selectedVariant.stock} items left in stock`
-      });
+      finalMaterial = material || "Mixed Fabrics";
+      finalColor = color || "Mixed Colors";
+      finalPrice = 0;
     }
 
     let cart = await Cart.findOne({ user: userId });
@@ -153,8 +175,8 @@ const addToCart = async (req, res) => {
         variant,
         material: finalMaterial,
         color: finalColor,
-        price: selectedVariant.price,
-        image: selectedVariant.images?.[0] || product.images?.[0] || "",
+        price: finalPrice,
+        image: finalImage,
         quantity: qty
       });
     }

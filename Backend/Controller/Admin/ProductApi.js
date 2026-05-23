@@ -175,9 +175,11 @@ const getAllProducts = async (req, res) => {
 
     const products = await Product.find(filter)
       .populate("category", "name slug")
+      .select("-specifications -variants.materials -variants.dimensions")
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(Number(limit));
+      .limit(Number(limit))
+      .lean();
 
     const total = await Product.countDocuments(filter);
 
@@ -401,7 +403,8 @@ const getSingleProduct = async (req, res) => {
     }
 
     const product = await Product.findById(id)
-      .populate("category", "name slug");
+      .populate("category", "name slug")
+      .lean();
 
     if (!product) {
       return res.status(404).json({
@@ -459,9 +462,11 @@ const SearchProduct = async (req, res) => {
       ]
     })
       .populate("category", "name slug")
+      .select("-specifications -variants.materials -variants.dimensions")
       .skip(skip)
       .limit(Number(limit))
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     const total = await Product.countDocuments({
       $or: [

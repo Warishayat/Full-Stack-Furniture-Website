@@ -779,6 +779,101 @@ const verifyPayment = async (req, res) => {
   }
 };
 
+const createSwatchOrder = async (req, res) => {
+  try {
+    const { productId, productTitle, productImage, swatches, shippingAddress, email, createAccount, password } = req.body;
+
+    if (!swatches || swatches.length === 0) {
+      return res.status(400).json({ success: false, message: "No swatches selected" });
+    }
+
+    let orderUser = null;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+      try {
+        const token = req.headers.authorization.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        orderUser = await User.findById(decoded.id).select("-password");
+      } catch (err) {
+        console.log("Optional auth token failed:", err.message);
+      }
+    }
+
+    let resolvedUser = orderUser;
+
+    if (!resolvedUser && createAccount && email && password) {
+      const existingUser = await User.findOne({ email });
+      if (!existingUser) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const name = shippingAddress?.fullName || email.split("@")[0];
+        
+        const newUser = new User({
+          name,
+          email,
+          password: hashedPassword,
+          role: "user"
+        });
+        await newUser.save();
+        resolvedUser = newUser;
+      } else {
+        resolvedUser = existingUser;
+      }
+    }
+
+    // Format order items conforming to schema
+    const orderItems = swatches.map((swatch, idx) => ({
+      product: productId,
+      title: `Free Swatch - ${productTitle}`,
+      image: swatch.swatchImage || productImage || "",
+      variant: { name: "Fabric Swatch" },
+      material: { name: swatch.materialName || "" },
+      color: { name: swatch.colorName || "Default" },
+      sku: `SWATCH-${Date.now()}-${idx}`,
+      quantity: 1,
+      price: 0,
+    }));
+
+    // Create a new confirmed order for free swatches
+    const order = new Order({
+      user: resolvedUser ? resolvedUser._id : undefined,
+      items: orderItems,
+      totalPrice: 0,
+      shippingAddress: {
+        fullName: shippingAddress?.fullName || "Guest Customer",
+        phone: shippingAddress?.phone || "",
+        address: shippingAddress?.address || "",
+        city: shippingAddress?.city || "",
+        postalCode: shippingAddress?.postalCode || "",
+        country: shippingAddress?.country || "GB",
+      },
+      paymentMethod: "cod",
+      paymentStatus: "paid",
+      orderStatus: "confirmed",
+      notes: "Free Swatches Request",
+    });
+
+    await order.save();
+
+    // Send confirmation email
+    const finalEmail = email || resolvedUser?.email;
+    if (finalEmail) {
+      await sendOrderConfirmationEmail(finalEmail, order).catch(err => console.log("Email error:", err));
+    }
+    
+    return res.status(200).json({
+      success: true,
+      message: "Swatches ordered successfully",
+      orderId: order._id,
+    });
+
+  } catch (error) {
+    console.log("Swatch Order Failed:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to create swatch order",
+    });
+  }
+};
+
 module.exports = {
   createCheckoutSession,
   webhookHandler,
@@ -788,5 +883,6 @@ module.exports = {
   trackOrder,
   getOrderById,
   createOrderAndSession,
-  verifyPayment
+  verifyPayment,
+  createSwatchOrder
 };
