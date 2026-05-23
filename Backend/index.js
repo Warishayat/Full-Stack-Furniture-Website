@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
 const connectDB = require("./Config/database");
+const compression = require("compression");
 
 const authRouter = require("./Routes/authRoutes");
 const product_router = require("./Routes/ProductRoutes");
@@ -18,6 +19,7 @@ const { webhookHandler } = require("./Controller/Orders/orderController");
 const app = express();
 
 app.use(cors());
+app.use(compression());
 connectDB();
 
 app.post(

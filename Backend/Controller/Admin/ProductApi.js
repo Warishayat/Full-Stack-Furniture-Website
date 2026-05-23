@@ -24,6 +24,7 @@ const createProduct = async (req, res) => {
 
     const allImages = (req.files?.images || []).map(file => file.path);
     const allSwatches = (req.files?.swatches || []).map(file => file.path);
+    const allVariantSizeCharts = (req.files?.variantSizeCharts || []).map(file => file.path);
     const sizeChartFile = req.files?.sizeChart?.[0];
     const sizeChart = sizeChartFile ? sizeChartFile.path : "";
 
@@ -90,6 +91,16 @@ const createProduct = async (req, res) => {
         variant.dimensions.length = variant.dimensions.length ? Number(variant.dimensions.length) : undefined;
         variant.dimensions.width = variant.dimensions.width ? Number(variant.dimensions.width) : undefined;
         variant.dimensions.height = variant.dimensions.height ? Number(variant.dimensions.height) : undefined;
+
+        // Map size chart index to actual path
+        if (variant.dimensions.sizeChartIndex !== undefined && variant.dimensions.sizeChartIndex !== null && variant.dimensions.sizeChartIndex !== "") {
+          variant.dimensions.sizeChart = allVariantSizeCharts[Number(variant.dimensions.sizeChartIndex)] || "";
+        } else {
+          variant.dimensions.sizeChart = variant.dimensions.sizeChart || "";
+        }
+
+        delete variant.dimensions.sizeChartIndex;
+        delete variant.dimensions.sizeChartPreviewUrl;
       }
 
       if (!variant.materials || !Array.isArray(variant.materials)) {
@@ -175,7 +186,7 @@ const getAllProducts = async (req, res) => {
 
     const products = await Product.find(filter)
       .populate("category", "name slug")
-      .select("-specifications -variants.materials -variants.dimensions")
+      .select("-specifications -variants.dimensions")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit))
@@ -275,6 +286,7 @@ const updateProduct = async (req, res) => {
 
     const allImages = (files?.images || []).map(f => f.path);
     const allSwatches = (files?.swatches || []).map(f => f.path);
+    const allVariantSizeCharts = (files?.variantSizeCharts || []).map(f => f.path);
 
     if (variants !== undefined) {
       let parsedVariants =
@@ -322,6 +334,16 @@ const updateProduct = async (req, res) => {
           variant.dimensions.length = variant.dimensions.length ? Number(variant.dimensions.length) : undefined;
           variant.dimensions.width = variant.dimensions.width ? Number(variant.dimensions.width) : undefined;
           variant.dimensions.height = variant.dimensions.height ? Number(variant.dimensions.height) : undefined;
+
+          // Map size chart index to actual path
+          if (variant.dimensions.sizeChartIndex !== undefined && variant.dimensions.sizeChartIndex !== null && variant.dimensions.sizeChartIndex !== "") {
+            variant.dimensions.sizeChart = allVariantSizeCharts[Number(variant.dimensions.sizeChartIndex)] || "";
+          } else {
+            variant.dimensions.sizeChart = variant.dimensions.sizeChart || "";
+          }
+
+          delete variant.dimensions.sizeChartIndex;
+          delete variant.dimensions.sizeChartPreviewUrl;
         }
 
         variant.materials?.forEach((material) => {

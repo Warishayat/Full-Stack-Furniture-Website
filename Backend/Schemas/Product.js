@@ -58,7 +58,8 @@ const VariantSchema = new Schema({
     unit: {
       type: String,
       default: "cm"
-    }
+    },
+    sizeChart: String
   },
 
   materials: [MaterialSchema]

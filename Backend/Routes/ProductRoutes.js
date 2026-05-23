@@ -20,7 +20,8 @@ product_router.post(
   upload.fields([
     { name: "images", maxCount: 150 },
     { name: "swatches", maxCount: 100 },
-    { name: "sizeChart", maxCount: 1 }
+    { name: "sizeChart", maxCount: 1 },
+    { name: "variantSizeCharts", maxCount: 50 }
   ]),
   createProduct
 );
@@ -35,7 +36,8 @@ product_router.put(
   upload.fields([
     { name: "images", maxCount: 150 },
     { name: "swatches", maxCount: 100 },
-    { name: "sizeChart", maxCount: 1 }
+    { name: "sizeChart", maxCount: 1 },
+    { name: "variantSizeCharts", maxCount: 50 }
   ]),
   updateProduct
 );
