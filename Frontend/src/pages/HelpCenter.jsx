@@ -6,7 +6,7 @@ const HelpCenter = () => {
     { icon: Truck, title: "Delivery & Logistics", desc: "Shipping times, white-glove service, and tracking.", link: "/shipping-policy" },
     { icon: RotateCcw, title: "Returns & Exchanges", desc: "Our 30-day return policy and process.", link: "/warranty" },
     { icon: CreditCard, title: "Payment & Finance", desc: "Secure payments and 0% APR options.", link: "/about" },
-    { icon: ShieldCheck, title: "Warranty & Quality", desc: "Our lifetime structural guarantee.", link: "/warranty" },
+    { icon: ShieldCheck, title: "Warranty & Quality", desc: "Our 2-year structural guarantee.", link: "/warranty" },
     { icon: User, title: "My Account", desc: "Managing your orders and profile.", link: "/login" },
     { icon: Package, title: "Care & Assembly", desc: "Maintenance tips and assembly guides.", link: "/about" }
   ];
@@ -15,7 +15,7 @@ const HelpCenter = () => {
     { q: "What is White-Glove delivery?", a: "Our signature service where specialists assemble and position your furniture in the room of your choice, then remove all packaging." },
     { q: "Do you offer international shipping?", a: "Yes, we ship to over 50 countries worldwide using specialized carbon-neutral logistics." },
     { q: "How do I care for my velvet sofa?", a: "We recommend regular light vacuuming and using a professional velvet brush to maintain the pile." },
-    { q: "What does the lifetime warranty cover?", a: "It covers the structural integrity of all solid wood frames for the lifetime of the original owner." }
+    { q: "What does the 2-year warranty cover?", a: "It covers the structural integrity of all solid wood frames for 2 years from the date of purchase." }
   ];
 
   return (

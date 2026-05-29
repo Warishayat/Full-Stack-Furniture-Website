@@ -162,7 +162,7 @@ const Home = () => {
               <p className="text-[7px] font-bold text-gray-500 uppercase tracking-widest">Hardwood</p>
             </div>
             <div className="p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-sm">
-              <p className="text-sm font-black text-[#D7282F] mb-0.5">25 Yr</p>
+              <p className="text-sm font-black text-[#D7282F] mb-0.5">2 Yr</p>
               <p className="text-[7px] font-bold text-gray-500 uppercase tracking-widest">Warranty</p>
             </div>
             <div className="p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-sm">
@@ -417,7 +417,7 @@ const Home = () => {
               },
               {
                 q: "What warranty do you offer on frames?",
-                a: "Every single EliteSeating frame is backed by our signature 25-Year Quality Frame Guarantee, insuring your pieces against structural defects for generations to come."
+                a: "Every single EliteSeating frame is backed by our signature 2-Year Quality Frame Guarantee, insuring your pieces against structural defects for generations to come."
               },
               {
                 q: "Do you offer flexible financing?",

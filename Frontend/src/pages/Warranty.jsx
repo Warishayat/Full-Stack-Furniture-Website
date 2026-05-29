@@ -16,14 +16,14 @@ const Warranty = () => {
       <div className="container mx-auto px-6 lg:px-12 pb-20">
         <div className="max-w-3xl mx-auto text-center mb-24">
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Quality Promise</span>
-           <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 mb-8 tracking-tighter">Lifetime <span className="italic text-gray-400">Assurance</span></h1>
+           <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 mb-8 tracking-tighter">2-Year <span className="italic text-gray-400">Assurance</span></h1>
            <p className="text-gray-600 text-lg leading-relaxed font-medium">Our furniture is built to last for generations. We stand behind every joint, stitch, and finish with our comprehensive warranty program.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 mb-32">
            {[
-             { icon: ShieldCheck, title: 'Lifetime Structural', desc: 'Warranty on all solid wood frames and structural integrity for the lifetime of the original owner.' },
-             { icon: Award, title: '5-Year Fabric', desc: 'Protection against manufacturing defects in upholstery, leather, and seam construction.' },
+             { icon: ShieldCheck, title: '2-Year Structural', desc: 'Warranty on all solid wood frames and structural integrity for 2 years from the date of purchase.' },
+             { icon: Award, title: '2-Year Fabric', desc: 'Protection against manufacturing defects in upholstery, leather, and seam construction.' },
              { icon: Heart, title: 'Care Program', desc: 'Annual maintenance tips and professional cleaning discounts for all EliteSeating members.' }
            ].map((item, idx) => (
              <div key={idx} className="p-12 bg-[#F2EDE7] rounded-sm border border-gray-100 group hover:border-[#D7282F] transition-all duration-500">

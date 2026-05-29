@@ -566,7 +566,7 @@ const ProductDetail = () => {
                         <Check className="w-3.5 h-3.5 text-[#51823F]" /> 0% APR AVAILABLE
                      </div>
                      <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#51823F]" /> 15 YEAR GUARANTEE
+                        <ShieldCheck className="w-3.5 h-3.5 text-[#51823F]" /> 2 YEAR GUARANTEE
                      </div>
                      <div className="flex items-center gap-2 text-[10px] font-bold text-gray-600">
                         <Info className="w-3.5 h-3.5 text-[#51823F]" /> BEST PRICE GUARANTEE
@@ -622,7 +622,7 @@ const ProductDetail = () => {
                     <div className="grid grid-cols-2 gap-x-12 gap-y-8">
                        <div><p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Primary Material</p><p className="text-gray-900 font-medium">{product.specifications?.general?.material || 'Hand-selected premium materials'}</p></div>
                        <div><p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Artisanal Finish</p><p className="text-gray-900 font-medium">{product.specifications?.general?.finish || 'Bespoke hand-finish'}</p></div>
-                       <div><p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Heritage Warranty</p><p className="text-gray-900 font-medium">{product.specifications?.general?.warranty || '15 Year Structural Guarantee'}</p></div>
+                       <div><p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Heritage Warranty</p><p className="text-gray-900 font-medium">{product.specifications?.general?.warranty || '2 Year Structural Guarantee'}</p></div>
                        <div><p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Logistics Weight</p><p className="text-gray-900 font-medium">{product.specifications?.packaging?.boxWeight || 'N/A'}</p></div>
                     </div>
                   )}

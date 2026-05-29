@@ -209,7 +209,7 @@ const Cart = () => {
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="font-serif font-bold text-gray-950 mb-1">Lifetime Assurance</h4>
+                  <h4 className="font-serif font-bold text-gray-950 mb-1">2-Year Assurance</h4>
                   <p className="text-xs text-gray-500 leading-relaxed">Every piece is backed by our comprehensive warranty.</p>
                 </div>
               </div>

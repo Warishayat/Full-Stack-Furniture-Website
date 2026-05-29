@@ -161,9 +161,14 @@ const ManageProducts = () => {
   };
 
   const removeImage = (index) => {
-    const newImages = [...images];
-    newImages.splice(index, 1);
-    setImages(newImages);
+    const isExisting = imagePreviews[index] && !imagePreviews[index].startsWith('blob:');
+    
+    if (!isExisting) {
+      const blobsBefore = imagePreviews.slice(0, index).filter(url => url && url.startsWith('blob:')).length;
+      const newImages = [...images];
+      newImages.splice(blobsBefore, 1);
+      setImages(newImages);
+    }
 
     const newPreviews = [...imagePreviews];
     newPreviews.splice(index, 1);
@@ -429,7 +434,7 @@ const ManageProducts = () => {
         oldPrice: v.oldPrice !== undefined ? v.oldPrice : '',
         stock: v.stock !== undefined ? v.stock : 0,
         sku: v.sku || '',
-        imageIndexes: [],
+        imageIndexes: v.images ? v.images.map(img => (product.images || []).indexOf(img)).filter(idx => idx !== -1) : [],
         dimensions: { ...v.dimensions, sizeChartIndex: null, sizeChartPreviewUrl: v.dimensions?.sizeChart || null },
         materials: v.materials?.length ? v.materials.map(m => ({
           ...m,
@@ -485,8 +490,34 @@ const ManageProducts = () => {
       submitData.append('description', formData.description);
       submitData.append('category', formData.category);
       
-      submitData.append('variants', JSON.stringify(formData.variants));
+      const variantsToSubmit = formData.variants.map(variant => {
+        const existingImagesForVariant = [];
+        const newImageIndexesForVariant = [];
+
+        (variant.imageIndexes || []).forEach(idx => {
+           const url = imagePreviews[idx];
+           if (url) {
+             if (!url.startsWith('blob:')) {
+               existingImagesForVariant.push(url);
+             } else {
+               const newIdx = imagePreviews.slice(0, idx).filter(u => u && u.startsWith('blob:')).length;
+               newImageIndexesForVariant.push(newIdx);
+             }
+           }
+        });
+
+        return {
+           ...variant,
+           existingImages: existingImagesForVariant,
+           imageIndexes: newImageIndexesForVariant,
+        };
+      });
+
+      submitData.append('variants', JSON.stringify(variantsToSubmit));
       submitData.append('specifications', JSON.stringify(formData.specifications));
+
+      const existingImages = imagePreviews.filter(url => url && !url.startsWith('blob:'));
+      submitData.append('existingImages', JSON.stringify(existingImages));
 
       if (images.length > 0) {
         toast.info(`Compressing and optimizing ${images.length} images for fast upload...`, { autoClose: 2000 });
