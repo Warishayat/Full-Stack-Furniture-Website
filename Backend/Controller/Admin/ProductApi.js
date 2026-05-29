@@ -1,6 +1,7 @@
 const Product = require("../../Schemas/Product");
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const { getCache, setCache, clearCachePrefix } = require("../../Utils/cache");
 
 const createProduct = async (req, res) => {
   try {
@@ -156,6 +157,8 @@ const createProduct = async (req, res) => {
       product
     });
 
+    clearCachePrefix("product_");
+
   } catch (error) {
     console.error("CREATE PRODUCT ERROR:", error);
 
@@ -177,6 +180,13 @@ const createProduct = async (req, res) => {
 const getAllProducts = async (req, res) => {
   try {
     const { category, page = 1, limit = 10 } = req.query;
+    
+    const cacheKey = `product_all_${category || 'all'}_${page}_${limit}`;
+    const cachedData = getCache(cacheKey);
+    if (cachedData) {
+      return res.status(200).json(cachedData);
+    }
+
     let filter = {};
     if (category) {
       filter.category = category;
@@ -194,14 +204,17 @@ const getAllProducts = async (req, res) => {
 
     const total = await Product.countDocuments(filter);
 
-    res.status(200).json({
+    const responseData = {
       success: true,
       count: products.length,
       total,
       page: Number(page),
       pages: Math.ceil(total / limit),
       products,
-    });
+    };
+
+    setCache(cacheKey, responseData);
+    res.status(200).json(responseData);
 
   } catch (error) {
     console.error("GET PRODUCTS ERROR:", error);
@@ -233,6 +246,8 @@ const deleteProduct = async (req, res) => {
     }
 
     await Product.findByIdAndDelete(id);
+
+    clearCachePrefix("product_");
 
     res.status(200).json({
       success: true,
@@ -284,7 +299,17 @@ const updateProduct = async (req, res) => {
     if (description !== undefined) product.description = description;
     if (category !== undefined) product.category = category;
 
+    let existingGlobalImages = product.images;
+    if (req.body.existingImages) {
+      try {
+        existingGlobalImages = JSON.parse(req.body.existingImages);
+      } catch (e) {
+        existingGlobalImages = product.images;
+      }
+    }
     const allImages = (files?.images || []).map(f => f.path);
+    product.images = [...existingGlobalImages, ...allImages];
+
     const allSwatches = (files?.swatches || []).map(f => f.path);
     const allVariantSizeCharts = (files?.variantSizeCharts || []).map(f => f.path);
 
@@ -320,7 +345,7 @@ const updateProduct = async (req, res) => {
         }
 
         // Handle variant images: combine existing strings and newly uploaded file paths
-        const existing = variant.existingImages || variant.images || [];
+        const existing = variant.existingImages !== undefined ? variant.existingImages : (variant.images || []);
         const uploaded = (variant.imageIndexes || [])
           .map(i => allImages[i])
           .filter(Boolean);
@@ -390,6 +415,8 @@ const updateProduct = async (req, res) => {
 
     await product.save();
 
+    clearCachePrefix("product_");
+
     res.status(200).json({
       success: true,
       message: "Product updated successfully",
@@ -417,6 +444,12 @@ const getSingleProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
+    const cacheKey = `product_single_${id}`;
+    const cachedData = getCache(cacheKey);
+    if (cachedData) {
+      return res.status(200).json(cachedData);
+    }
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
         success: false,
@@ -439,7 +472,7 @@ const getSingleProduct = async (req, res) => {
     const firstMaterial = firstVariant?.materials?.[0] || null;
     const firstColor = firstMaterial?.colors?.[0] || null;
 
-    res.status(200).json({
+    const responseData = {
       success: true,
       product,
 
@@ -451,7 +484,10 @@ const getSingleProduct = async (req, res) => {
         price: firstVariant?.price || 0,
         stock: firstVariant?.stock || 0
       }
-    });
+    };
+
+    setCache(cacheKey, responseData);
+    res.status(200).json(responseData);
 
   } catch (error) {
     console.error("GET SINGLE PRODUCT ERROR:", error);
@@ -472,6 +508,12 @@ const SearchProduct = async (req, res) => {
         success: false,
         message: "Search query is required"
       });
+    }
+
+    const cacheKey = `product_search_${query.toLowerCase()}_${page}_${limit}`;
+    const cachedData = getCache(cacheKey);
+    if (cachedData) {
+      return res.status(200).json(cachedData);
     }
 
     const searchRegex = new RegExp(query, "i");
@@ -496,14 +538,17 @@ const SearchProduct = async (req, res) => {
       ]
     });
 
-    res.status(200).json({
+    const responseData = {
       success: true,
       count: products.length,
       total,
       page: Number(page),
       pages: Math.ceil(total / limit),
       products
-    });
+    };
+
+    setCache(cacheKey, responseData);
+    res.status(200).json(responseData);
 
   } catch (error) {
     console.error("SEARCH ERROR:", error);

@@ -1,6 +1,7 @@
 const Category = require("../../Schemas/Category");
 const slugify = require("slugify");
 const mongoose = require("mongoose");
+const { getCache, setCache, clearCachePrefix } = require("../../Utils/cache");
 
 const createCategory = async (req, res) => {
   try {
@@ -37,6 +38,8 @@ const createCategory = async (req, res) => {
 
     await category.save();
 
+    clearCachePrefix("category_");
+
     res.status(201).json({
       success: true,
       message: "Category created successfully",
@@ -62,15 +65,24 @@ const createCategory = async (req, res) => {
 
 const getAllCategories = async (req, res) => {
   try {
+    const cacheKey = "category_all";
+    const cachedData = getCache(cacheKey);
+    if (cachedData) {
+      return res.status(200).json(cachedData);
+    }
+
     const categories = await Category.find().sort({ createdAt: -1 });
-    res.status(200).json({
+    const responseData = {
       success: true,
       count: categories.length,
       message: categories.length
         ? "Categories fetched successfully"
         : "No categories found",
       categories,
-    });
+    };
+
+    setCache(cacheKey, responseData);
+    res.status(200).json(responseData);
 
   } catch (error) {
     console.error("GET CATEGORIES ERROR:", error);
@@ -112,6 +124,8 @@ const deleteCategory = async (req, res) => {
       });
     }
 
+    clearCachePrefix("category_");
+
     res.status(200).json({
       success: true,
       message: "Category deleted successfully",
@@ -131,6 +145,12 @@ const deleteCategory = async (req, res) => {
 const getSingleCategory = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const cacheKey = `category_single_${id}`;
+    const cachedData = getCache(cacheKey);
+    if (cachedData) {
+      return res.status(200).json(cachedData);
+    }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -152,11 +172,14 @@ const getSingleCategory = async (req, res) => {
 
     const children = await Category.find({ parent: id }).select("name slug");
 
-    res.status(200).json({
+    const responseData = {
       success: true,
       category,
       children,
-    });
+    };
+
+    setCache(cacheKey, responseData);
+    res.status(200).json(responseData);
 
   } catch (error) {
     console.error("GET SINGLE CATEGORY ERROR:", error);
