@@ -74,7 +74,7 @@ const Home = () => {
     });
   }, [featuredProducts, categories]);
 
-  const displayDiningProducts = useMemo(() => {
+  const displaySofaBedProducts = useMemo(() => {
     return featuredProducts.filter(p => {
       const catName = p.category?.name || p.category?.title || p.category?.slug || '';
       const title = p.title || '';
@@ -84,17 +84,17 @@ const Home = () => {
       const parentId = catObj?.parent?._id || catObj?.parent || '';
       const parentObj = parentId ? categories.find(c => c._id === parentId) : null;
       
-      const isDiningCategory = 
-        catName.toLowerCase().includes('dining') || 
-        catName.toLowerCase().includes('dinning') ||
-        (catObj?.slug || '').toLowerCase().includes('dining') ||
-        (catObj?.slug || '').toLowerCase().includes('dinning') ||
-        (parentObj?.name || '').toLowerCase().includes('dining') ||
-        (parentObj?.name || '').toLowerCase().includes('dinning') ||
-        (parentObj?.slug || '').toLowerCase().includes('dining') ||
-        (parentObj?.slug || '').toLowerCase().includes('dinning');
+      const isSofaBedCategory = 
+        catName.toLowerCase().includes('sofa bed') || 
+        catName.toLowerCase().includes('sofa cum bed') ||
+        (catObj?.slug || '').toLowerCase().includes('sofa-bed') ||
+        (catObj?.slug || '').toLowerCase().includes('sofa-cum-bed') ||
+        (parentObj?.name || '').toLowerCase().includes('sofa bed') ||
+        (parentObj?.name || '').toLowerCase().includes('sofa cum bed') ||
+        (parentObj?.slug || '').toLowerCase().includes('sofa-bed') ||
+        (parentObj?.slug || '').toLowerCase().includes('sofa-cum-bed');
 
-      return isDiningCategory || title.toLowerCase().includes('dining') || title.toLowerCase().includes('dinning');
+      return isSofaBedCategory || title.toLowerCase().includes('sofa bed') || title.toLowerCase().includes('sofa cum bed');
     });
   }, [featuredProducts, categories]);
 
@@ -178,7 +178,7 @@ const Home = () => {
       </section>
 
       {/* Flash Sofa Sale Section */}
-      <section className="py-32 bg-white hidden lg:block">
+      <section className="py-24 bg-white">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
             {/* Large Banner */}
@@ -231,27 +231,27 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Flash Dining Sale Section */}
-      <section className="py-32 bg-[#F2EDE7]/30 hidden lg:block">
+      {/* Sofa Cum Bed Section */}
+      <section className="py-24 bg-[#F2EDE7]/30">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row-reverse gap-16 lg:gap-24">
             {/* Large Banner */}
             <div className="lg:w-1/2 relative group overflow-hidden">
               <div className="aspect-[4/5] lg:aspect-[16/10] xl:aspect-[16/10] overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?q=80&w=2671&auto=format&fit=crop" 
-                  alt="Flash Dining Sale"
+                  src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=2670&auto=format&fit=crop" 
+                  alt="Sofa Cum Bed Collection"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[3s]"
                 />
               </div>
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-700" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-12">
-                <span className="text-[10px] font-black uppercase tracking-[0.6em] mb-6">Culinary Elegance</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.6em] mb-6">Versatile Elegance</span>
                 <h2 className="text-7xl md:text-9xl font-serif font-black mb-10 leading-[0.8] tracking-tighter">
-                  Dining<br /><span className="italic text-gray-400">Affair</span>
+                  Sofa<br /><span className="italic text-gray-400">Beds</span>
                 </h2>
-                <Link to="/products?category=dining" className="px-12 py-5 bg-white text-gray-900 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-[#D7282F] hover:text-white transition-all shadow-2xl">
-                  Shop The Suite
+                <Link to="/products?category=sofa-bed" className="px-12 py-5 bg-white text-gray-900 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-[#D7282F] hover:text-white transition-all shadow-2xl">
+                  Shop Sofa Beds
                 </Link>
               </div>
               <div className="absolute inset-8 border border-white/20 pointer-events-none group-hover:inset-6 transition-all duration-700" />
@@ -260,8 +260,8 @@ const Home = () => {
             {/* Product Grid */}
             <div className="lg:w-1/2">
                <div className="mb-12">
-                  <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Exquisite Artistry</span>
-                  <h3 className="text-4xl font-serif font-black text-gray-900 tracking-tighter">Luxury <span className="italic text-gray-400">Settings</span></h3>
+                  <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Smart Living</span>
+                  <h3 className="text-4xl font-serif font-black text-gray-900 tracking-tighter">Sofa <span className="italic text-gray-400">Cum Bed</span></h3>
                </div>
                 <div className="grid grid-cols-2 gap-8 lg:gap-12 animate-fade-in">
                   {loading ? (
@@ -275,7 +275,7 @@ const Home = () => {
                       </div>
                     ))
                   ) : (
-                    displayDiningProducts.slice(0, 4).map((product) => (
+                    displaySofaBedProducts.slice(0, 4).map((product) => (
                       <ProductCard key={product._id} product={product} />
                     ))
                   )}
