@@ -90,8 +90,12 @@ const OrderSchema = new Schema(
 
     stripeSessionId: String,
     stripePaymentIntentId: String,
+    
+    assemblyService: {
+      type: Boolean,
+      default: false,
+    },
 
-   
     notes: String,
   },
   { timestamps: true }

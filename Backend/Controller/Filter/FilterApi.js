@@ -1,6 +1,7 @@
 const Product = require("../../Schemas/Product");
 const Category = require("../../Schemas/Category");
 const mongoose = require("mongoose");
+const { getCache, setCache } = require("../../Utils/cache");
 
 // Helper to escape special regex characters safely
 const escapeRegex = (string) => {
@@ -11,6 +12,10 @@ const escapeRegex = (string) => {
 const getFilteredProducts = async (req, res) => {
   try {
     const { variant, material, color, category, minPrice, maxPrice, search } = req.query;
+
+    const cacheKey = `filter_prod_${category || ''}_${variant || ''}_${material || ''}_${color || ''}_${minPrice || ''}_${maxPrice || ''}_${search || ''}`;
+    const cachedData = getCache(cacheKey);
+    if (cachedData) return res.json(cachedData);
 
     let query = {};
 
@@ -69,13 +74,20 @@ const getFilteredProducts = async (req, res) => {
       if (maxPrice) query["variants.price"].$lte = Number(maxPrice);
     }
 
-    const products = await Product.find(query).populate("category").sort({ createdAt: -1 });
+    const products = await Product.find(query)
+      .populate("category", "name slug")
+      .select("-specifications -variants.dimensions")
+      .sort({ createdAt: -1 })
+      .lean();
 
-    res.json({
+    const responseData = {
       success: true,
       count: products.length,
       products: products
-    });
+    };
+
+    setCache(cacheKey, responseData, 300); // cache for 5 minutes
+    res.json(responseData);
 
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -85,6 +97,11 @@ const getFilteredProducts = async (req, res) => {
 const getFilterOptions = async (req, res) => {
   try {
     const { category } = req.query;
+    
+    const cacheKey = `filter_opts_${category || 'all'}`;
+    const cachedData = getCache(cacheKey);
+    if (cachedData) return res.json(cachedData);
+
     let query = {};
 
     if (category) {
@@ -117,7 +134,9 @@ const getFilterOptions = async (req, res) => {
       }
     }
 
-    const products = await Product.find(query);
+    const products = await Product.find(query)
+      .select("variants.name variants.materials.name variants.materials.colors.name")
+      .lean();
 
     const variants = [];
     const materials = [];
@@ -153,12 +172,15 @@ const getFilterOptions = async (req, res) => {
       return result;
     };
 
-    res.json({
+    const responseData = {
       success: true,
       variants: deduplicateOptions(variants).sort(),
       materials: deduplicateOptions(materials).sort(),
       colors: deduplicateOptions(colors).sort()
-    });
+    };
+
+    setCache(cacheKey, responseData, 3600); // Cache filter options longer
+    res.json(responseData);
 
   } catch (error) {
     res.status(500).json({ message: error.message });

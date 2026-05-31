@@ -161,7 +161,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border-top: 2px solid #f1f5f9; padding-top: 16px;">
                         <tr>
                           <td style="font-size: 14px; color: #64748b; padding: 6px 0;">Order subtotal</td>
-                          <td align="right" style="font-size: 14px; font-weight: bold; color: #1e293b; padding: 6px 0;">£${order.totalPrice.toLocaleString()}</td>
+                          <td align="right" style="font-size: 14px; font-weight: bold; color: #1e293b; padding: 6px 0;">£${(order.totalPrice - (order.assemblyService ? 50 : 0)).toLocaleString()}</td>
                         </tr>
                         <tr>
                           <td style="font-size: 14px; color: #64748b; padding: 6px 0;">Delivery</td>
@@ -171,6 +171,11 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                           <td style="font-size: 14px; color: #64748b; padding: 6px 0;">VAT</td>
                           <td align="right" style="font-size: 14px; font-weight: bold; color: #64748b; padding: 6px 0;">£0.00</td>
                         </tr>
+                        ${order.assemblyService ? `
+                        <tr>
+                          <td style="font-size: 14px; color: #64748b; padding: 6px 0;">Assembly Service</td>
+                          <td align="right" style="font-size: 14px; font-weight: bold; color: #1e293b; padding: 6px 0;">£50.00</td>
+                        </tr>` : ''}
                         <tr style="border-top: 1px solid #f1f5f9;">
                           <td style="font-size: 18px; font-weight: bold; color: #1e293b; padding: 16px 0 0 0;">Total Paid</td>
                           <td align="right" style="font-size: 22px; font-weight: 800; color: #1e293b; padding: 16px 0 0 0;">£${order.totalPrice.toLocaleString()}</td>
@@ -198,7 +203,8 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                             <h4 style="margin: 0 0 12px 0; font-size: 12px; font-weight: bold; color: #475569; text-transform: uppercase; letter-spacing: 0.05em;">Artisanal Delivery Details</h4>
                             <p style="margin: 0; font-size: 14px; font-weight: bold; color: #51823f; line-height: 1.5;">${deliveryDateStr}</p>
                             <p style="margin: 4px 0 0 0; font-size: 13px; color: #475569; line-height: 1.5;">
-                              Bespoke premium white-glove logistics. Our white-glove professionals will fully assemble and position your purchase in your room of choice.
+                              Bespoke premium white-glove logistics.
+                              ${order.assemblyService ? '<br/><br/><strong style="color: #4f46e5;">★ Premium Assembly Included</strong><br/>Our professionals will fully assemble and position your purchase in your room of choice.' : ''}
                             </p>
                           </td>
                         </tr>

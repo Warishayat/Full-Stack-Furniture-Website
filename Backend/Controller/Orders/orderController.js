@@ -551,7 +551,7 @@ const jwt = require("jsonwebtoken");
 
   const createOrderAndSession = async (req, res) => {
   try {
-    const { items, shippingAddress, email, createAccount, password, deliveryDate, paymentMethodType } = req.body;
+    const { items, shippingAddress, email, createAccount, password, deliveryDate, paymentMethodType, assemblyService } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ success: false, message: "No items in checkout" });
@@ -606,7 +606,10 @@ const jwt = require("jsonwebtoken");
     }));
 
     // Calculate total price: Strictly sum of items (no VAT or delivery)
-    const totalPrice = orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    let totalPrice = orderItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    if (assemblyService) {
+      totalPrice += 50;
+    }
 
     // Create a new pending order
     const order = new Order({
@@ -621,6 +624,7 @@ const jwt = require("jsonwebtoken");
         postalCode: shippingAddress?.postalCode || "",
         country: shippingAddress?.country || "GB",
       },
+      assemblyService: Boolean(assemblyService),
       paymentMethod: paymentMethodType === "cod" ? "cod" : "card",
       paymentStatus: "pending",
       orderStatus: paymentMethodType === "cod" ? "confirmed" : "processing",
@@ -660,6 +664,19 @@ const jwt = require("jsonwebtoken");
       },
       quantity: item.quantity,
     }));
+
+    if (assemblyService) {
+      lineItems.push({
+        price_data: {
+          currency: "gbp",
+          product_data: {
+            name: "Premium Assembly Service",
+          },
+          unit_amount: 50 * 100,
+        },
+        quantity: 1,
+      });
+    }
 
     // Generate success and cancel URLs using the request origin
     const frontend_url = req.headers.origin || "http://localhost:5173";
