@@ -250,14 +250,28 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (product) {
-      addToCart(product._id, quantity, {
-        variant: currentVariant?.name,
-        material: currentMaterial?.name,
-        color: currentColor?.name,
-        price: currentPrice,
-        title: product.title,
-        image: activeImage
-      });
+      try {
+        addToCart(product._id, quantity, {
+          variant: currentVariant?.name,
+          material: currentMaterial?.name,
+          color: currentColor?.name,
+          price: currentPrice,
+          title: product.title,
+          image: activeImage
+        });
+        if (window.fbq) {
+          window.fbq('track', 'AddToCart', {
+            content_ids: [product._id],
+            content_name: product.title,
+            content_type: 'product',
+            value: currentPrice * quantity,
+            currency: 'GBP'
+          });
+        }
+        toast.success('Added to basket');
+      } catch (error) {
+        console.error('Add to cart error:', error);
+      }
     }
   };
 

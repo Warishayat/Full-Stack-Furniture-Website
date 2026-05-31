@@ -34,6 +34,18 @@ const Checkout = () => {
     }
   }, [user, isGuestFlow]);
 
+  // InitiateCheckout tracking
+  useEffect(() => {
+    if (cartItems.length > 0 && window.fbq && !window.initiateCheckoutTracked) {
+      window.fbq('track', 'InitiateCheckout', {
+        value: cartTotal,
+        currency: 'GBP',
+        num_items: cartItems.length
+      });
+      window.initiateCheckoutTracked = true;
+    }
+  }, [cartItems, cartTotal]);
+
   // Login form state (Gate existing customer)
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
@@ -100,6 +112,7 @@ const Checkout = () => {
 
   const deliveryOptions = getDynamicDeliveryOptions();
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState('');
+  const [assemblyService, setAssemblyService] = useState(false);
 
   // Set default email if user is logged in
   useEffect(() => {
@@ -204,7 +217,8 @@ const Checkout = () => {
         createAccount,
         password: checkoutPassword,
         deliveryDate: selectedDeliveryDate,
-        paymentMethodType: paymentMethod
+        paymentMethodType: paymentMethod,
+        assemblyService
       };
 
       const { data } = await API.post('/api/order/createOrderAndSession', payload);
@@ -655,6 +669,22 @@ const Checkout = () => {
                   </p>
 
                   {/* Date Cards */}
+                  {/* Assembly Service Checkbox */}
+                  <div className="mb-6 p-5 rounded-2xl border-2 border-slate-100 bg-white hover:border-[#51823F] transition-all">
+                    <label className="flex items-start gap-4 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={assemblyService}
+                        onChange={() => setAssemblyService(!assemblyService)}
+                        className="rounded text-green-600 focus:ring-green-500 w-5 h-5 mt-0.5 shrink-0 cursor-pointer"
+                      />
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">Add Premium Assembly Service (+£50.00)</p>
+                        <p className="text-xs text-slate-500 mt-1 leading-relaxed">Our expert logistics team will fully assemble your items in your room of choice and remove all packaging.</p>
+                      </div>
+                    </label>
+                  </div>
+
                   <div className="space-y-4">
                     {deliveryOptions.map((opt) => {
                       const isSelected = selectedDeliveryDate === opt.date;
@@ -861,12 +891,19 @@ const Checkout = () => {
                     <span className="font-bold text-[#51823F]">Free</span>
                   </div>
 
+                  {assemblyService && (
+                    <div className="flex justify-between text-slate-500">
+                      <span className="font-semibold">Assembly Service</span>
+                      <span className="font-bold">£50.00</span>
+                    </div>
+                  )}
+
                   <div className="h-[1px] bg-slate-100 w-full my-4" />
 
                   <div className="flex justify-between items-baseline text-slate-900">
                     <span className="text-lg font-serif font-black">Total</span>
                     <div className="text-right">
-                      <span className="text-2xl font-black text-slate-900">£{cartTotal.toLocaleString()}</span>
+                      <span className="text-2xl font-black text-slate-900">£{(cartTotal + (assemblyService ? 50 : 0)).toLocaleString()}</span>
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Including VAT £0.00</p>
                     </div>
                   </div>

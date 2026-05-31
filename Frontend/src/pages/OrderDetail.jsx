@@ -217,6 +217,12 @@ const OrderDetail = () => {
                         <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-1">Artisanal Delivery Details</p>
                         <p className="font-bold text-primary-950 text-lg text-accent">{order.notes ? order.notes.replace('Delivery Date: ', '') : 'Estimated 9-13 days'}</p>
                         <p className="text-xs text-primary-500 mt-1">Bespoke premium white-glove logistics.</p>
+                        {order.assemblyService && (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 mt-2 text-[9px] font-black uppercase tracking-widest rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+                             <div className="w-1 h-1 rounded-full bg-indigo-500" />
+                             Premium Assembly Included
+                          </span>
+                        )}
                      </div>
                   </div>
                </div>
@@ -275,12 +281,18 @@ const OrderDetail = () => {
                <div className="space-y-6 relative z-10">
                   <div className="flex justify-between items-center text-primary-300">
                      <span className="text-xs uppercase tracking-widest font-black">Subtotal</span>
-                     <span className="font-bold">£{order.totalPrice?.toLocaleString()}</span>
+                     <span className="font-bold">£{order.totalPrice ? (order.totalPrice - (order.assemblyService ? 50 : 0)).toLocaleString() : 0}</span>
                   </div>
                   <div className="flex justify-between items-center text-primary-300">
                      <span className="text-xs uppercase tracking-widest font-black">Shipping</span>
                      <span className="text-accent font-black uppercase tracking-widest text-[9px]">Complimentary</span>
                   </div>
+                  {order.assemblyService && (
+                    <div className="flex justify-between items-center text-primary-300">
+                       <span className="text-xs uppercase tracking-widest font-black">Assembly Service</span>
+                       <span className="font-bold">£50</span>
+                    </div>
+                  )}
                   <div className="h-px bg-white/10 my-6" />
                   <div className="flex justify-between items-end">
                      <span className="text-sm font-serif font-bold italic">Total Value</span>

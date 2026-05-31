@@ -17,7 +17,16 @@ const Success = () => {
     const verifyAndClear = async () => {
       try {
         if (orderId) {
-          await API.post('/api/order/verifyPayment', { orderId });
+          const { data } = await API.post('/api/order/verifyPayment', { orderId });
+          if (data && data.order && window.fbq && !window.purchaseTracked) {
+            window.fbq('track', 'Purchase', {
+              value: data.order.totalPrice,
+              currency: 'GBP',
+              content_ids: data.order.items.map(i => i.product),
+              content_type: 'product'
+            });
+            window.purchaseTracked = true;
+          }
         }
       } catch (err) {
         console.log('Payment verification fallback error:', err);

@@ -35,6 +35,10 @@ const Products = () => {
     let found = flatCats.find(c => (c.slug || '').toLowerCase() === slugOrId.toLowerCase());
     if (found) return found._id;
 
+    // Try exact name match
+    found = flatCats.find(c => (c.name || '').toLowerCase() === slugOrId.toLowerCase());
+    if (found) return found._id;
+
     // Try singular/plural match
     const searchSlugSingular = slugOrId.toLowerCase().endsWith('s') ? slugOrId.toLowerCase().slice(0, -1) : slugOrId.toLowerCase();
     const searchSlugPlural = slugOrId.toLowerCase() + 's';
@@ -42,13 +46,24 @@ const Products = () => {
     found = flatCats.find(c => {
       const cSlug = (c.slug || '').toLowerCase();
       const cName = (c.name || '').toLowerCase();
+      // Prioritize exact singular/plural match
       return cSlug === searchSlugSingular || 
              cSlug === searchSlugPlural || 
              cName === searchSlugSingular || 
-             cName === searchSlugPlural ||
-             cName === slugOrId.toLowerCase() ||
-             cSlug.includes(searchSlugSingular) ||
-             searchSlugSingular.includes(cSlug);
+             cName === searchSlugPlural;
+    });
+
+    if (found) return found._id;
+
+    // As a last resort, check for partial match if the query is very specific
+    found = flatCats.find(c => {
+      const cSlug = (c.slug || '').toLowerCase();
+      const cName = (c.name || '').toLowerCase();
+      
+      // Don't match "sofa" to "sofa-cum-bed" when searching for "sofas"
+      if (searchSlugSingular === 'sofa' && cSlug.includes('cum')) return false;
+      
+      return cSlug.includes(searchSlugSingular) || searchSlugSingular.includes(cSlug);
     });
 
     return found ? found._id : slugOrId;
@@ -92,10 +107,12 @@ const Products = () => {
         const allCats = catRes.data.categories || catRes.data || [];
         
         // Structure categories for sidebar
+        const excludedCategories = ['dinning sets', 'tables', 'chairs'];
         const structured = allCats.filter(c => !c.parent).map(p => ({
           ...p,
           children: allCats.filter(c => (c.parent?._id === p._id) || (c.parent === p._id))
-        })).filter(p => p.image || p.children.length > 0);
+        })).filter(p => p.image || p.children.length > 0)
+          .filter(cat => !excludedCategories.includes(cat.name.toLowerCase()));
         
         setCategories(structured);
       } catch (error) {
@@ -110,19 +127,14 @@ const Products = () => {
       try {
         setLoading(true);
         
-        let endpoint = '/product/getAllProducts';
+        let endpoint = '/filter/products';
         let params = {};
 
-        if (searchQuery) {
-          endpoint = '/product/search';
-          params.query = searchQuery;
-        } else if (activeFilters.category || activeFilters.material || activeFilters.color || activeFilters.variant) {
-          endpoint = '/filter/products';
-          if (activeFilters.category) params.category = activeFilters.category;
-          if (activeFilters.material) params.material = activeFilters.material;
-          if (activeFilters.color) params.color = activeFilters.color;
-          if (activeFilters.variant) params.variant = activeFilters.variant;
-        }
+        if (searchQuery) params.search = searchQuery;
+        if (activeFilters.category) params.category = activeFilters.category;
+        if (activeFilters.material) params.material = activeFilters.material;
+        if (activeFilters.color) params.color = activeFilters.color;
+        if (activeFilters.variant) params.variant = activeFilters.variant;
 
         const { data } = await API.get(endpoint, { params });
         const items = data.products || (Array.isArray(data) ? data : []);

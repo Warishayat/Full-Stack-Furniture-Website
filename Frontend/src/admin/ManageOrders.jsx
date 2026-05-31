@@ -153,9 +153,16 @@ const ManageOrders = () => {
                        </div>
                     </td>
                     <td className="p-8">
-                       <div className="flex items-center gap-2 text-gray-900 font-black">
-                          <CreditCard className="w-4 h-4 text-[#D7282F]" />
-                          <span className="text-xl font-serif">£{order.totalPrice?.toLocaleString(undefined, { minimumFractionDigits: 0 })}</span>
+                       <div className="flex flex-col gap-1">
+                         <div className="flex items-center gap-2 text-gray-900 font-black">
+                            <CreditCard className="w-4 h-4 text-[#D7282F]" />
+                            <span className="text-xl font-serif">£{order.totalPrice?.toLocaleString(undefined, { minimumFractionDigits: 0 })}</span>
+                         </div>
+                         {order.assemblyService && (
+                           <span className="inline-block mt-1 text-[8px] font-black uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-sm w-max">
+                             Assembly Included
+                           </span>
+                         )}
                        </div>
                     </td>
                     <td className="p-8">

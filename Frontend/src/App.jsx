@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AppLayout from './components/layout/AppLayout';
@@ -48,10 +48,21 @@ const LuxuryLoader = () => (
   </div>
 );
 
+const PixelRouteTracker = () => {
+  const location = useLocation();
+  useEffect(() => {
+    if (window.fbq) {
+      window.fbq('track', 'PageView');
+    }
+  }, [location.pathname, location.search]);
+  return null;
+};
+
 function App() {
   return (
     <>
       <ScrollToTop />
+      <PixelRouteTracker />
       <ToastContainer 
         position="bottom-right" 
         autoClose={3000} 
@@ -63,6 +74,7 @@ function App() {
         draggable
         pauseOnHover
         theme="light"
+        className="mt-20 md:mt-0"
       />
       
       <Suspense fallback={<LuxuryLoader />}>

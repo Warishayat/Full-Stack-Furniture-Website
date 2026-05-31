@@ -75,7 +75,10 @@ const Navbar = () => {
           children: cats.filter(c => (c.parent?._id === p._id) || (c.parent === p._id))
         })).filter(p => p.image || p.children.length > 0);
         
-        setCategories(structured);
+        const excludedCategories = ['dinning sets', 'tables', 'chairs'];
+        const filteredCategories = structured.filter(cat => !excludedCategories.includes(cat.name.toLowerCase()));
+        
+        setCategories(filteredCategories);
       } catch (err) { console.error(err); }
     };
     fetchCats();
