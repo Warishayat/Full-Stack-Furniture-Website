@@ -42,6 +42,7 @@ app.use("/review", review_router);
 app.use("/support", contactRouter);
 app.use("/newsletter", newsletterRouter);
 app.use("/wishlist", wishlistRouter);
+app.use("/", require("./Routes/feedRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
