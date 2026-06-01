@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Package, Tags, ShoppingCart, Activity, ChevronRight, TrendingUp, Mail, Users } from 'lucide-react';
+import { LayoutDashboard, Package, Tags, ShoppingCart, Activity, ChevronRight, TrendingUp, Mail, Users, Download } from 'lucide-react';
 import API from '../services/api';
 
 const AdminDashboard = () => {
@@ -57,6 +57,7 @@ const AdminDashboard = () => {
     { name: 'Logistics', path: '/admin/orders', icon: ShoppingCart },
     { name: 'Inquiries', path: '/admin/messages', icon: Mail },
     { name: 'Subscribers', path: '/admin/subscribers', icon: Users },
+    { name: 'Test Feed', path: '/admin/test-feed', icon: Download },
   ];
 
   return (

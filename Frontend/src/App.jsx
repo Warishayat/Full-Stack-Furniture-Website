@@ -37,6 +37,7 @@ const ManageCategories = lazy(() => import('./admin/ManageCategories'));
 const AdminOrders = lazy(() => import('./admin/ManageOrders'));
 const ManageMessages = lazy(() => import('./admin/ManageMessages'));
 const ManageSubscribers = lazy(() => import('./admin/ManageSubscribers'));
+const TestFeed = lazy(() => import('./admin/TestFeed'));
 
 // Luxury branded loading animation
 const LuxuryLoader = () => (
@@ -116,6 +117,7 @@ function App() {
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="messages" element={<ManageMessages />} />
                 <Route path="subscribers" element={<ManageSubscribers />} />
+                <Route path="test-feed" element={<TestFeed />} />
               </Route>
             </Route>
           </Route>
