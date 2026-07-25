@@ -36,7 +36,7 @@ const CookieConsent = () => {
           <div>
             <h4 className="text-white font-serif font-bold text-xl mb-2">Cookie Privacy</h4>
             <p className="text-primary-200 text-xs leading-relaxed font-medium">
-              We use refined cookies to ensure you have the most exceptional experience on our platform. By continuing, you agree to our elite privacy standards.
+              We use refined cookies to ensure you have the most exceptional experience on our platform. By continuing, you agree to our comfort privacy standards.
             </p>
           </div>
         </div>
@@ -46,7 +46,7 @@ const CookieConsent = () => {
             onClick={handleAccept}
             className="flex-1 py-4 bg-accent text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white hover:text-primary-950 transition-all shadow-lg"
           >
-            Accept Elite Cookies
+            Accept Comfort Cookies
           </button>
           <button
             onClick={handleDecline}

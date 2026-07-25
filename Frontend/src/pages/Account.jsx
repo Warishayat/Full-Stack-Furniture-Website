@@ -58,7 +58,7 @@ const Account = () => {
             </div>
 
             <div className="mt-12 p-10 border border-gray-100 rounded-sm">
-               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-6 block">Elite Member Since</h4>
+               <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em] mb-6 block">Comfort Member Since</h4>
                <p className="text-2xl font-serif font-black text-gray-900 italic">
                   {new Date(user.createdAt || Date.now()).getFullYear()}
                </p>
@@ -102,7 +102,7 @@ const Account = () => {
             <div className="mt-12 p-10 bg-gray-900 text-white rounded-sm flex items-center justify-between gap-10">
                <div>
                   <h3 className="text-2xl font-serif font-black italic mb-2 tracking-tight">Need assistance?</h3>
-                  <p className="text-gray-400 text-sm font-medium leading-relaxed">Our concierge team is available 24/7 for our elite members.</p>
+                  <p className="text-gray-400 text-sm font-medium leading-relaxed">Our concierge team is available 24/7 for our comfort members.</p>
                </div>
                <Link to="/contact" className="px-10 py-4 bg-[#D7282F] text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-gray-900 transition-all whitespace-nowrap">
                   Contact Specialist

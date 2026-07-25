@@ -152,7 +152,7 @@ const Home = () => {
             Handcrafted In <span className="italic text-gray-400">Great Britain</span>
           </h3>
           <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm mx-auto mb-8">
-            Every EliteSeating piece is meticulously hand-carved and custom upholstered using heritage fabrics, sustainable hardwood frames, and premium cushioning for lifetime longevity.
+            Every ComfortSeating piece is meticulously hand-carved and custom upholstered using heritage fabrics, sustainable hardwood frames, and premium cushioning for lifetime longevity.
           </p>
           
           {/* Key USPs styled beautifully */}
@@ -358,7 +358,7 @@ const Home = () => {
                 <ArrowRight className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Elite Returns</p>
+                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Comfort Returns</p>
                 <p className="text-[9px] font-bold text-gray-400 italic">14-Day Assurance</p>
               </div>
             </div>
@@ -417,7 +417,7 @@ const Home = () => {
               },
               {
                 q: "What warranty do you offer on frames?",
-                a: "Every single EliteSeating frame is backed by our signature 2-Year Quality Frame Guarantee, insuring your pieces against structural defects for generations to come."
+                a: "Every single ComfortSeating frame is backed by our signature 2-Year Quality Frame Guarantee, insuring your pieces against structural defects for generations to come."
               },
               {
                 q: "Do you offer flexible financing?",

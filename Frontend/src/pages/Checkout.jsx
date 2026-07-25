@@ -249,7 +249,7 @@ const Checkout = () => {
       {/* Branded Trustpilot Mini Header */}
       <div className="border-b border-gray-100 bg-white py-4 px-6 md:px-12 flex flex-col justify-center items-center text-xs font-semibold text-gray-500 gap-2">
         <Link to="/" className="text-2xl font-serif font-black tracking-widest text-slate-900 hover:text-green-700 transition-colors">
-          ELITESEATING <span className="text-sm font-sans font-light tracking-widest text-slate-400">LTD</span>
+          ComfortSeating <span className="text-sm font-sans font-light tracking-widest text-slate-400">LTD</span>
         </Link>
         <div className="flex items-center justify-between w-full max-w-sm px-4">
           <span>Excellent 4.6 out of 5</span>

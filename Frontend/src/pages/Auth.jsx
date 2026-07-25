@@ -134,7 +134,7 @@ const Auth = () => {
 
           <div className="mt-12 pt-8 border-t border-gray-100">
             <p className="text-gray-500 text-sm mb-4">
-              {isLogin ? "New to EliteSeating?" : "Already have an account?"}
+              {isLogin ? "New to ComfortSeating?" : "Already have an account?"}
             </p>
             <button
               onClick={() => setIsLogin(!isLogin)}

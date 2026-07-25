@@ -152,13 +152,13 @@ const Footer = () => {
         <div className="border-t border-gray-100 pt-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
           <div className="flex flex-col gap-4">
             <Link to="/" className="flex items-center gap-2">
-              <span className="text-2xl font-bold tracking-tighter text-black">EliteSeating</span>
+              <span className="text-2xl font-bold tracking-tighter text-black">ComfortSeating</span>
               <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 border-l border-gray-200 pl-2">Ltd.</span>
             </Link>
             <p className="text-[10px] text-gray-400 leading-relaxed max-w-2xl">
-              © 2026 EliteSeating Ltd. All Rights Reserved. | Company no. 05349107 | Vat no. GB867099668
+              © 2026 ComfortSeating Ltd. All Rights Reserved. | Company no. 05349107 | Vat no. GB867099668
               <br />
-              EliteSeating Ltd. is authorised and regulated by the Financial Conduct Authority, register number 719600 and act as a credit broker and not a lender.
+              ComfortSeating Ltd. is authorised and regulated by the Financial Conduct Authority, register number 719600 and act as a credit broker and not a lender.
             </p>
           </div>
           

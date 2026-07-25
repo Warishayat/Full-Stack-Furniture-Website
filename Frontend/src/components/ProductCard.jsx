@@ -22,10 +22,10 @@ const ProductCard = memo(({ product }) => {
       const lastVariant = product.variants[product.variants.length - 1];
       defaultVariantName = lastVariant.name || '';
       
-      if (lastVariant.images && lastVariant.images.length > 0) {
+      if (product.images && product.images.length > 0) {
+        img = product.images[0];
+      } else if (lastVariant.images && lastVariant.images.length > 0) {
         img = lastVariant.images[0];
-      } else if (product.images && product.images.length > 0) {
-        img = product.images[product.images.length - 1]; // Fallback to last product image
       }
 
       if (lastVariant.materials && lastVariant.materials.length > 0) {

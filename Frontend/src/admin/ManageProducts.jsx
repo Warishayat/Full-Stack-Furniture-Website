@@ -756,7 +756,7 @@ const ManageProducts = () => {
 
       {/* MODAL - Step-by-Step Wizard */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm overflow-y-auto">
+        <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm overflow-y-auto">
           <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-5xl flex flex-col max-h-[90vh] overflow-hidden animate-fade-in-up">
             
             {/* Modal Header */}
@@ -809,7 +809,7 @@ const ManageProducts = () => {
                           value={formData.title}
                           onChange={handleInputChange}
                           className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-indigo-600/20 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-lg font-bold text-slate-900"
-                          placeholder="Elite Seating Masterpiece"
+                          placeholder="Comfort Seating Masterpiece"
                           required
                         />
                       </div>
@@ -871,15 +871,24 @@ const ManageProducts = () => {
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Collection Assets ({imagePreviews.length})</p>
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                           {imagePreviews.map((url, idx) => (
-                            <div key={idx} className="relative group aspect-square rounded-2xl overflow-hidden border border-gray-100 shadow-xl">
-                              <img src={url} className="w-full h-full object-cover" />
-                              <button 
-                                type="button"
-                                onClick={() => removeImage(idx)}
-                                className="absolute inset-0 bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                              >
-                                <Trash2 className="w-5 h-5" />
-                              </button>
+                            <div key={idx} className="relative group aspect-square rounded-2xl border border-gray-100 shadow-xl">
+                              <div className="w-full h-full rounded-2xl overflow-hidden relative">
+                                <img src={url} className="w-full h-full object-cover" />
+                                <button 
+                                  type="button"
+                                  onClick={() => removeImage(idx)}
+                                  className="absolute inset-0 bg-red-600/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                                >
+                                  <Trash2 className="w-5 h-5" />
+                                </button>
+                              </div>
+                              {/* Hover Zoom Preview */}
+                              <div className="fixed z-[99999] pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.3)] border-4 border-white overflow-hidden scale-95 group-hover:scale-100 flex items-center justify-center">
+                                <img src={url} className="w-full h-full object-contain" />
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase">
+                                  Preview
+                                </div>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -1130,23 +1139,31 @@ const ManageProducts = () => {
                               {imagePreviews.map((url, imgIdx) => {
                                 const isSelected = (variant.imageIndexes || []).includes(imgIdx);
                                 return (
-                                  <button
-                                    key={imgIdx}
-                                    type="button"
-                                    onClick={() => updateVariantImageIndex(vIdx, imgIdx)}
-                                    className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                                      isSelected 
-                                        ? 'border-blue-600 ring-4 ring-blue-50' 
-                                        : 'border-transparent opacity-30 grayscale hover:opacity-60'
-                                    }`}
-                                  >
-                                    <img src={url} className="w-full h-full object-cover" />
-                                    {isSelected && (
-                                      <div className="absolute inset-0 bg-blue-600/30 flex items-center justify-center">
-                                        <Check className="w-5 h-5 text-white stroke-[4]" />
+                                  <div key={imgIdx} className="relative group inline-block">
+                                    <button
+                                      type="button"
+                                      onClick={() => updateVariantImageIndex(vIdx, imgIdx)}
+                                      className={`relative w-16 h-16 rounded-xl overflow-hidden border-2 transition-all block ${
+                                        isSelected 
+                                          ? 'border-blue-600 ring-4 ring-blue-50' 
+                                          : 'border-transparent opacity-30 grayscale hover:opacity-100 hover:grayscale-0'
+                                      }`}
+                                    >
+                                      <img src={url} className="w-full h-full object-cover" />
+                                      {isSelected && (
+                                        <div className="absolute inset-0 bg-blue-600/30 flex items-center justify-center">
+                                          <Check className="w-5 h-5 text-white stroke-[4]" />
+                                        </div>
+                                      )}
+                                    </button>
+                                    {/* Hover Zoom Preview */}
+                                    <div className="fixed z-[99999] pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.3)] border-4 border-white overflow-hidden scale-95 group-hover:scale-100 flex items-center justify-center">
+                                      <img src={url} className="w-full h-full object-contain" />
+                                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase">
+                                        Preview
                                       </div>
-                                    )}
-                                  </button>
+                                    </div>
+                                  </div>
                                 );
                               })}
                               {imagePreviews.length === 0 && <p className="text-[10px] text-gray-400 italic">Please upload collection assets in Step 2 first to link them to this size.</p>}

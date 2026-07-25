@@ -24,7 +24,7 @@ const Warranty = () => {
            {[
              { icon: ShieldCheck, title: '2-Year Structural', desc: 'Warranty on all solid wood frames and structural integrity for 2 years from the date of purchase.' },
              { icon: Award, title: '2-Year Fabric', desc: 'Protection against manufacturing defects in upholstery, leather, and seam construction.' },
-             { icon: Heart, title: 'Care Program', desc: 'Annual maintenance tips and professional cleaning discounts for all EliteSeating members.' }
+             { icon: Heart, title: 'Care Program', desc: 'Annual maintenance tips and professional cleaning discounts for all ComfortSeating members.' }
            ].map((item, idx) => (
              <div key={idx} className="p-12 bg-[#F2EDE7] rounded-sm border border-gray-100 group hover:border-[#D7282F] transition-all duration-500">
                 <item.icon className="w-12 h-12 text-[#D7282F] mb-8" />
@@ -53,7 +53,7 @@ const Warranty = () => {
               </ul>
            </div>
            <div className="lg:w-1/2 relative min-h-[400px]">
-              <img src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?q=80&w=2628&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="EliteSeating Craftsmanship" />
+              <img src="https://images.unsplash.com/photo-1581539250439-c96689b516dd?q=80&w=2628&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-60" alt="ComfortSeating Craftsmanship" />
               <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-transparent to-transparent" />
            </div>
         </div>
