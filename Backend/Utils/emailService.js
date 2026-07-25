@@ -76,7 +76,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
 
     // Setup beautiful, luxury themed email template
     const mailOptions = {
-      from: `"EliteSeating LTD" <${process.env.EMAIL_USER}>`,
+      from: `"ComfortSeating LTD" <${process.env.EMAIL_USER}>`,
       to: recipientEmail,
       subject: `Your Order is Confirmed: #${orderIdShort}`,
       html: `
@@ -96,7 +96,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                   <!-- Luxury Header -->
                   <tr>
                     <td align="center" style="background-color: #1e293b; padding: 40px 40px 32px 40px; color: #ffffff;">
-                      <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; font-family: Garamond, Georgia, serif;">ELITESEATING</h1>
+                      <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; font-family: Garamond, Georgia, serif;">ComfortSeating</h1>
                       <p style="margin: 4px 0 24px 0; font-size: 9px; letter-spacing: 0.3em; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Premium Bespoke Seating</p>
                       
                       <div style="width: 48px; height: 1px; background-color: #ef4444; margin: 0 auto 24px auto;"></div>
@@ -221,7 +221,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                       </p>
                       <div style="margin: 24px 0; height: 1px; background-color: #e2e8f0; width: 100%;"></div>
                       <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.6;">
-                        &copy; ${new Date().getFullYear()} EliteSeating LTD. All rights reserved.<br />
+                        &copy; ${new Date().getFullYear()} ComfortSeating LTD. All rights reserved.<br />
                         High-End Premium Artisan Seating Manufacturers & White-Glove Logistics.
                       </p>
                     </td>

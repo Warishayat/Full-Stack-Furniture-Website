@@ -10,7 +10,7 @@ exports.subscribe = async (req, res) => {
 
     const existing = await Newsletter.findOne({ email });
     if (existing) {
-      return res.status(400).json({ message: "You are already part of our elite circle." });
+      return res.status(400).json({ message: "You are already part of our Comfort circle." });
     }
 
     const newSubscriber = new Newsletter({ email });
@@ -18,7 +18,7 @@ exports.subscribe = async (req, res) => {
 
     res.status(201).json({ 
       success: true, 
-      message: "Welcome to the EliteSeating inner circle. You will now receive our latest curations." 
+      message: "Welcome to the ComfortSeating inner circle. You will now receive our latest curations." 
     });
   } catch (error) {
     console.error("Newsletter Error:", error);

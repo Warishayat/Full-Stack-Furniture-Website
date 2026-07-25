@@ -158,6 +158,7 @@ const createProduct = async (req, res) => {
     });
 
     clearCachePrefix("product_");
+    clearCachePrefix("filter_");
 
   } catch (error) {
     console.error("CREATE PRODUCT ERROR:", error);
@@ -248,6 +249,7 @@ const deleteProduct = async (req, res) => {
     await Product.findByIdAndDelete(id);
 
     clearCachePrefix("product_");
+    clearCachePrefix("filter_");
 
     res.status(200).json({
       success: true,
@@ -416,6 +418,7 @@ const updateProduct = async (req, res) => {
     await product.save();
 
     clearCachePrefix("product_");
+    clearCachePrefix("filter_");
 
     res.status(200).json({
       success: true,
