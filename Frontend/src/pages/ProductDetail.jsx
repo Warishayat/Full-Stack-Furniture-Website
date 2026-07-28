@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, ArrowRight, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, Info, Ruler, Star, CreditCard, Sparkles, Calendar, X, ZoomIn, ZoomOut } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, ArrowRight, Plus, Minus, Check, ShieldCheck, Truck, ChevronDown, ChevronLeft, ChevronRight, Info, Ruler, Star, CreditCard, Sparkles, Calendar, X, ZoomIn, ZoomOut } from 'lucide-react';
 import API from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -327,6 +327,24 @@ const ProductDetail = () => {
     </div>
   );
 
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    const images = currentVariant?.images?.length > 0 ? currentVariant.images : product?.images || [];
+    if (!images.length) return;
+    const currentIndex = images.indexOf(activeImage);
+    const prevIndex = (currentIndex - 1 + images.length) % images.length;
+    setActiveImage(images[prevIndex]);
+  };
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    const images = currentVariant?.images?.length > 0 ? currentVariant.images : product?.images || [];
+    if (!images.length) return;
+    const currentIndex = images.indexOf(activeImage);
+    const nextIndex = (currentIndex + 1) % images.length;
+    setActiveImage(images[nextIndex]);
+  };
+
   return (
     <div className="bg-white min-h-screen pt-28 lg:pt-36">
       {/* Breadcrumbs */}
@@ -345,7 +363,7 @@ const ProductDetail = () => {
           
           {/* Left: Product Media */}
           <div className="lg:w-[60%] space-y-4">
-            <div className="relative bg-white border border-gray-100 overflow-hidden">
+            <div className="relative bg-white border border-gray-100 overflow-hidden group">
                {/* Hot Sell Badge */}
                <div className="absolute top-4 left-0 z-10">
                   <span className="bg-[#D7282F] text-white text-[10px] font-bold px-4 py-1 uppercase shadow-sm">Hot Sell</span>
@@ -354,8 +372,26 @@ const ProductDetail = () => {
                <img 
                  src={activeImage} 
                  alt={product.title} 
-                 className="w-full h-auto object-contain aspect-square"
+                 className="w-full h-auto object-contain aspect-square transition-opacity duration-300"
                />
+
+               {/* Carousel Arrows */}
+               {(currentVariant?.images?.length > 1 || product?.images?.length > 1) && (
+                 <>
+                   <button 
+                     onClick={handlePrevImage} 
+                     className="absolute top-1/2 left-4 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white hover:scale-110 rounded-full flex items-center justify-center shadow-lg text-gray-800 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
+                   >
+                     <ChevronLeft className="w-6 h-6" />
+                   </button>
+                   <button 
+                     onClick={handleNextImage} 
+                     className="absolute top-1/2 right-4 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white hover:scale-110 rounded-full flex items-center justify-center shadow-lg text-gray-800 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
+                   >
+                     <ChevronRight className="w-6 h-6" />
+                   </button>
+                 </>
+               )}
             </div>
             
             <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
