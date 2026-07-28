@@ -146,7 +146,7 @@ const webhookHandler = async (req, res) => {
               if (userDoc) finalEmail = userDoc.email;
             }
             if (finalEmail) {
-              await sendOrderConfirmationEmail(finalEmail, order);
+              sendOrderConfirmationEmail(finalEmail, order).catch(err => console.log("Email error:", err));
             }
           }
           return res.status(200).json({ received: true });
@@ -193,7 +193,7 @@ const webhookHandler = async (req, res) => {
             if (userDoc) finalEmail = userDoc.email;
           }
           if (finalEmail) {
-            await sendOrderConfirmationEmail(finalEmail, existingOrder);
+            sendOrderConfirmationEmail(finalEmail, existingOrder).catch(err => console.log("Email error:", err));
           }
         }
         return res.status(200).json({ received: true });
@@ -642,7 +642,7 @@ const jwt = require("jsonwebtoken");
       // Send confirmation email
       const finalEmail = email || resolvedUser?.email;
       if (finalEmail) {
-        await sendOrderConfirmationEmail(finalEmail, order).catch(err => console.log("Email error:", err));
+        sendOrderConfirmationEmail(finalEmail, order).catch(err => console.log("Email error:", err));
       }
       
       return res.status(200).json({
@@ -776,7 +776,7 @@ const verifyPayment = async (req, res) => {
           if (userDoc) finalEmail = userDoc.email;
         }
         if (finalEmail) {
-          await sendOrderConfirmationEmail(finalEmail, order);
+          sendOrderConfirmationEmail(finalEmail, order).catch(err => console.log("Email error:", err));
         }
 
         console.log("Order Confirmed");

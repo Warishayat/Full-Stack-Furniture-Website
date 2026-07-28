@@ -142,6 +142,75 @@ const deleteCategory = async (req, res) => {
   }
 };
 
+const updateCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid category ID",
+      });
+    }
+
+    const category = await Category.findById(id);
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    let name = req.body?.name?.trim();
+    if (name) {
+      category.name = name;
+      const baseSlug = slugify(name, { lower: true });
+      let slug = baseSlug;
+      let count = 1;
+
+      // Only check slug collision if name is actually changing to something that produces a different slug
+      if (category.slug !== slug) {
+        while (await Category.findOne({ slug, _id: { $ne: id } })) {
+          slug = `${baseSlug}-${count++}`;
+        }
+        category.slug = slug;
+      }
+    }
+
+    if (req.body?.parent !== undefined) {
+      category.parent = req.body.parent || null;
+    }
+
+    if (req.file) {
+      category.image = req.file.path || req.file.secure_url;
+    }
+
+    await category.save();
+
+    clearCachePrefix("category_");
+
+    res.status(200).json({
+      success: true,
+      message: "Category updated successfully",
+      category,
+    });
+  } catch (error) {
+    console.error("UPDATE CATEGORY ERROR:", error);
+
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: "Category already exists.",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+    });
+  }
+};
+
 const getSingleCategory = async (req, res) => {
   try {
     const { id } = req.params;
@@ -197,4 +266,5 @@ module.exports = {
   getAllCategories,
   deleteCategory,
   getSingleCategory,
+  updateCategory,
 }

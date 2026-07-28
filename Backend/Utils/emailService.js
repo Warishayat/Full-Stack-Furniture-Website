@@ -238,7 +238,8 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
 
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    // Silent error handler
+    console.error("Failed to send order confirmation email:", error);
+    // You can re-throw the error if you want the outer catch to handle it, or just log it.
   }
 };
 

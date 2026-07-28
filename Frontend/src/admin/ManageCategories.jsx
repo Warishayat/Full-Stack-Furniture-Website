@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Trash2, Plus, Image as ImageIcon, X, FolderTree, ChevronRight, Hash } from 'lucide-react';
+import { Trash2, Plus, Image as ImageIcon, X, FolderTree, ChevronRight, Hash, Edit2 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import API from '../services/api';
 
@@ -14,6 +14,7 @@ const ManageCategories = () => {
   const [parent, setParent] = useState('');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const fileInputRef = useRef(null);
 
   const fetchCategories = async () => {
@@ -59,19 +60,35 @@ const ManageCategories = () => {
       if (parent) formData.append('parent', parent);
       if (image) formData.append('image', image);
 
-      await API.post('/category/createCategory', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      if (editingId) {
+        await API.put(`/category/updateCategory/${editingId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        toast.success('Category Updated');
+      } else {
+        await API.post('/category/createCategory', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        toast.success('Category Orchestrated');
+      }
       
-      toast.success('Category Orchestrated');
       setIsModalOpen(false);
       resetForm();
       fetchCategories();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to create category');
+      toast.error(error.response?.data?.message || (editingId ? 'Failed to update category' : 'Failed to create category'));
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleEdit = (cat) => {
+    setEditingId(cat._id);
+    setName(cat.name);
+    setParent(cat.parent?._id || '');
+    setImagePreview(cat.image || null);
+    setImage(null);
+    setIsModalOpen(true);
   };
 
   const resetForm = () => {
@@ -79,6 +96,7 @@ const ManageCategories = () => {
     setParent('');
     setImage(null);
     setImagePreview(null);
+    setEditingId(null);
   };
 
   const handleDelete = async (id) => {
@@ -162,7 +180,14 @@ const ManageCategories = () => {
                          </div>
                        )}
                     </td>
-                    <td className="p-8 text-right">
+                    <td className="p-8 text-right space-x-2">
+                      <button 
+                        onClick={() => handleEdit(cat)}
+                        className="p-4 text-gray-500 bg-white hover:bg-gray-900 hover:text-white transition-all border border-gray-100 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0"
+                        title="Edit Department"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
                       <button 
                         onClick={() => handleDelete(cat._id)}
                         className="p-4 text-[#D7282F] bg-white hover:bg-[#D7282F] hover:text-white transition-all border border-gray-100 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0"
@@ -185,8 +210,8 @@ const ManageCategories = () => {
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-gray-100 animate-fade-in-up">
             <div className="flex justify-between items-center p-10 border-b border-gray-50">
               <div>
-                <h2 className="text-3xl font-serif font-black text-gray-900 tracking-tight">New Orchestration</h2>
-                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">Define a new departmental entity.</p>
+                <h2 className="text-3xl font-serif font-black text-gray-900 tracking-tight">{editingId ? 'Modify Orchestration' : 'New Orchestration'}</h2>
+                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">{editingId ? 'Update departmental entity settings.' : 'Define a new departmental entity.'}</p>
               </div>
               <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-all">
                 <X className="w-5 h-5" />
@@ -250,7 +275,7 @@ const ManageCategories = () => {
                   disabled={isSubmitting}
                   className="w-full py-5 bg-gray-900 text-white font-black uppercase tracking-[0.3em] text-[10px] rounded-sm hover:bg-[#D7282F] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 shadow-xl"
                 >
-                  {isSubmitting ? 'Synchronizing Archive...' : 'Finalize Orchestration'}
+                  {isSubmitting ? 'Synchronizing Archive...' : (editingId ? 'Update Orchestration' : 'Finalize Orchestration')}
                 </button>
               </div>
             </form>

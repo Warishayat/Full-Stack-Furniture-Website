@@ -44,7 +44,7 @@ const LuxuryLoader = () => (
   <div className="fixed inset-0 bg-white flex flex-col items-center justify-center z-50">
     <div className="flex flex-col items-center gap-4 animate-pulse">
       <div className="w-12 h-12 border border-gray-200 border-t-[#D7282F] rounded-full animate-spin"></div>
-      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-900">E&S COLLECTION</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-900">C&S COLLECTION</p>
     </div>
   </div>
 );
