@@ -51,10 +51,14 @@ const Footer = () => {
     <footer className="bg-white text-gray-700 pt-20 pb-10 border-t border-gray-100">
       <div className="container mx-auto px-6 lg:px-12">
         
-        {/* Social Icons Bar */}
         <div className="flex justify-center gap-6 mb-12">
-          {[FaFacebookF, FaInstagram, FaTwitter, FaLinkedinIn].map((Icon, idx) => (
-            <a key={idx} href="#" className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
+          {[
+            { Icon: FaFacebookF, url: "https://www.facebook.com/share/1EXvZWS5aU/?mibextid=wwXIfr" },
+            { Icon: FaInstagram, url: "https://www.instagram.com/comfortsittingltd?igsh=aG0zcWFxcmx0ajRx" },
+            { Icon: FaTwitter, url: "#" },
+            { Icon: FaLinkedinIn, url: "#" }
+          ].map(({ Icon, url }, idx) => (
+            <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
               <Icon size={18} className="text-gray-600" />
             </a>
           ))}
@@ -71,7 +75,7 @@ const Footer = () => {
               <li><Link to="/login" className="hover:underline">My Account</Link></li>
               <li className="pt-4 flex flex-col gap-2">
                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Speak to an advisor:</span>
-                 <a href="tel:07378957840" className="text-lg font-bold text-gray-900 hover:text-[#D7282F] transition-colors">07378957840</a>
+                 <a href="tel:07916603675" className="text-lg font-bold text-gray-900 hover:text-[#D7282F] transition-colors">07916603675</a>
               </li>
             </ul>
           </div>

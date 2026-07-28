@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import AppLayout from './components/layout/AppLayout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import ScrollToTop from './components/utils/ScrollToTop';
+import { FaWhatsapp } from 'react-icons/fa';
 
 // Lazy load user pages
 const Home = lazy(() => import('./pages/Home'));
@@ -123,6 +124,17 @@ function App() {
           </Route>
         </Routes>
       </Suspense>
+
+      {/* Floating WhatsApp Button */}
+      <a
+        href="https://wa.me/447916603675"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-[#25D366] text-white p-3.5 md:p-4 rounded-full shadow-[0_4px_14px_0_rgba(37,211,102,0.39)] hover:scale-110 hover:shadow-[0_6px_20px_rgba(37,211,102,0.23)] transition-all z-[9999] flex items-center justify-center"
+        aria-label="Chat with us on WhatsApp"
+      >
+        <FaWhatsapp className="w-7 h-7 md:w-8 md:h-8" />
+      </a>
     </>
   );
 }

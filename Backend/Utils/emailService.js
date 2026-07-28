@@ -217,7 +217,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                     <td align="center" style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 32px 40px; text-align: center;">
                       <p style="margin: 0; font-size: 13px; color: #475569; font-weight: 500;">Need assistance with your luxurious seating layout?</p>
                       <p style="margin: 8px 0 0 0; font-size: 12px; color: #64748b;">
-                        Reach out to our specialist concierges at <a href="mailto:eilteseatingltd@gmail.com" style="color: #ef4444; text-decoration: none; font-weight: bold;">eilteseatingltd@gmail.com</a>
+                        Reach out to our specialist concierges at <a href="mailto:comfortsitting152@gmail.com" style="color: #ef4444; text-decoration: none; font-weight: bold;">comfortsitting152@gmail.com</a>
                       </p>
                       <div style="margin: 24px 0; height: 1px; background-color: #e2e8f0; width: 100%;"></div>
                       <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.6;">
