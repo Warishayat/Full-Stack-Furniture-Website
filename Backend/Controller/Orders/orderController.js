@@ -45,7 +45,7 @@ const createCheckoutSession = async (req, res) => {
     const frontend_url = req.headers.origin || process.env.FRONTEND_URL || "http://localhost:5173";
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card", "afterpay_clearpay"],
+      payment_method_types: ["card", "afterpay_clearpay", "klarna"],
 
       mode: "payment",
 
@@ -122,8 +122,11 @@ const webhookHandler = async (req, res) => {
                 const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent, {
                   expand: ["payment_method"]
                 });
-                if (paymentIntent && paymentIntent.payment_method && paymentIntent.payment_method.type === "afterpay_clearpay") {
-                  order.paymentMethod = "afterpay_clearpay";
+                if (paymentIntent && paymentIntent.payment_method) {
+                  const pType = paymentIntent.payment_method.type;
+                  if (pType === "afterpay_clearpay") order.paymentMethod = "afterpay_clearpay";
+                  else if (pType === "klarna") order.paymentMethod = "klarna";
+                  else order.paymentMethod = "card";
                 } else {
                   order.paymentMethod = "card";
                 }
@@ -169,8 +172,11 @@ const webhookHandler = async (req, res) => {
               const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent, {
                 expand: ["payment_method"]
               });
-              if (paymentIntent && paymentIntent.payment_method && paymentIntent.payment_method.type === "afterpay_clearpay") {
-                existingOrder.paymentMethod = "afterpay_clearpay";
+              if (paymentIntent && paymentIntent.payment_method) {
+                const pType = paymentIntent.payment_method.type;
+                if (pType === "afterpay_clearpay") existingOrder.paymentMethod = "afterpay_clearpay";
+                else if (pType === "klarna") existingOrder.paymentMethod = "klarna";
+                else existingOrder.paymentMethod = "card";
               } else {
                 existingOrder.paymentMethod = "card";
               }
@@ -267,6 +273,8 @@ const webhookHandler = async (req, res) => {
 
       if (methodType === "afterpay_clearpay") {
         paymentMethod = "afterpay_clearpay";
+      } else if (methodType === "klarna") {
+        paymentMethod = "klarna";
       }
 
       // =========================
@@ -592,17 +600,25 @@ const jwt = require("jsonwebtoken");
       }
     }
 
-    // Format order items conforming to schema
-    const orderItems = items.map((item) => ({
-      product: item.product,
-      title: item.title,
-      image: item.image,
-      variant: { name: item.variant || "Standard" },
-      material: { name: item.material || "" },
-      color: { name: item.color || "Default" },
-      sku: item.sku || "",
-      quantity: Number(item.quantity) || 1,
-      price: Number(item.price) || 0,
+    // Format order items conforming to schema securely by fetching prices from database
+    const orderItems = await Promise.all(items.map(async (item) => {
+      const productDoc = await Product.findById(item.product);
+      if (!productDoc) throw new Error(`Product not found: ${item.title}`);
+      
+      const variantDoc = productDoc.variants.find(v => v.name === (item.variant || "Standard"));
+      const securePrice = variantDoc ? variantDoc.price : 0;
+
+      return {
+        product: productDoc._id,
+        title: productDoc.title,
+        image: variantDoc?.images?.[0] || productDoc.images?.[0] || item.image || "",
+        variant: { name: item.variant || "Standard" },
+        material: { name: item.material || "" },
+        color: { name: item.color || "Default" },
+        sku: variantDoc?.sku || item.sku || "",
+        quantity: Number(item.quantity) || 1,
+        price: securePrice, // CRITICAL FIX: NEVER TRUST FRONTEND PRICES
+      };
     }));
 
     // Calculate total price: Strictly sum of items (no VAT or delivery)
@@ -678,13 +694,13 @@ const jwt = require("jsonwebtoken");
       });
     }
 
-    // Generate success and cancel URLs using the request origin
-    const frontend_url = req.headers.origin || "http://localhost:5173";
+    // Generate success and cancel URLs dynamically based on request origin or env
+    const frontend_url = req.headers.origin || process.env.FRONTEND_URL || "http://localhost:5173";
     const success_url = `${frontend_url}/success?orderId=${order._id}`;
     const cancel_url = `${frontend_url}/cancel`;
 
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card", "afterpay_clearpay"],
+      payment_method_types: ["card", "afterpay_clearpay", "klarna"],
       mode: "payment",
       line_items: lineItems,
       customer_email: email || resolvedUser?.email,
@@ -752,8 +768,11 @@ const verifyPayment = async (req, res) => {
             const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent, {
               expand: ["payment_method"]
             });
-            if (paymentIntent && paymentIntent.payment_method && paymentIntent.payment_method.type === "afterpay_clearpay") {
-              order.paymentMethod = "afterpay_clearpay";
+            if (paymentIntent && paymentIntent.payment_method) {
+              const pType = paymentIntent.payment_method.type;
+              if (pType === "afterpay_clearpay") order.paymentMethod = "afterpay_clearpay";
+              else if (pType === "klarna") order.paymentMethod = "klarna";
+              else order.paymentMethod = "card";
             } else {
               order.paymentMethod = "card";
             }
@@ -763,12 +782,10 @@ const verifyPayment = async (req, res) => {
         }
         await order.save();
 
-        // Clear user's cart if they were logged in
         if (order.user) {
           await Cart.findOneAndUpdate({ user: order.user }, { items: [], totalPrice: 0 });
         }
 
-        // Dispatch premium order confirmation email
         const customerEmail = session.customer_details?.email || session.metadata?.customerEmail;
         let finalEmail = customerEmail;
         if (!finalEmail && order.user) {

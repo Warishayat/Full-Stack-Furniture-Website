@@ -27,6 +27,12 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
       year: "numeric"
     });
 
+    let formattedPaymentMethod = "Credit / Debit Card";
+    if (order.paymentMethod === "afterpay_clearpay") formattedPaymentMethod = "Clearpay / Afterpay";
+    else if (order.paymentMethod === "klarna") formattedPaymentMethod = "Klarna";
+    else if (order.paymentMethod === "cod") formattedPaymentMethod = "Cash on Delivery";
+
+
     // Helper to safely extract names from field objects
     const getFieldValue = (field) => {
       if (!field) return "";
@@ -126,9 +132,9 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                             <span style="font-size: 13px; font-weight: bold; color: #1e293b; font-family: monospace; word-break: break-all;">${order._id}</span>
                           </td>
                           <td align="right" style="padding-top: 12px; border-top: 1px solid #cbd5e1; margin-top: 12px;">
-                            <span style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; tracking: 0.05em; display: block; margin-bottom: 4px;">Payment Status</span>
+                            <span style="font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; tracking: 0.05em; display: block; margin-bottom: 4px;">Payment Method & Status</span>
                             <span style="font-size: 13px; font-weight: bold; color: ${order.paymentStatus === 'paid' ? '#10b981' : '#f59e0b'};">
-                              ${order.paymentStatus === 'paid' ? 'Paid / Confirmed' : (order.paymentMethod === 'cod' ? 'Pending (Cash on Delivery)' : 'Pending')}
+                              ${formattedPaymentMethod} • ${order.paymentStatus === 'paid' ? 'Paid / Confirmed' : (order.paymentMethod === 'cod' ? 'Pending (Cash on Delivery)' : 'Pending')}
                             </span>
                           </td>
                         </tr>
@@ -243,6 +249,28 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
   }
 };
 
-module.exports = {
-  sendOrderConfirmationEmail,
+const sendWelcomeEmail = async (recipientEmail, name) => {
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
+    const mailOptions = {
+      from: `"ComfortSeating" <${process.env.EMAIL_USER}>`,
+      to: recipientEmail,
+      subject: "Welcome to Premium Membership - ComfortSeating",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+          <h2 style="color: #51823f;">Welcome to ComfortSeating, ${name}!</h2>
+          <p>Thank you for becoming a Premium Member.</p>
+          <p>Your account has been successfully created along with your recent order. You can now log in to track your orders, save your details for faster checkout, and enjoy exclusive premium member benefits.</p>
+          <p>If you have any questions, feel free to reply to this email.</p>
+          <br/>
+          <p>Best regards,<br/>The ComfortSeating Team</p>
+        </div>
+      `,
+    };
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Failed to send welcome email:", error);
+  }
 };
+
+module.exports = { sendOrderConfirmationEmail, sendWelcomeEmail };

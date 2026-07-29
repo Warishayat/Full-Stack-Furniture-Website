@@ -51,12 +51,10 @@ const Checkout = () => {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  // Steps indicator: 1 (Contact), 2 (Delivery Dates), 3 (Payment)
   const [currentStep, setCurrentStep] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState('cod'); // 'cod' or 'card'
+  const [paymentMethod, setPaymentMethod] = useState('card'); 
 
-  // Form Fields State
-  const [title, setTitle] = useState(''); // Miss, Mr, Mrs, Ms
+  const [title, setTitle] = useState(''); 
   const [firstName, setFirstName] = useState('');
   const [surname, setSurname] = useState('');
   const [email, setEmail] = useState('');
@@ -175,10 +173,7 @@ const Checkout = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const handlePaymentSubmit = async () => {
-    if (paymentMethod === 'card') {
-      toast.error('Bank Transfer / Card payments are currently unavailable. Please select Cash on Delivery.');
-      return;
-    }
+
 
     try {
       setPaymentLoading(true);
@@ -623,7 +618,7 @@ const Checkout = () => {
                             onChange={() => setCreateAccount(!createAccount)}
                             className="rounded text-green-600 focus:ring-green-500 w-4 h-4 mt-0.5 shrink-0"
                           />
-                          <span>Create an account to save your details</span>
+                          <span>Do you want to be our premium member?</span>
                         </label>
                         {createAccount && (
                           <div className="animate-fade-in-up">
@@ -760,20 +755,9 @@ const Checkout = () => {
                   <div className="space-y-6">
                     <p className="text-xs font-black uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2">Select Payment Method</p>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div 
-                        onClick={() => setPaymentMethod('cod')}
-                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3 ${paymentMethod === 'cod' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
-                      >
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'cod' ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
-                          {paymentMethod === 'cod' && <Check className="w-3 h-3 stroke-[3]" />}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-800">Cash on Delivery</p>
-                          <p className="text-xs text-slate-500 mt-0.5">Pay when your order arrives</p>
-                        </div>
-                      </div>
 
+
+                    <div className="grid grid-cols-1 gap-4">
                       <div 
                         onClick={() => setPaymentMethod('card')}
                         className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3 ${paymentMethod === 'card' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
@@ -782,25 +766,21 @@ const Checkout = () => {
                           {paymentMethod === 'card' && <Check className="w-3 h-3 stroke-[3]" />}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-slate-800">Bank Transfer / Card</p>
-                          <p className="text-xs text-slate-500 mt-0.5">Pay securely via Stripe</p>
+                          <p className="text-sm font-bold text-slate-800">Secure Payment</p>
+                          <p className="text-xs text-slate-500 mt-0.5">Pay securely via Stripe (Card, Clearpay, Klarna)</p>
                         </div>
                       </div>
                     </div>
                     
-                    {paymentMethod === 'card' && (
-                      <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-sm font-semibold animate-fade-in">
-                        Bank Transfer / Card payments are currently unavailable due to maintenance. Please select Cash on Delivery to complete your order.
-                      </div>
-                    )}
+
 
                     <button
                       onClick={handlePaymentSubmit}
                       disabled={paymentLoading}
                       className="w-full py-5 bg-[#51823F] hover:bg-[#457036] text-white font-black uppercase tracking-[0.2em] text-sm rounded shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                     >
-                      {paymentMethod === 'card' ? <CreditCard className="w-5 h-5" /> : <Check className="w-5 h-5" />}
-                      {paymentLoading ? 'Processing...' : (paymentMethod === 'card' ? 'Complete with Stripe' : 'Confirm Order')}
+                      <CreditCard className="w-5 h-5" />
+                      {paymentLoading ? 'Processing...' : 'Complete with Stripe'}
                     </button>
                   </div>
 

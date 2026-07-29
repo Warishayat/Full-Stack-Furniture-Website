@@ -72,7 +72,7 @@ const OrderSchema = new Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["afterpay_clearpay", "card", "cod"],
+      enum: ["afterpay_clearpay", "card", "cod","klarna"],
       required: true,
     },
 
