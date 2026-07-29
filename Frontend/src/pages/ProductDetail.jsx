@@ -438,8 +438,8 @@ const ProductDetail = () => {
                 <span className="bg-[#D7282F] text-white text-[10px] font-bold px-2 py-0.5 ml-2 uppercase">SAVE</span>
               </div>
 
-              <div className="text-sm font-bold text-[#D7282F] underline underline-offset-4 mb-8 flex items-center gap-2 cursor-pointer">
-                 <CreditCard className="w-4 h-4" /> Interest Free Credit From £99.00 / mo
+              <div className="text-sm font-bold text-[#D7282F] mb-8 flex items-center gap-2">
+                 <CreditCard className="w-4 h-4" /> Pay in Easy Interest-Free Monthly Installments
               </div>
 
               {/* Selection Sections */}

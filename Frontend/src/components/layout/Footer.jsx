@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
 import { MapPin, Phone, Mail, Sparkles, ShieldCheck, Send } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import API from '../../services/api';
@@ -55,8 +55,7 @@ const Footer = () => {
           {[
             { Icon: FaFacebookF, url: "https://www.facebook.com/share/1EXvZWS5aU/?mibextid=wwXIfr" },
             { Icon: FaInstagram, url: "https://www.instagram.com/comfortsittingltd?igsh=aG0zcWFxcmx0ajRx" },
-            { Icon: FaTwitter, url: "#" },
-            { Icon: FaLinkedinIn, url: "#" }
+            { Icon: FaTiktok, url: "https://www.tiktok.com/@comfort.sitting?is_from_webapp=1&sender_device=pc" }
           ].map(({ Icon, url }, idx) => (
             <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
               <Icon size={18} className="text-gray-600" />
