@@ -75,6 +75,7 @@ const ManageProducts = () => {
     title: '',
     description: '',
     category: '',
+    legs: [],
     variants: [
       {
         name: 'Standard',
@@ -108,6 +109,7 @@ const ManageProducts = () => {
   const [images, setImages] = useState([]); // File objects
   const [imagePreviews, setImagePreviews] = useState([]); // URLs for preview
   const [swatches, setSwatches] = useState([]); // Swatch file objects
+  const [legImages, setLegImages] = useState([]); // Leg image file objects
   const [variantSizeCharts, setVariantSizeCharts] = useState([]); // Variant size chart file objects
   const [sizeChart, setSizeChart] = useState(null);
   const [sizeChartPreview, setSizeChartPreview] = useState(null);
@@ -377,6 +379,7 @@ const ManageProducts = () => {
       title: '',
       description: '',
       category: '',
+      legs: [],
       variants: [{ 
         name: 'Standard', 
         price: '', 
@@ -400,6 +403,7 @@ const ManageProducts = () => {
     setImages([]);
     setImagePreviews([]);
     setSwatches([]);
+    setLegImages([]);
     setVariantSizeCharts([]);
     setSizeChart(null);
     setSizeChartPreview(null);
@@ -428,6 +432,11 @@ const ManageProducts = () => {
       title: product.title || '',
       description: product.description || '',
       category: product.category?._id || product.category || '',
+      legs: product.legs?.length ? product.legs.map(l => ({
+        ...l,
+        imageIndexes: [],
+        images: l.images || (l.image ? [l.image] : [])
+      })) : [],
       variants: product.variants?.length ? product.variants.map(v => ({
         ...v,
         price: v.price !== undefined ? v.price : '',
@@ -514,6 +523,16 @@ const ManageProducts = () => {
       });
 
       submitData.append('variants', JSON.stringify(variantsToSubmit));
+      
+      const legsToSubmit = formData.legs.map(leg => {
+        return {
+          name: leg.name,
+          imageIndexes: leg.imageIndexes || [],
+          existingImages: leg.existingImages || leg.images || [],
+        };
+      });
+      submitData.append('legs', JSON.stringify(legsToSubmit));
+      
       submitData.append('specifications', JSON.stringify(formData.specifications));
 
       const existingImages = imagePreviews.filter(url => url && !url.startsWith('blob:'));
@@ -532,6 +551,13 @@ const ManageProducts = () => {
           swatches.map(sw => compressImage(sw))
         );
         compressedSwatches.forEach(sw => submitData.append('swatches', sw));
+      }
+
+      if (legImages.length > 0) {
+        const compressedLegImages = await Promise.all(
+          legImages.map(img => compressImage(img))
+        );
+        compressedLegImages.forEach(img => submitData.append('legImages', img));
       }
 
       if (variantSizeCharts.length > 0) {
@@ -840,6 +866,126 @@ const ManageProducts = () => {
                         placeholder="Describe the architectural soul of this piece..."
                       ></textarea>
                     </div>
+
+                    {/* Legs Options for Sofas */}
+                    {(() => {
+                      const selectedCat = categories.find(c => c._id === formData.category);
+                      const catName = selectedCat ? selectedCat.name.toLowerCase() : '';
+                      const isSofa = catName === 'sofa' || catName === 'sofas';
+                      
+                      if (isSofa) {
+                        return (
+                          <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100 shadow-inner mt-8">
+                            <div className="flex items-center justify-between mb-4">
+                              <label className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Legs Architecture (Sofa Only)</label>
+                              <button 
+                                type="button" 
+                                onClick={() => {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    legs: [...prev.legs, { name: '', images: [], imageIndexes: [] }]
+                                  }));
+                                }}
+                                className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white transition-colors rounded-lg text-[10px] font-black uppercase tracking-widest"
+                              >
+                                + Add Leg Option
+                              </button>
+                            </div>
+                            
+                            <div className="space-y-4">
+                              {formData.legs.map((leg, lIdx) => (
+                                <div key={lIdx} className="flex flex-col md:flex-row gap-4 items-start md:items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm relative">
+                                  <button 
+                                    type="button" 
+                                    onClick={() => {
+                                      const newLegs = [...formData.legs];
+                                      newLegs.splice(lIdx, 1);
+                                      setFormData(prev => ({ ...prev, legs: newLegs }));
+                                    }}
+                                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-100 text-red-600 rounded-full flex items-center justify-center hover:bg-red-600 hover:text-white transition-all"
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                  
+                                  <div className="flex-1 space-y-2 w-full">
+                                    <label className="text-[9px] font-black text-gray-400 uppercase">Leg Name (e.g. Wooden, Chrome)</label>
+                                    <input
+                                      type="text"
+                                      value={leg.name}
+                                      onChange={(e) => {
+                                        const newLegs = [...formData.legs];
+                                        newLegs[lIdx].name = e.target.value;
+                                        setFormData(prev => ({ ...prev, legs: newLegs }));
+                                      }}
+                                      className="w-full px-4 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold"
+                                      placeholder="Wooden Legs"
+                                    />
+                                  </div>
+                                  
+                                  <div className="flex-1 space-y-2 w-full">
+                                    <label className="text-[9px] font-black text-gray-400 uppercase block mb-1">Leg Images</label>
+                                    <div className="flex flex-col gap-2">
+                                      <div className="flex flex-wrap gap-2">
+                                        {(leg.previewUrls || leg.existingImages || leg.images || []).map((url, i) => (
+                                          <img key={i} src={url} className="w-10 h-10 object-cover rounded-xl border border-gray-200" alt="Leg" />
+                                        ))}
+                                        {!(leg.previewUrls?.length || leg.existingImages?.length || leg.images?.length) && (
+                                          <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center text-[8px] font-black text-gray-400 uppercase">None</div>
+                                        )}
+                                      </div>
+                                      <label className="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors cursor-pointer rounded-lg text-[9px] font-black uppercase text-gray-700 flex items-center justify-center gap-2">
+                                        <UploadCloud className="w-3.5 h-3.5" /> Upload Images
+                                        <input 
+                                          type="file"
+                                          accept="image/*"
+                                          multiple
+                                          className="hidden"
+                                          onChange={(e) => {
+                                            const files = Array.from(e.target.files);
+                                            if (!files.length) return;
+                                            
+                                            const currentLegImagesCount = legImages.length;
+                                            setLegImages([...legImages, ...files]);
+                                            
+                                            const newLegs = [...formData.legs];
+                                            const indices = files.map((_, i) => currentLegImagesCount + i);
+                                            const previews = files.map(f => URL.createObjectURL(f));
+                                            
+                                            newLegs[lIdx].imageIndexes = [...(newLegs[lIdx].imageIndexes || []), ...indices];
+                                            newLegs[lIdx].previewUrls = [...(newLegs[lIdx].previewUrls || []), ...previews];
+                                            setFormData(prev => ({ ...prev, legs: newLegs }));
+                                            toast.success(`${files.length} images loaded for ${newLegs[lIdx].name || 'Leg Option'}`);
+                                          }}
+                                        />
+                                      </label>
+                                      <button 
+                                        type="button" 
+                                        onClick={() => {
+                                          const newLegs = [...formData.legs];
+                                          newLegs[lIdx].imageIndexes = [];
+                                          newLegs[lIdx].previewUrls = [];
+                                          newLegs[lIdx].images = [];
+                                          newLegs[lIdx].existingImages = [];
+                                          setFormData(prev => ({ ...prev, legs: newLegs }));
+                                        }}
+                                        className="text-[9px] font-bold text-red-500 hover:underline text-left mt-1"
+                                      >
+                                        Clear Images
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              
+                              {formData.legs.length === 0 && (
+                                <p className="text-xs text-gray-400 italic text-center py-4">No legs configured for this sofa yet.</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
                   </div>
                   <div className="flex justify-end pt-6">
                     <button type="button" onClick={() => setActiveTab('gallery')} className="px-12 py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:shadow-xl hover:shadow-indigo-500/30 transition-all flex items-center gap-3 active:scale-95">

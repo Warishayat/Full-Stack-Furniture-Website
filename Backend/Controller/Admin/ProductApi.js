@@ -25,6 +25,7 @@ const createProduct = async (req, res) => {
 
     const allImages = (req.files?.images || []).map(file => file.path);
     const allSwatches = (req.files?.swatches || []).map(file => file.path);
+    const allLegImages = (req.files?.legImages || []).map(file => file.path);
     const allVariantSizeCharts = (req.files?.variantSizeCharts || []).map(file => file.path);
     const sizeChartFile = req.files?.sizeChart?.[0];
     const sizeChart = sizeChartFile ? sizeChartFile.path : "";
@@ -43,6 +44,22 @@ const createProduct = async (req, res) => {
       if (parsedSpecifications === null) parsedSpecifications = {};
     } catch (e) {
       return res.status(400).json({ success: false, message: "Invalid JSON format in specifications" });
+    }
+
+    let parsedLegs = [];
+    if (req.body.legs) {
+      try {
+        parsedLegs = typeof req.body.legs === "string" ? JSON.parse(req.body.legs) : req.body.legs;
+      } catch (e) {}
+      
+      parsedLegs.forEach(leg => {
+        const existing = leg.existingImages !== undefined ? leg.existingImages : (leg.images || []);
+        const uploaded = (leg.imageIndexes || []).map(i => allLegImages[i]).filter(Boolean);
+        leg.images = [...existing.filter(img => typeof img === "string"), ...uploaded];
+
+        delete leg.imageIndexes;
+        delete leg.existingImages;
+      });
     }
 
     if (!Array.isArray(parsedVariants)) {
@@ -142,6 +159,7 @@ const createProduct = async (req, res) => {
       category,
       images: allImages,
       variants: parsedVariants,
+      legs: parsedLegs,
       specifications: {
         ...parsedSpecifications,
         dimensions: {
@@ -313,6 +331,7 @@ const updateProduct = async (req, res) => {
     product.images = [...existingGlobalImages, ...allImages];
 
     const allSwatches = (files?.swatches || []).map(f => f.path);
+    const allLegImages = (files?.legImages || []).map(f => f.path);
     const allVariantSizeCharts = (files?.variantSizeCharts || []).map(f => f.path);
 
     if (variants !== undefined) {
@@ -403,6 +422,23 @@ const updateProduct = async (req, res) => {
           : specifications;
 
       product.specifications = parsedSpecs;
+    }
+
+    if (req.body.legs !== undefined) {
+      let parsedLegs = [];
+      try {
+        parsedLegs = typeof req.body.legs === "string" ? JSON.parse(req.body.legs) : req.body.legs;
+      } catch (e) {}
+      
+      parsedLegs.forEach(leg => {
+        const existing = leg.existingImages !== undefined ? leg.existingImages : (leg.images || []);
+        const uploaded = (leg.imageIndexes || []).map(i => allLegImages[i]).filter(Boolean);
+        leg.images = [...existing.filter(img => typeof img === "string"), ...uploaded];
+
+        delete leg.imageIndexes;
+        delete leg.existingImages;
+      });
+      product.legs = parsedLegs;
     }
 
     const sizeChartImage = files?.sizeChart?.[0]?.path;

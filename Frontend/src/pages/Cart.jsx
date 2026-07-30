@@ -150,6 +150,11 @@ const Cart = () => {
                             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
                               Color: <span className="text-gray-950">{item.color || 'Default'}</span>
                             </span>
+                            {item.leg && (
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                Legs: <span className="text-gray-950">{item.leg}</span>
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>

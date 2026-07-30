@@ -24,6 +24,10 @@ const OrderItemSchema = new Schema(
       name: String, // Leather
     },
 
+    leg: {
+      name: String, // Wooden
+    },
+
     color: {
       name: String, // Black
     },

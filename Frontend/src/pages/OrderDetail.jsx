@@ -160,6 +160,9 @@ const OrderDetail = () => {
                             {item.color?.name && (
                               <span>Color: <strong className="text-primary-950">{item.color.name}</strong></span>
                             )}
+                            {item.leg && (
+                              <span>Legs: <strong className="text-primary-950">{item.leg}</strong></span>
+                            )}
                           </div>
                           <p className="text-xs text-primary-500 font-bold uppercase tracking-widest">Qty: {item.quantity}</p>
                           <p className="text-accent font-bold">£{(item.price || item.product?.price || 0).toLocaleString()}</p>

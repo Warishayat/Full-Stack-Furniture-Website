@@ -44,6 +44,7 @@ const getCart = async (req, res) => {
         variant: item.variant,
         material: item.material,
         color: item.color,
+        leg: item.leg,
         price: item.price,
         quantity: item.quantity,
         image: item.image,
@@ -69,7 +70,7 @@ const getCart = async (req, res) => {
 
 const addToCart = async (req, res) => {
   try {
-    const { productId, variant, material, color, quantity = 1 } = req.body;
+    const { productId, variant, material, color, leg, quantity = 1 } = req.body;
     const userId = req.user.id;
 
     if (!productId || !variant) {
@@ -164,7 +165,8 @@ const addToCart = async (req, res) => {
       item.product.toString() === productId &&
       item.variant === variant &&
       item.material === finalMaterial &&
-      item.color === finalColor
+      item.color === finalColor &&
+      item.leg === leg
     );
 
     if (index > -1) {
@@ -175,6 +177,7 @@ const addToCart = async (req, res) => {
         variant,
         material: finalMaterial,
         color: finalColor,
+        leg: leg,
         price: finalPrice,
         image: finalImage,
         quantity: qty

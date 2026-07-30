@@ -36,6 +36,7 @@ export const CartProvider = ({ children }) => {
             variant: item.variant,
             material: item.material,
             color: item.color,
+            leg: item.leg,
             image: item.image
           });
         } catch (err) {
@@ -75,7 +76,8 @@ export const CartProvider = ({ children }) => {
         item.product === productId &&
         item.variant === variant &&
         item.material === material &&
-        item.color === color
+        item.color === color &&
+        item.leg === options.leg
       );
 
       if (existingItemIndex > -1) {
@@ -89,6 +91,7 @@ export const CartProvider = ({ children }) => {
           variant: variant || 'Standard',
           material: material || '',
           color: color || 'Default',
+          leg: options.leg || '',
           quantity,
           price: Number(price) || 0
         };
@@ -109,6 +112,7 @@ export const CartProvider = ({ children }) => {
         variant,
         material,
         color,
+        leg: options.leg,
         image
       });
       toast.success('Item added to cart');

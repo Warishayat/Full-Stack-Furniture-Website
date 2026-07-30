@@ -25,6 +25,10 @@ const CartSchema = new Schema(
           type: String, // e.g. "Leather"
           required: true
         },
+        
+        leg: {
+          type: String, // e.g. "Wooden"
+        },
 
         color: {
           type: String, // e.g. "Black"

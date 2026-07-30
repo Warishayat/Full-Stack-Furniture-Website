@@ -45,6 +45,8 @@ const ProductDetail = () => {
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
   const [selectedMaterialIdx, setSelectedMaterialIdx] = useState(0);
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
+  const [selectedLegIdx, setSelectedLegIdx] = useState(0);
+  const [isViewingLeg, setIsViewingLeg] = useState(false);
   const [hoveredSwatchIdx, setHoveredSwatchIdx] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
@@ -217,6 +219,7 @@ const ProductDetail = () => {
   const currentVariant = product?.variants?.[selectedVariantIdx];
   const currentMaterial = currentVariant?.materials?.[selectedMaterialIdx];
   const currentColor = currentMaterial?.colors?.[selectedColorIdx];
+  const currentLeg = product?.legs?.[selectedLegIdx];
 
   const currentPrice = currentVariant?.price || product?.price || 0;
   const currentOldPrice = currentVariant?.oldPrice || product?.oldprice || 0;
@@ -228,6 +231,7 @@ const ProductDetail = () => {
     } else if (product?.images?.length > 0) {
       setActiveImage(product.images[0]);
     }
+    setIsViewingLeg(false);
   }, [product, currentVariant]);
 
   const getCategoryLabel = () => {
@@ -255,6 +259,7 @@ const ProductDetail = () => {
           variant: currentVariant?.name,
           material: currentMaterial?.name,
           color: currentColor?.name,
+          leg: currentLeg?.name,
           price: currentPrice,
           title: product.title,
           image: activeImage
@@ -395,7 +400,7 @@ const ProductDetail = () => {
             </div>
             
             <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
-               {(currentVariant?.images?.length > 0 ? currentVariant.images : product?.images || []).map((img, idx) => (
+               {(isViewingLeg && currentLeg?.images?.length > 0 ? currentLeg.images : (currentVariant?.images?.length > 0 ? currentVariant.images : product?.images || [])).map((img, idx) => (
                  <button 
                    key={idx}
                    onClick={() => setActiveImage(img)}
@@ -588,6 +593,66 @@ const ProductDetail = () => {
                       <span className="text-sm font-bold text-gray-900 flex items-center gap-1">Order free swatches <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
                       <span className="text-[10px] text-gray-500 font-medium mt-1">Free first-class delivery</span>
                     </button>
+                  </div>
+                )}
+
+                {product?.legs?.length > 0 && getCategoryLabel() === 'Sofa' && (
+                  <div className="space-y-4">
+                    <p className="text-sm font-bold text-gray-900">
+                      Leg options: <span className="text-gray-400 font-medium">{currentLeg?.name}</span>
+                    </p>
+                    <div className="flex flex-wrap gap-x-6 gap-y-8">
+                      {product.legs.map((leg, i) => {
+                        const isSelected = selectedLegIdx === i;
+                        const hasImage = !!leg.images?.length;
+                        
+                        return (
+                          <div 
+                            key={i} 
+                            className="flex flex-col items-center relative"
+                          >
+                            <button 
+                              type="button"
+                              title={leg.name}
+                              onClick={() => {
+                                setSelectedLegIdx(i);
+                                setIsViewingLeg(true);
+                                if (hasImage) setActiveImage(leg.images[0]);
+                              }}
+                              className={`w-14 h-14 rounded-md overflow-hidden border-2 transition-all hover:scale-110 active:scale-95 duration-200 p-0.5 flex-shrink-0 shadow-sm relative ${
+                                isSelected 
+                                  ? 'border-gray-950 ring-2 ring-gray-950/20 ring-offset-1 scale-105' 
+                                  : 'border-gray-200 hover:border-gray-400'
+                              }`}
+                            >
+                              {hasImage ? (
+                                <img 
+                                  src={leg.images[0]} 
+                                  alt={leg.name} 
+                                  className="w-full h-full object-cover rounded-md"
+                                />
+                              ) : (
+                                <div className="w-full h-full rounded-md border border-gray-50 bg-gray-100 flex items-center justify-center text-[8px] font-black uppercase text-gray-400">
+                                  No Img
+                                </div>
+                              )}
+                              
+                              {isSelected && (
+                                <div className="absolute inset-0 bg-black/10 flex items-center justify-center rounded-md">
+                                  <div className="w-5 h-5 bg-white rounded-md flex items-center justify-center shadow-md">
+                                    <Check className="w-3.5 h-3.5 text-gray-900 stroke-[3]" />
+                                  </div>
+                                </div>
+                              )}
+                            </button>
+                            
+                            <span className="text-[9px] text-center text-gray-500 mt-2 font-black uppercase tracking-wider line-clamp-1 w-16 leading-tight">
+                              {leg.name}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
 

@@ -12,6 +12,11 @@ const ColorSchema = new Schema({
   }
 });
 
+const LegSchema = new Schema({
+  name: { type: String, required: true },
+  images: [{ type: String, required: false }]
+});
+
 const MaterialSchema = new Schema({
   name: {
     type: String,
@@ -102,6 +107,8 @@ const ProductSchema = new Schema(
       type: Number,
       default: 0
     },
+    
+    legs: [LegSchema],
 
     specifications: {
       general: {

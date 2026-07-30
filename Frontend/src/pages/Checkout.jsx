@@ -843,6 +843,11 @@ const Checkout = () => {
                              {item.color}
                           </div>
                         )}
+                        {item.leg && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 font-bold uppercase tracking-wider">
+                            Legs: {item.leg}
+                          </div>
+                        )}
                         <div className="flex items-center gap-1.5 text-green-700 text-[10px] font-black uppercase tracking-widest">
                           <Truck className="w-3.5 h-3.5 shrink-0" />
                           <span>In stock. Fast delivery.</span>
