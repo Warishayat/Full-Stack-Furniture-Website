@@ -12,7 +12,7 @@ const Bespoke = () => {
               <p className="text-lg text-primary-500 mb-12 leading-relaxed">
                  For those who seek the extraordinary. Our bespoke service allows you to work directly with our master designers to create unique pieces tailored specifically to your architectural space and personal aesthetic.
               </p>
-              <button className="px-12 py-6 bg-primary-950 text-white font-bold rounded-full hover:bg-accent transition-all shadow-2xl shadow-primary-900/10 uppercase tracking-widest text-xs">
+              <button type="button" className="px-12 py-6 bg-primary-950 text-white font-bold rounded-full hover:bg-accent transition-all shadow-2xl shadow-primary-900/10 uppercase tracking-widest text-xs">
                  Book a Consultation
               </button>
            </div>

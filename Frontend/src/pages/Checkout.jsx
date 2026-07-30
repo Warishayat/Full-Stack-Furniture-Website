@@ -278,7 +278,7 @@ const Checkout = () => {
               {/* Guest Side */}
               <div className="md:col-span-5 flex flex-col justify-center text-center md:text-left h-full">
                 <h2 className="text-2xl font-serif text-slate-800 font-black mb-6">New customer</h2>
-                <button
+                <button type="button"
                   onClick={() => {
                     setIsGuestFlow(true);
                     setCheckoutFlow('form');
@@ -705,13 +705,13 @@ const Checkout = () => {
 
                   {/* Back & Next Actions */}
                   <div className="pt-8 border-t border-slate-100 flex gap-4 justify-between">
-                    <button
+                    <button type="button"
                       onClick={() => setCurrentStep(1)}
                       className="px-6 py-3 border border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-widest rounded hover:bg-slate-50 transition-colors"
                     >
                       Back
                     </button>
-                    <button
+                    <button type="button"
                       onClick={handleStep2Submit}
                       className="px-10 py-3 bg-[#51823F] hover:bg-[#457036] text-white font-extrabold uppercase tracking-widest text-xs rounded shadow-md hover:shadow-lg transition-all"
                     >
@@ -774,7 +774,7 @@ const Checkout = () => {
                     
 
 
-                    <button
+                    <button type="button"
                       onClick={handlePaymentSubmit}
                       disabled={paymentLoading}
                       className="w-full py-5 bg-[#51823F] hover:bg-[#457036] text-white font-black uppercase tracking-[0.2em] text-sm rounded shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-50"
@@ -786,7 +786,7 @@ const Checkout = () => {
 
                   {/* Back Button */}
                   <div className="pt-4 border-t border-slate-100">
-                    <button
+                    <button type="button"
                       onClick={() => setCurrentStep(2)}
                       className="px-6 py-3 border border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-widest rounded hover:bg-slate-50 transition-colors"
                     >
@@ -822,7 +822,7 @@ const Checkout = () => {
                         {item.variant === "Fabric Swatches Bundle" ? (
                            item.image.split('|').slice(0, 4).map((imgUrl, i) => (
                              <div key={i} className={`w-1/2 h-1/2 p-0.5`}>
-                               {imgUrl ? <img src={imgUrl} className="w-full h-full object-cover rounded" /> : <div className="w-full h-full bg-slate-200 rounded" />}
+                               {imgUrl ? <img src={imgUrl} alt="Fabric Swatch Preview" className="w-full h-full object-cover rounded" /> : <div className="w-full h-full bg-slate-200 rounded" />}
                              </div>
                            ))
                         ) : (

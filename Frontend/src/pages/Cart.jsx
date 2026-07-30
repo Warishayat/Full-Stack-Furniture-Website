@@ -161,21 +161,21 @@ const Cart = () => {
                       
                       <div className="flex items-center gap-6">
                         <div className="flex items-center bg-[#F2EDE7] rounded-full p-1.5 border border-gray-100 shadow-inner">
-                          <button 
+                          <button type="button" 
                             onClick={() => updateCart(item._id, Math.max(1, item.quantity - 1))}
                             className="w-10 h-10 flex items-center justify-center text-gray-900 hover:bg-white hover:text-[#D7282F] rounded-full transition-all duration-300 shadow-sm"
                           >
                             <Minus className="w-4 h-4" />
                           </button>
                           <span className="w-12 text-center font-bold text-lg text-gray-950">{item.quantity}</span>
-                          <button 
+                          <button type="button" 
                             onClick={() => updateCart(item._id, item.quantity + 1)}
                             className="w-10 h-10 flex items-center justify-center text-gray-900 hover:bg-white hover:text-[#D7282F] rounded-full transition-all duration-300 shadow-sm"
                           >
                             <Plus className="w-4 h-4" />
                           </button>
                         </div>
-                        <button 
+                        <button type="button" 
                           onClick={() => removeFromCart(item._id)}
                           className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 hover:text-red-500 transition-colors"
                         >
@@ -273,7 +273,7 @@ const Cart = () => {
               </div>
 
               <div className="space-y-6 relative z-10">
-                <button 
+                <button type="button" 
                   onClick={handleCheckout}
                   className="w-full group relative overflow-hidden flex items-center justify-center px-8 py-6 bg-[#D7282F] text-white font-black uppercase tracking-[0.3em] text-xs rounded-full hover:bg-white hover:text-gray-950 transition-all duration-500 shadow-2xl shadow-[#D7282F]/20"
                 >

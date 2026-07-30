@@ -1,5 +1,5 @@
 import { User, Package, ShieldCheck, LogOut, ChevronRight, ShoppingBag, RotateCcw, Activity } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 
@@ -14,8 +14,7 @@ const Account = () => {
   };
 
   if (!user) {
-    navigate('/login');
-    return null;
+    return <Navigate to="/login" replace />;
   }
 
   const menuItems = [
@@ -49,7 +48,7 @@ const Account = () => {
                </h2>
                <p className="text-gray-500 text-sm font-medium mb-8">{user.email}</p>
                
-               <button 
+               <button type="button" 
                  onClick={handleLogout}
                  className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-[#D7282F] transition-colors"
                >

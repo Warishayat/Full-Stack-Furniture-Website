@@ -42,13 +42,13 @@ const CookieConsent = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <button
+          <button type="button"
             onClick={handleAccept}
             className="flex-1 py-4 bg-accent text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white hover:text-primary-950 transition-all shadow-lg"
           >
             Accept Comfort Cookies
           </button>
-          <button
+          <button type="button"
             onClick={handleDecline}
             className="px-6 py-4 border border-white/10 text-white/60 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:bg-white/5 hover:text-white transition-all"
           >
@@ -56,7 +56,7 @@ const CookieConsent = () => {
           </button>
         </div>
         
-        <button 
+        <button type="button" 
           onClick={() => setIsVisible(false)}
           className="absolute top-6 right-6 text-white/20 hover:text-white transition-colors"
         >

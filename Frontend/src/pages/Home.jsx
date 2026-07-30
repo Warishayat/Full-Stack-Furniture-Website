@@ -430,7 +430,7 @@ const Home = () => {
                   key={idx} 
                   className="border border-gray-100 rounded-sm hover:border-gray-200 transition-colors bg-white overflow-hidden"
                 >
-                  <button
+                  <button type="button"
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
                     className="w-full flex items-center justify-between p-6 text-left outline-none"
                   >

@@ -90,7 +90,7 @@ const Inspiration = () => {
               <p className="text-gray-400 text-lg mb-12 leading-relaxed font-medium">
                  Join our community of collectors and designers. Share your ComfortSeating sanctuary and inspire others to define their own luxury.
               </p>
-              <button className="px-12 py-5 bg-[#D7282F] text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-gray-900 transition-all">
+              <button type="button" className="px-12 py-5 bg-[#D7282F] text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-gray-900 transition-all">
                  Share Your Space
               </button>
            </div>

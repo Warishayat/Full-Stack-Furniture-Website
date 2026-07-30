@@ -191,7 +191,7 @@ const Products = () => {
           </div>
           
           <div className="flex items-center gap-4">
-             <button 
+             <button type="button" 
                onClick={() => setIsSidebarOpen(true)}
                className="lg:hidden flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl"
              >
@@ -207,14 +207,14 @@ const Products = () => {
         {activeFilters.category && categories.find(c => c._id === activeFilters.category)?.children?.length > 0 && (
           <div className="mb-16">
             <div className="flex items-center gap-4 mb-8 overflow-x-auto pb-4 scrollbar-hide">
-              <button 
+              <button type="button" 
                 onClick={() => updateFilter('category', activeFilters.category)}
                 className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${activeFilters.category === categories.find(c => c._id === activeFilters.category)?._id ? 'bg-black text-white border-black' : 'bg-white text-gray-400 border-gray-100 hover:border-gray-300'}`}
               >
                 All {categories.find(c => c._id === activeFilters.category)?.name}
               </button>
               {categories.find(c => c._id === activeFilters.category).children.map(child => (
-                <button 
+                <button type="button" 
                   key={child._id}
                   onClick={() => updateFilter('category', child._id)}
                   className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${activeFilters.category === child._id ? 'bg-black text-white border-black' : 'bg-white text-gray-400 border-gray-100 hover:border-gray-300'}`}
@@ -236,7 +236,7 @@ const Products = () => {
                   <SlidersHorizontal className="w-4 h-4 text-gray-400" /> Filter Curation
                 </h2>
                 {(activeFilters.category || activeFilters.material || activeFilters.color || activeFilters.variant) && (
-                  <button 
+                  <button type="button" 
                     onClick={clearFilters}
                     className="text-[9px] font-black uppercase tracking-widest text-[#D7282F] hover:underline"
                   >
@@ -249,7 +249,7 @@ const Products = () => {
               <div className="border-b border-gray-100 pb-6">
                 <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Collections</h3>
                 <div className="space-y-2">
-                  <button 
+                  <button type="button" 
                     onClick={() => updateFilter('category', '')}
                     className={`flex items-center justify-between w-full text-left text-xs font-bold uppercase tracking-widest py-1 transition-all ${!activeFilters.category ? 'text-[#D7282F]' : 'text-gray-500 hover:text-gray-900'}`}
                   >
@@ -260,7 +260,7 @@ const Products = () => {
                     const isSelected = activeFilters.category === cat._id;
                     return (
                       <div key={cat._id} className="space-y-1.5">
-                        <button 
+                        <button type="button" 
                           onClick={() => updateFilter('category', cat._id)}
                           className={`flex items-center justify-between w-full text-left text-xs font-bold uppercase tracking-widest py-1 transition-all ${isSelected ? 'text-[#D7282F]' : 'text-gray-500 hover:text-gray-900'}`}
                         >
@@ -273,7 +273,7 @@ const Products = () => {
                             {cat.children.map((child) => {
                               const isChildSelected = activeFilters.category === child._id;
                               return (
-                                <button 
+                                <button type="button" 
                                   key={child._id}
                                   onClick={() => updateFilter('category', child._id)}
                                   className={`block w-full text-left text-[11px] font-bold transition-all ${isChildSelected ? 'text-gray-900 font-extrabold' : 'text-gray-400 hover:text-gray-700'}`}
@@ -352,7 +352,7 @@ const Products = () => {
                     {filterOptions.colors.map((col) => {
                       const isSelected = activeFilters.color === col;
                       return (
-                        <button 
+                        <button type="button" 
                           key={col} 
                           className={`flex items-center gap-2 p-1.5 rounded-xl border transition-all text-left group ${isSelected ? 'bg-white border-[#D7282F] shadow-sm' : 'border-gray-100 hover:border-gray-300'}`}
                           onClick={() => updateFilter('color', activeFilters.color === col ? '' : col)}
@@ -398,7 +398,7 @@ const Products = () => {
                 <RefreshCcw className="w-12 h-12 text-gray-300 mx-auto mb-8" />
                 <h3 className="text-3xl font-serif text-gray-900 mb-4 tracking-tight">No Items Found</h3>
                 <p className="text-gray-500 mb-10 max-w-sm mx-auto font-medium leading-relaxed">We couldn't find any pieces matching your current refinement.</p>
-                <button 
+                <button type="button" 
                   onClick={clearFilters}
                   className="px-12 py-4 bg-[#51823F] text-white font-bold rounded-sm uppercase tracking-widest text-[10px] hover:bg-[#457036] transition-all shadow-xl active:scale-95"
                 >
@@ -417,7 +417,7 @@ const Products = () => {
           <div className="absolute inset-y-0 right-0 w-full max-w-xs bg-white p-8 flex flex-col shadow-2xl animate-fade-in-right">
              <div className="flex items-center justify-between mb-10 pb-6 border-b border-gray-50">
                <h3 className="text-lg font-black uppercase tracking-widest text-gray-900">Refine</h3>
-               <button onClick={() => setIsSidebarOpen(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full"><X className="w-5 h-5" /></button>
+               <button type="button" onClick={() => setIsSidebarOpen(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full"><X className="w-5 h-5" /></button>
              </div>
 
              <div className="flex-1 overflow-y-auto space-y-10 pr-2">
@@ -425,7 +425,7 @@ const Products = () => {
                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Collections</p>
                   <div className="flex flex-col gap-4">
                     {categories.map(cat => (
-                      <button key={cat._id} onClick={() => { updateFilter('category', cat._id); setIsSidebarOpen(false); }} className={`text-left font-bold ${activeFilters.category === cat._id ? 'text-blue-600' : 'text-gray-500'}`}>{cat.name}</button>
+                      <button type="button" key={cat._id} onClick={() => { updateFilter('category', cat._id); setIsSidebarOpen(false); }} className={`text-left font-bold ${activeFilters.category === cat._id ? 'text-blue-600' : 'text-gray-500'}`}>{cat.name}</button>
                     ))}
                   </div>
                 </div>
@@ -434,15 +434,15 @@ const Products = () => {
                   <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Materials</p>
                   <div className="flex flex-wrap gap-2">
                     {filterOptions.materials.map(mat => (
-                      <button key={mat} onClick={() => { updateFilter('material', mat); setIsSidebarOpen(false); }} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${activeFilters.material === mat ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-100 text-gray-500'}`}>{mat}</button>
+                      <button type="button" key={mat} onClick={() => { updateFilter('material', mat); setIsSidebarOpen(false); }} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border ${activeFilters.material === mat ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-100 text-gray-500'}`}>{mat}</button>
                     ))}
                   </div>
                 </div>
              </div>
 
              <div className="mt-auto pt-8 flex gap-4">
-                <button onClick={clearFilters} className="flex-1 py-4 bg-gray-50 text-gray-900 rounded-2xl font-black text-[10px] uppercase tracking-widest">Reset</button>
-                <button onClick={() => setIsSidebarOpen(false)} className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl">Apply</button>
+                <button type="button" onClick={clearFilters} className="flex-1 py-4 bg-gray-50 text-gray-900 rounded-2xl font-black text-[10px] uppercase tracking-widest">Reset</button>
+                <button type="button" onClick={() => setIsSidebarOpen(false)} className="flex-1 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl">Apply</button>
              </div>
           </div>
         </div>

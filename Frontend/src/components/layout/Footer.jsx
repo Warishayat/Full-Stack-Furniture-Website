@@ -141,7 +141,7 @@ const Footer = () => {
                  onChange={(e) => setEmail(e.target.value)}
                  className="w-full bg-gray-50 border border-gray-100 px-8 py-6 outline-none focus:bg-white focus:border-gray-900 transition-all font-medium pr-20"
                />
-               <button 
+               <button type="button" 
                  disabled={isSubmitting}
                  className="absolute right-2 top-1/2 -translate-y-1/2 p-4 bg-gray-900 text-white hover:bg-[#D7282F] transition-all disabled:opacity-50"
                >

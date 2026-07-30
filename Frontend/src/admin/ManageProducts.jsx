@@ -234,7 +234,7 @@ const ManageProducts = () => {
     const newVariants = [...formData.variants];
     const sourceMaterials = newVariants[sourceIdx].materials;
     // Perform deep clone to avoid shared reference bugs
-    newVariants[targetIdx].materials = JSON.parse(JSON.stringify(sourceMaterials));
+    newVariants[targetIdx].materials = structuredClone(sourceMaterials);
     setFormData(prev => ({ ...prev, variants: newVariants }));
     toast.success(`Copied materials from "${newVariants[sourceIdx].name || `Variant ${sourceIdx + 1}`}" to "${newVariants[targetIdx].name || `Variant ${targetIdx + 1}`}"`);
   };
@@ -247,7 +247,7 @@ const ManageProducts = () => {
         if (idx === sourceIdx) return v;
         return {
           ...v,
-          materials: JSON.parse(JSON.stringify(sourceMaterials))
+          materials: structuredClone(sourceMaterials)
         };
       });
       setFormData(prev => ({ ...prev, variants: newVariants }));
@@ -275,7 +275,7 @@ const ManageProducts = () => {
       
       if (window.confirm(`Import fabrics/materials from "${sourceProduct.title}"? This will overwrite materials in all current variants.`)) {
         const sourceMaterials = sourceProduct.variants[0].materials || [];
-        const clonedMaterials = JSON.parse(JSON.stringify(sourceMaterials)).map(m => ({
+        const clonedMaterials = structuredClone(sourceMaterials).map(m => ({
           ...m,
           colors: m.colors.map(c => ({
             ...c,
@@ -621,7 +621,7 @@ const ManageProducts = () => {
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-2 block">Archive Management</span>
            <h1 className="text-4xl lg:text-6xl font-serif font-black text-gray-900 tracking-tighter">Inventory <span className="italic text-gray-400">Registry</span></h1>
         </div>
-        <button 
+        <button type="button" 
           onClick={() => { resetForm(); setIsModalOpen(true); }}
           className="flex items-center px-10 py-5 bg-gray-900 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-sm hover:bg-[#D7282F] transition-all active:scale-95 shadow-xl"
         >
@@ -695,14 +695,14 @@ const ManageProducts = () => {
                         </td>
                         <td className="p-8 text-right">
                           <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
-                            <button 
+                            <button type="button" 
                               onClick={() => handleEditClick(product)}
                               className="p-4 text-gray-900 bg-white hover:bg-gray-900 hover:text-white transition-all border border-gray-100"
                               title="Edit Piece"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
-                            <button 
+                            <button type="button" 
                               onClick={() => handleDelete(product._id)}
                               className="p-4 text-[#D7282F] bg-white hover:bg-[#D7282F] hover:text-white transition-all border border-gray-100"
                               title="Remove Piece"
@@ -761,14 +761,14 @@ const ManageProducts = () => {
 
                     {/* Action buttons (always visible on touch screens) */}
                     <div className="flex gap-3 w-full sm:w-auto justify-end pt-4 sm:pt-0 border-t border-gray-50 sm:border-transparent">
-                      <button 
+                      <button type="button" 
                         onClick={() => handleEditClick(product)}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-gray-50 hover:bg-gray-900 hover:text-white transition-all text-[9px] font-black uppercase tracking-widest text-gray-700 border border-gray-100"
                         title="Edit Piece"
                       >
                         <Edit className="w-3.5 h-3.5" /> Edit
                       </button>
-                      <button 
+                      <button type="button" 
                         onClick={() => handleDelete(product._id)}
                         className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-red-50 hover:bg-[#D7282F] hover:text-white transition-all text-[9px] font-black uppercase tracking-widest text-[#D7282F] border border-red-100/50"
                         title="Remove Piece"
@@ -797,7 +797,7 @@ const ManageProducts = () => {
                 </h2>
                 <p className="text-sm text-gray-400 mt-1">Guided workflow for product orchestration.</p>
               </div>
-              <button onClick={resetForm} className="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-colors">
+              <button type="button" onClick={resetForm} className="w-12 h-12 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-colors">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -1034,7 +1034,7 @@ const ManageProducts = () => {
                           {imagePreviews.map((url, idx) => (
                             <div key={idx} className="relative group aspect-square rounded-2xl border border-gray-100 shadow-xl">
                               <div className="w-full h-full rounded-2xl overflow-hidden relative">
-                                <img src={url} className="w-full h-full object-cover" />
+                                <img src={url} alt={`Asset preview ${idx}`} className="w-full h-full object-cover" />
                                 <button 
                                   type="button"
                                   onClick={() => removeImage(idx)}
@@ -1045,7 +1045,7 @@ const ManageProducts = () => {
                               </div>
                               {/* Hover Zoom Preview */}
                               <div className="fixed z-[99999] pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.3)] border-4 border-white overflow-hidden scale-95 group-hover:scale-100 flex items-center justify-center">
-                                <img src={url} className="w-full h-full object-contain" />
+                                <img src={url} alt={`Enlarged preview ${idx}`} className="w-full h-full object-contain" />
                                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase">
                                   Preview
                                 </div>
@@ -1310,7 +1310,7 @@ const ManageProducts = () => {
                                           : 'border-transparent opacity-30 grayscale hover:opacity-100 hover:grayscale-0'
                                       }`}
                                     >
-                                      <img src={url} className="w-full h-full object-cover" />
+                                      <img src={url} alt={`Variant Preview ${imgIdx}`} className="w-full h-full object-cover" />
                                       {isSelected && (
                                         <div className="absolute inset-0 bg-blue-600/30 flex items-center justify-center">
                                           <Check className="w-5 h-5 text-white stroke-[4]" />
@@ -1319,7 +1319,7 @@ const ManageProducts = () => {
                                     </button>
                                     {/* Hover Zoom Preview */}
                                     <div className="fixed z-[99999] pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.3)] border-4 border-white overflow-hidden scale-95 group-hover:scale-100 flex items-center justify-center">
-                                      <img src={url} className="w-full h-full object-contain" />
+                                      <img src={url} alt={`Enlarged Variant Preview ${imgIdx}`} className="w-full h-full object-contain" />
                                       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase">
                                         Preview
                                       </div>
@@ -1515,7 +1515,7 @@ const ManageProducts = () => {
                         className="w-full aspect-video border-2 border-dashed border-gray-100 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-all overflow-hidden relative"
                       >
                          {sizeChartPreview ? (
-                           <img src={sizeChartPreview} className="w-full h-full object-contain" />
+                           <img src={sizeChartPreview} alt="Size Guide Preview" className="w-full h-full object-contain" />
                          ) : (
                            <div className="text-center">
                              <UploadCloud className="w-8 h-8 text-gray-200 mx-auto mb-2" />

@@ -109,7 +109,7 @@ const ManageSubscribers = () => {
                       </span>
                     </td>
                     <td className="py-6 px-6 text-right">
-                      <button 
+                      <button type="button" 
                         onClick={() => handleDelete(sub._id)}
                         className="p-2 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 rounded-sm transition-all inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest"
                         title="Remove Subscriber"

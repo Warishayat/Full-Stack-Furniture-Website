@@ -53,7 +53,7 @@ const Wishlist = () => {
               return (
                 <div key={product._id} className="relative group">
                   <ProductCard product={product} />
-                  <button 
+                  <button type="button" 
                     onClick={() => toggleWishlist(product._id)}
                     className="absolute top-4 left-4 z-20 p-2 bg-white/90 text-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm hover:bg-red-500 hover:text-white"
                     title="Remove from selection"

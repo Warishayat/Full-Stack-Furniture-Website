@@ -76,7 +76,7 @@ const ProductCard = memo(({ product }) => {
       )}
 
       {/* Wishlist Heart */}
-      <button 
+      <button type="button" 
         onClick={(e) => { e.preventDefault(); toggleWishlist(product._id); }}
         className={`absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-sm rounded-full transition-colors ${activeInWishlist ? 'text-[#D7282F]' : 'text-gray-400 hover:text-[#D7282F]'}`}
       >

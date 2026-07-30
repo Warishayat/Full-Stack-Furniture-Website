@@ -171,14 +171,14 @@ const ManageMessages = () => {
                       </td>
                       <td className="py-6 px-6 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-3 opacity-80 group-hover:opacity-100">
-                          <button 
+                          <button type="button" 
                             onClick={() => setSelectedMessage(msg)}
                             className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-sm transition-all"
                             title="Inspect Details"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
-                          <button 
+                          <button type="button" 
                             onClick={() => handleDelete(msg._id)}
                             className="p-2 bg-red-50 hover:bg-red-600 hover:text-white text-red-600 rounded-sm transition-all"
                             title="Delete Permanently"
@@ -238,7 +238,7 @@ const ManageMessages = () => {
                 <div className="pt-4 border-t border-gray-200 space-y-4">
                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Update Conversation Status</span>
                   <div className="grid grid-cols-2 gap-3">
-                    <button 
+                    <button type="button" 
                       onClick={() => handleUpdateStatus(selectedMessage._id, 'read')}
                       className={`py-3 text-[9px] font-black uppercase tracking-widest rounded-sm border transition-all ${
                         selectedMessage.status === 'read' 
@@ -248,7 +248,7 @@ const ManageMessages = () => {
                     >
                       Mark Read
                     </button>
-                    <button 
+                    <button type="button" 
                       onClick={() => handleUpdateStatus(selectedMessage._id, 'replied')}
                       className={`py-3 text-[9px] font-black uppercase tracking-widest rounded-sm border transition-all ${
                         selectedMessage.status === 'replied' 
@@ -259,7 +259,7 @@ const ManageMessages = () => {
                       Mark Replied
                     </button>
                   </div>
-                  <button 
+                  <button type="button" 
                     onClick={() => handleDelete(selectedMessage._id)}
                     className="w-full py-3 bg-red-50 hover:bg-red-600 hover:text-white border border-red-100 text-red-600 rounded-sm text-[9px] font-black uppercase tracking-widest transition-all mt-2"
                   >

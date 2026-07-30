@@ -133,7 +133,7 @@ const Navbar = () => {
 
           {/* Right: Icons */}
           <div className="flex items-center gap-3 sm:gap-4 md:gap-6 ml-auto">
-            <button onClick={() => setIsSearchVisible(!isSearchVisible)} className="md:hidden p-1 sm:p-2 text-gray-600">
+            <button type="button" onClick={() => setIsSearchVisible(!isSearchVisible)} className="md:hidden p-1 sm:p-2 text-gray-600">
               <Search className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
             
@@ -160,7 +160,7 @@ const Navbar = () => {
               )}
             </Link>
 
-            <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-1 sm:p-2 text-gray-900">
+            <button type="button" onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-1 sm:p-2 text-gray-900">
               <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           </div>
@@ -241,7 +241,7 @@ const Navbar = () => {
           <div className="absolute inset-y-0 right-0 w-72 bg-white flex flex-col p-10 overflow-y-auto">
             <div className="flex justify-between items-center mb-8">
                <span className="font-bold tracking-tighter text-xl text-slate-900">ComfortSeating Ltd.</span>
-               <button onClick={() => setIsMobileMenuOpen(false)} className="text-slate-900"><X className="w-6 h-6" /></button>
+               <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-900"><X className="w-6 h-6" /></button>
             </div>
             <nav className="flex flex-col gap-6">
               <Link to="/products?sale=true" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-[#D7282F]">Flash Sale</Link>
@@ -261,7 +261,7 @@ const Navbar = () => {
                         {cat.name}
                       </Link>
                       {cat.children?.length > 0 && (
-                        <button 
+                        <button type="button" 
                           onClick={() => setExpandedMobileCat(expandedMobileCat === cat._id ? null : cat._id)}
                           className="p-1 focus:outline-none"
                         >
@@ -306,7 +306,7 @@ const Navbar = () => {
                       <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-[#D7282F] text-white text-center rounded-lg font-bold text-sm">Admin Suite</Link>
                     )}
                     <Link to="/account" onClick={() => setIsMobileMenuOpen(false)} className="block w-full py-3 bg-black text-white text-center rounded-lg font-bold text-sm">My Dashboard</Link>
-                    <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="text-red-500 font-bold text-left text-sm mt-2">Sign Out</button>
+                    <button type="button" onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="text-red-500 font-bold text-left text-sm mt-2">Sign Out</button>
                   </div>
                 )}
               </div>

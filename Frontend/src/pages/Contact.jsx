@@ -149,7 +149,7 @@ const Contact = () => {
                 ></textarea>
               </div>
               <div className="md:col-span-2 pt-4">
-                <button 
+                <button type="button" 
                   disabled={isSubmitting}
                   className="w-full bg-gray-900 text-white font-black py-6 rounded-sm hover:bg-[#D7282F] transition-all text-[10px] uppercase tracking-[0.4em] flex items-center justify-center gap-4 disabled:opacity-50"
                 >

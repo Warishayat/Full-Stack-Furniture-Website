@@ -121,7 +121,7 @@ const ManageCategories = () => {
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-2 block">Organizational Architecture</span>
            <h1 className="text-4xl lg:text-6xl font-serif font-black text-gray-900 tracking-tighter">Departmental <span className="italic text-gray-400">Registry</span></h1>
         </div>
-        <button 
+        <button type="button" 
           onClick={() => { resetForm(); setIsModalOpen(true); }}
           className="flex items-center px-10 py-5 bg-gray-900 text-white text-[10px] font-black uppercase tracking-[0.3em] rounded-sm hover:bg-[#D7282F] transition-all active:scale-95 shadow-xl"
         >
@@ -181,14 +181,14 @@ const ManageCategories = () => {
                        )}
                     </td>
                     <td className="p-8 text-right space-x-2">
-                      <button 
+                      <button type="button" 
                         onClick={() => handleEdit(cat)}
                         className="p-4 text-gray-500 bg-white hover:bg-gray-900 hover:text-white transition-all border border-gray-100 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0"
                         title="Edit Department"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button 
+                      <button type="button" 
                         onClick={() => handleDelete(cat._id)}
                         className="p-4 text-[#D7282F] bg-white hover:bg-[#D7282F] hover:text-white transition-all border border-gray-100 opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0"
                         title="Delete Department"
@@ -213,7 +213,7 @@ const ManageCategories = () => {
                 <h2 className="text-3xl font-serif font-black text-gray-900 tracking-tight">{editingId ? 'Modify Orchestration' : 'New Orchestration'}</h2>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">{editingId ? 'Update departmental entity settings.' : 'Define a new departmental entity.'}</p>
               </div>
-              <button onClick={() => setIsModalOpen(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-all">
+              <button type="button" onClick={() => setIsModalOpen(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-all">
                 <X className="w-5 h-5" />
               </button>
             </div>

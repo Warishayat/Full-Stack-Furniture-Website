@@ -136,7 +136,7 @@ const Auth = () => {
             <p className="text-gray-500 text-sm mb-4">
               {isLogin ? "New to ComfortSeating?" : "Already have an account?"}
             </p>
-            <button
+            <button type="button"
               onClick={() => setIsLogin(!isLogin)}
               className="text-gray-900 font-bold hover:text-[#D7282F] transition-colors"
             >

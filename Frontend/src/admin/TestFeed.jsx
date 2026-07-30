@@ -11,7 +11,7 @@ const TestFeed = () => {
       const downloadUrl = `${baseUrl}/product.csv`;
       
       // Native browser download (most reliable way)
-      window.open(downloadUrl, '_blank');
+      window.open(downloadUrl, "_blank", "noopener,noreferrer");
       
       toast.success("Downloading CSV Feed...");
     } catch (error) {
@@ -34,7 +34,7 @@ const TestFeed = () => {
         <h3 className="text-2xl font-serif font-black text-gray-900 mb-4">Export Feed</h3>
         <p className="text-gray-600 mb-8 font-medium">Click the button below to generate and download the latest product inventory in CSV format.</p>
         
-        <button 
+        <button type="button" 
           onClick={handleDownload}
           className="flex items-center gap-3 px-8 py-4 bg-gray-900 text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#D7282F] transition-all"
         >

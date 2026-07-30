@@ -328,7 +328,7 @@ const ProductDetail = () => {
   if (error || !product) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6 text-center pt-20">
       <h2 className="text-4xl font-bold text-gray-900 mb-6">Product Not Found</h2>
-      <button onClick={() => navigate('/products')} className="px-8 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition-all">Back to Products</button>
+      <button type="button" onClick={() => navigate('/products')} className="px-8 py-3 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition-all">Back to Products</button>
     </div>
   );
 
@@ -383,13 +383,13 @@ const ProductDetail = () => {
                {/* Carousel Arrows */}
                {(currentVariant?.images?.length > 1 || product?.images?.length > 1) && (
                  <>
-                   <button 
+                   <button type="button" 
                      onClick={handlePrevImage} 
                      className="absolute top-1/2 left-4 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white hover:scale-110 rounded-full flex items-center justify-center shadow-lg text-gray-800 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
                    >
                      <ChevronLeft className="w-6 h-6" />
                    </button>
-                   <button 
+                   <button type="button" 
                      onClick={handleNextImage} 
                      className="absolute top-1/2 right-4 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white hover:scale-110 rounded-full flex items-center justify-center shadow-lg text-gray-800 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
                    >
@@ -401,7 +401,7 @@ const ProductDetail = () => {
             
             <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide">
                {(isViewingLeg && currentLeg?.images?.length > 0 ? currentLeg.images : (currentVariant?.images?.length > 0 ? currentVariant.images : product?.images || [])).map((img, idx) => (
-                 <button 
+                 <button type="button" 
                    key={idx}
                    onClick={() => setActiveImage(img)}
                    className={`w-20 h-20 border-2 flex-shrink-0 transition-all ${
@@ -485,7 +485,7 @@ const ProductDetail = () => {
                     </label>
                     <div className="flex flex-wrap gap-2.5">
                       {currentVariant.materials.map((m, i) => (
-                        <button 
+                        <button type="button" 
                           key={i} 
                           onClick={() => { setSelectedMaterialIdx(i); setSelectedColorIdx(0); }}
                           className={`px-4 py-2 border rounded-sm text-xs font-black uppercase tracking-widest transition-all ${
@@ -586,7 +586,7 @@ const ProductDetail = () => {
                     </div>
 
                     {/* Order Free Swatches Button */}
-                    <button 
+                    <button type="button" 
                       onClick={() => setIsSwatchesModalOpen(true)}
                       className="w-full mt-6 py-4 border border-gray-300 rounded-sm flex flex-col items-center justify-center hover:bg-gray-50 transition-colors group"
                     >
@@ -662,14 +662,14 @@ const ProductDetail = () => {
               <div className="mt-10 p-6 bg-gray-50 border border-gray-100 space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="flex items-center bg-white border border-gray-200">
-                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900"><Minus className="w-3 h-3" /></button>
+                    <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900"><Minus className="w-3 h-3" /></button>
                       <input type="text" readOnly value={quantity} className="w-8 text-center bg-transparent font-bold text-sm" />
-                      <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900"><Plus className="w-3 h-3" /></button>
+                      <button type="button" onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900"><Plus className="w-3 h-3" /></button>
                     </div>
                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">In stock. Best price guarantee</p>
                  </div>
 
-                 <button 
+                 <button type="button" 
                    onClick={handleAddToCart}
                    className="w-full h-14 bg-[#51823F] text-white font-bold hover:bg-[#457036] transition-all flex items-center justify-center gap-3 rounded-sm text-lg shadow-sm"
                  >
@@ -717,7 +717,7 @@ const ProductDetail = () => {
             { id: 'returns', label: 'Returns' },
           ].map((item) => (
             <div key={item.id} className="border-b border-gray-100">
-              <button 
+              <button type="button" 
                 onClick={() => setActiveAccordion(activeAccordion === item.id ? '' : item.id)}
                 className="w-full py-6 flex items-center justify-between text-left group"
               >
@@ -835,7 +835,7 @@ const ProductDetail = () => {
                <p className="text-gray-600 mb-10 text-lg leading-relaxed">Sign up to our newsletter for exclusive offers and interior inspiration.</p>
                <div className="flex gap-2">
                   <input type="email" placeholder="Your email address" className="flex-1 px-6 py-4 border-none outline-none text-sm rounded-sm" />
-                  <button className="px-10 py-4 bg-gray-800 text-white font-bold rounded-sm uppercase tracking-widest text-xs hover:bg-gray-700 transition-all">Join</button>
+                  <button type="button" className="px-10 py-4 bg-gray-800 text-white font-bold rounded-sm uppercase tracking-widest text-xs hover:bg-gray-700 transition-all">Join</button>
                </div>
             </div>
             <div className="w-full md:w-[45%] aspect-[16/9] bg-gray-200 relative overflow-hidden group">
@@ -864,7 +864,7 @@ const ProductDetail = () => {
                    </p>
                  </div>
                  <div className="flex items-center gap-2">
-                   <button
+                   <button type="button"
                      onClick={() => setZoomScale(prev => Math.min(prev + 0.25, 3))}
                      disabled={zoomScale >= 3}
                      className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 disabled:opacity-40 disabled:hover:bg-transparent transition-all"
@@ -872,7 +872,7 @@ const ProductDetail = () => {
                    >
                      <ZoomIn className="w-5 h-5" />
                    </button>
-                   <button
+                   <button type="button"
                      onClick={() => setZoomScale(prev => Math.max(prev - 0.25, 1))}
                      disabled={zoomScale <= 1}
                      className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 disabled:opacity-40 disabled:hover:bg-transparent transition-all"
@@ -881,7 +881,7 @@ const ProductDetail = () => {
                      <ZoomOut className="w-5 h-5" />
                    </button>
                    <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
-                   <button
+                   <button type="button"
                      onClick={() => setIsSizeGuideOpen(false)}
                      className="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-all"
                      title="Close"
@@ -948,8 +948,8 @@ const SectionSlider = ({ title, products = [] }) => (
     <div className="flex items-center justify-between mb-10 pb-6 border-b border-gray-100">
       <h3 className="text-3xl font-serif text-gray-800">{title}</h3>
       <div className="flex gap-2">
-        <button className="w-10 h-10 flex items-center justify-center border border-gray-200 hover:bg-gray-50 transition-all"><ArrowLeft className="w-4 h-4" /></button>
-        <button className="w-10 h-10 flex items-center justify-center border border-gray-200 hover:bg-gray-50 transition-all rotate-180"><ArrowLeft className="w-4 h-4" /></button>
+        <button type="button" className="w-10 h-10 flex items-center justify-center border border-gray-200 hover:bg-gray-50 transition-all"><ArrowLeft className="w-4 h-4" /></button>
+        <button type="button" className="w-10 h-10 flex items-center justify-center border border-gray-200 hover:bg-gray-50 transition-all rotate-180"><ArrowLeft className="w-4 h-4" /></button>
       </div>
     </div>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -1116,9 +1116,9 @@ const ReviewsSection = ({ productId, reviews = [], setReviews }) => {
 };
 
 const SwatchesModal = ({ isOpen, onClose, product, addToCart }) => {
-  if (!isOpen) return null;
-
   const [selectedSwatches, setSelectedSwatches] = useState([]);
+
+  if (!isOpen) return null;
 
   // Group all unique colors by material
   const groupedSwatches = {};
@@ -1188,7 +1188,7 @@ const SwatchesModal = ({ isOpen, onClose, product, addToCart }) => {
       <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-lg shadow-2xl flex flex-col" onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="p-8 border-b border-gray-100 bg-gray-50/50 relative">
-          <button onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors">
+          <button type="button" onClick={onClose} className="absolute top-6 right-6 text-gray-400 hover:text-gray-900 transition-colors">
             <X className="w-5 h-5" />
           </button>
           <div className="flex justify-between items-center pr-8">
@@ -1244,7 +1244,7 @@ const SwatchesModal = ({ isOpen, onClose, product, addToCart }) => {
         {/* Footer Actions */}
         <div className="p-8 border-t border-gray-100 bg-white">
           <p className="text-xs text-gray-400 mb-4 font-medium uppercase tracking-widest text-center">Add swatches to your cart to checkout for free.</p>
-          <button 
+          <button type="button" 
             onClick={handleAddToCart}
             disabled={selectedSwatches.length === 0}
             className="w-full py-4 bg-[#51823F] hover:bg-[#457036] text-white font-black uppercase tracking-[0.2em] text-xs rounded-sm shadow-md transition-all disabled:opacity-50"
