@@ -58,7 +58,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Direct Line</h4>
-                  <p className="text-lg font-bold text-gray-900">07916603675</p>
+                  <p className="text-lg font-bold text-gray-900">07376770302</p>
                 </div>
               </div>
 

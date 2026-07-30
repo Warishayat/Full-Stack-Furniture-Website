@@ -125,9 +125,9 @@ const MyOrders = () => {
                         </div>
                         <div className="flex-1 text-center md:text-left">
                           <h4 className="text-xl font-serif font-black text-gray-900 mb-1">{item.title || item.product?.title || 'Handcrafted Piece'}</h4>
-                          {item.variant && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Variant: {item.variant}</p>}
-                          {item.color && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Color: {item.color}</p>}
-                          {item.leg && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Legs: {item.leg}</p>}
+                          {item.variant && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Variant: {item.variant?.name || (typeof item.variant === 'string' ? item.variant : '')}</p>}
+                          {item.color && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Color: {item.color?.name || (typeof item.color === 'string' ? item.color : '')}</p>}
+                          {item.leg && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Legs: {item.leg?.name || (typeof item.leg === 'string' ? item.leg : '')}</p>}
                           <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">Quantity: {item.quantity}</p>
                           <p className="text-sm font-bold text-[#D7282F]">£{(item.price || 0).toLocaleString()}</p>
                         </div>

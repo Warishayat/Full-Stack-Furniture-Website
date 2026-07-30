@@ -161,7 +161,7 @@ const OrderDetail = () => {
                               <span>Color: <strong className="text-primary-950">{item.color.name}</strong></span>
                             )}
                             {item.leg && (
-                              <span>Legs: <strong className="text-primary-950">{item.leg}</strong></span>
+                              <span>Legs: <strong className="text-primary-950">{item.leg?.name || (typeof item.leg === 'string' ? item.leg : '')}</strong></span>
                             )}
                           </div>
                           <p className="text-xs text-primary-500 font-bold uppercase tracking-widest">Qty: {item.quantity}</p>

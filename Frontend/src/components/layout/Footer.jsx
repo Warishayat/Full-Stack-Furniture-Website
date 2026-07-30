@@ -55,7 +55,7 @@ const Footer = () => {
           {[
             { Icon: FaFacebookF, url: "https://www.facebook.com/share/1EXvZWS5aU/?mibextid=wwXIfr" },
             { Icon: FaInstagram, url: "https://www.instagram.com/comfortsittingltd?igsh=aG0zcWFxcmx0ajRx" },
-            { Icon: FaTiktok, url: "https://www.tiktok.com/@comfort.sitting?is_from_webapp=1&sender_device=pc" }
+            { Icon: FaTiktok, url: "https://www.tiktok.com/@comfortsittingltd?_r=1&_t=ZN-98TULF06BVv" }
           ].map(({ Icon, url }, idx) => (
             <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
               <Icon size={18} className="text-gray-600" />
@@ -74,7 +74,7 @@ const Footer = () => {
               <li><Link to="/login" className="hover:underline">My Account</Link></li>
               <li className="pt-4 flex flex-col gap-2">
                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Speak to an advisor:</span>
-                 <a href="tel:07916603675" className="text-lg font-bold text-gray-900 hover:text-[#D7282F] transition-colors">07916603675</a>
+                 <a href="tel:07376770302" className="text-lg font-bold text-gray-900 hover:text-[#D7282F] transition-colors">07376770302</a>
               </li>
             </ul>
           </div>

@@ -66,7 +66,7 @@ const ReturnsPolicy = () => {
                       <MessageCircle className="w-6 h-6 text-[#D7282F]" />
                       <h3 className="text-2xl font-serif font-black italic tracking-tight">Need help?</h3>
                    </div>
-                   <p className="text-gray-400 text-sm font-medium leading-relaxed">Our support specialists are here to guide you through every step of the return process. Contact us at 07916603675.</p>
+                   <p className="text-gray-400 text-sm font-medium leading-relaxed">Our support specialists are here to guide you through every step of the return process. Contact us at 07376770302.</p>
                 </div>
                 <Link to="/contact" className="px-10 py-4 bg-[#D7282F] text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-gray-900 transition-all whitespace-nowrap">
                    Contact Support

@@ -262,7 +262,7 @@ const ProductDetail = () => {
           leg: currentLeg?.name,
           price: currentPrice,
           title: product.title,
-          image: activeImage
+          image: isViewingLeg ? (currentVariant?.images?.[0] || product?.images?.[0] || activeImage) : activeImage
         });
         if (window.fbq) {
           window.fbq('track', 'AddToCart', {

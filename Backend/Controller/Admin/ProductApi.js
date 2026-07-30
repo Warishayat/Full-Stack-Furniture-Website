@@ -169,6 +169,25 @@ const createProduct = async (req, res) => {
       }
     });
 
+    if (req.body.applyLegsToAllSofaCategories === 'true' && product.legs) {
+      try {
+        const Category = require("../../Schemas/Category");
+        const allCategories = await Category.find({});
+        const sofaCategoryIds = allCategories
+          .filter(c => /sofa|cum bed/i.test(c.name))
+          .map(c => c._id);
+        
+        if (sofaCategoryIds.length > 0) {
+          await Product.updateMany(
+            { category: { $in: sofaCategoryIds }, _id: { $ne: product._id } },
+            { $set: { legs: product.legs } }
+          );
+        }
+      } catch (e) {
+        console.error("Error bulk updating legs:", e);
+      }
+    }
+
     res.status(201).json({
       success: true,
       message: "Product created successfully",
@@ -455,6 +474,25 @@ const updateProduct = async (req, res) => {
 
     clearCachePrefix("product_");
     clearCachePrefix("filter_");
+
+    if (req.body.applyLegsToAllSofaCategories === 'true' && product.legs) {
+      try {
+        const Category = require("../../Schemas/Category");
+        const allCategories = await Category.find({});
+        const sofaCategoryIds = allCategories
+          .filter(c => /sofa|cum bed/i.test(c.name))
+          .map(c => c._id);
+        
+        if (sofaCategoryIds.length > 0) {
+          await Product.updateMany(
+            { category: { $in: sofaCategoryIds }, _id: { $ne: product._id } },
+            { $set: { legs: product.legs } }
+          );
+        }
+      } catch (e) {
+        console.error("Error bulk updating legs:", e);
+      }
+    }
 
     res.status(200).json({
       success: true,

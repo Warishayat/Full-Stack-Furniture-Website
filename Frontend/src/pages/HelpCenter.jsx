@@ -85,8 +85,8 @@ const HelpCenter = () => {
                  <Link to="/contact" className="px-12 py-5 bg-[#D7282F] text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-gray-900 transition-all">
                     Contact Specialist
                  </Link>
-                 <a href="tel:07916603675" className="text-lg font-bold text-white hover:text-[#D7282F] transition-colors">
-                   07916603675
+                 <a href="tel:07376770302" className="text-lg font-bold text-white hover:text-[#D7282F] transition-colors">
+                   07376770302
                  </a>
               </div>
            </div>

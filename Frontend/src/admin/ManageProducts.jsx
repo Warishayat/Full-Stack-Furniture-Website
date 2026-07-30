@@ -104,6 +104,7 @@ const ManageProducts = () => {
       delivery: { time: '', charges: '' },
       returns: { policy: '', link: '' }
     },
+    applyLegsToAllSofaCategories: false,
   });
 
   const [images, setImages] = useState([]); // File objects
@@ -399,6 +400,7 @@ const ManageProducts = () => {
         delivery: { time: '', charges: '' },
         returns: { policy: '', link: '' }
       },
+      applyLegsToAllSofaCategories: false,
     });
     setImages([]);
     setImagePreviews([]);
@@ -472,6 +474,7 @@ const ManageProducts = () => {
         assembly: { ...defaultSpecs.assembly, ...product.specifications?.assembly },
         delivery: { ...defaultSpecs.delivery, ...product.specifications?.delivery },
       },
+      applyLegsToAllSofaCategories: false,
     });
 
     setImagePreviews(product.images || []);
@@ -532,6 +535,7 @@ const ManageProducts = () => {
         };
       });
       submitData.append('legs', JSON.stringify(legsToSubmit));
+      submitData.append('applyLegsToAllSofaCategories', formData.applyLegsToAllSofaCategories);
       
       submitData.append('specifications', JSON.stringify(formData.specifications));
 
@@ -871,25 +875,36 @@ const ManageProducts = () => {
                     {(() => {
                       const selectedCat = categories.find(c => c._id === formData.category);
                       const catName = selectedCat ? selectedCat.name.toLowerCase() : '';
-                      const isSofa = catName === 'sofa' || catName === 'sofas';
+                      const isSofa = /sofa|cum bed/i.test(catName);
                       
                       if (isSofa) {
                         return (
                           <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100 shadow-inner mt-8">
                             <div className="flex items-center justify-between mb-4">
-                              <label className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Legs Architecture (Sofa Only)</label>
-                              <button 
-                                type="button" 
-                                onClick={() => {
-                                  setFormData(prev => ({
-                                    ...prev,
-                                    legs: [...prev.legs, { name: '', images: [], imageIndexes: [] }]
-                                  }));
-                                }}
-                                className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white transition-colors rounded-lg text-[10px] font-black uppercase tracking-widest"
-                              >
-                                + Add Leg Option
-                              </button>
+                              <label className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Legs Architecture (Sofas / Sofa Cum Beds)</label>
+                              <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-2 text-[10px] font-black text-gray-700 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={formData.applyLegsToAllSofaCategories}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, applyLegsToAllSofaCategories: e.target.checked }))}
+                                    className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
+                                  />
+                                  Apply to all Sofas & Cum Beds
+                                </label>
+                                <button 
+                                  type="button" 
+                                  onClick={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      legs: [...prev.legs, { name: '', images: [], imageIndexes: [] }]
+                                    }));
+                                  }}
+                                  className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-600 hover:text-white transition-colors rounded-lg text-[10px] font-black uppercase tracking-widest"
+                                >
+                                  + Add Leg Option
+                                </button>
+                              </div>
                             </div>
                             
                             <div className="space-y-4">

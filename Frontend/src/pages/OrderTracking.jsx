@@ -193,7 +193,7 @@ const OrderTracking = () => {
               For detailed status inquiries or architectural consultations, our specialists are available via our dedicated private line.
            </p>
            <div className="w-16 h-[2px] bg-[#D7282F]/20 mx-auto mb-10" />
-           <p className="text-gray-900 font-black uppercase tracking-[0.5em] text-xs">07916603675</p>
+           <p className="text-gray-900 font-black uppercase tracking-[0.5em] text-xs">07376770302</p>
         </div>
       </div>
     </div>
