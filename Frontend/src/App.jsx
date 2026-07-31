@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ReactGA from 'react-ga4';
 import AppLayout from './components/layout/AppLayout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import ScrollToTop from './components/utils/ScrollToTop';
@@ -50,13 +51,30 @@ const LuxuryLoader = () => (
   </div>
 );
 
-const PixelRouteTracker = () => {
+const AnalyticsTracker = () => {
   const location = useLocation();
+
   useEffect(() => {
+    // Initialize Google Analytics if ID is provided in .env
+    const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    if (gaMeasurementId) {
+      ReactGA.initialize(gaMeasurementId);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Facebook Pixel Tracking
     if (window.fbq) {
       window.fbq('track', 'PageView');
     }
+    
+    // Google Analytics 4 Page View Tracking
+    const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    if (gaMeasurementId) {
+      ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
+    }
   }, [location.pathname, location.search]);
+
   return null;
 };
 
@@ -64,7 +82,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
-      <PixelRouteTracker />
+      <AnalyticsTracker />
       <ToastContainer 
         position="bottom-right" 
         autoClose={3000} 

@@ -674,7 +674,7 @@ const Checkout = () => {
                         className="rounded text-green-600 focus:ring-green-500 w-5 h-5 mt-0.5 shrink-0 cursor-pointer"
                       />
                       <div>
-                        <p className="text-sm font-bold text-slate-900">Add Premium Assembly Service (+£50.00)</p>
+                        <p className="text-sm font-bold text-slate-900">Add Premium Assembly Service (+&pound;50.00)</p>
                         <p className="text-xs text-slate-500 mt-1 leading-relaxed">Our expert logistics team will fully assemble your items in your room of choice and remove all packaging.</p>
                       </div>
                     </label>
@@ -856,7 +856,7 @@ const Checkout = () => {
 
                       {/* Pricing */}
                       <div className="text-right shrink-0">
-                        <p className="text-xs font-extrabold text-slate-900">£{(Number(item.price) * item.quantity).toLocaleString()}</p>
+                        <p className="text-xs font-extrabold text-slate-900">&pound;{(Number(item.price) * item.quantity).toLocaleString()}</p>
                       </div>
 
                     </div>
@@ -868,7 +868,7 @@ const Checkout = () => {
                   
                   <div className="flex justify-between text-slate-500">
                     <span className="font-semibold">Order subtotal</span>
-                    <span className="font-bold">£{cartTotal.toLocaleString()}</span>
+                    <span className="font-bold">&pound;{cartTotal.toLocaleString()}</span>
                   </div>
 
                   <div className="flex justify-between text-slate-500">
@@ -879,7 +879,7 @@ const Checkout = () => {
                   {assemblyService && (
                     <div className="flex justify-between text-slate-500">
                       <span className="font-semibold">Assembly Service</span>
-                      <span className="font-bold">£50.00</span>
+                      <span className="font-bold">&pound;50.00</span>
                     </div>
                   )}
 
@@ -888,8 +888,8 @@ const Checkout = () => {
                   <div className="flex justify-between items-baseline text-slate-900">
                     <span className="text-lg font-serif font-black">Total</span>
                     <div className="text-right">
-                      <span className="text-2xl font-black text-slate-900">£{(cartTotal + (assemblyService ? 50 : 0)).toLocaleString()}</span>
-                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Including VAT £0.00</p>
+                      <span className="text-2xl font-black text-slate-900">&pound;{(cartTotal + (assemblyService ? 50 : 0)).toLocaleString()}</span>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Including VAT &pound;0.00</p>
                     </div>
                   </div>
 
