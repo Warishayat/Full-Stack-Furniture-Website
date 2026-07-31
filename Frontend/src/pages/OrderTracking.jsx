@@ -51,7 +51,7 @@ const OrderTracking = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-6 lg:px-12 pt-32 lg:pt-40">
+      <div className="w-full px-6 lg:px-12 pt-32 lg:pt-40">
         <nav className="flex text-xs text-gray-400 gap-2 items-center mb-8">
           <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
           <span>›</span>
@@ -59,7 +59,7 @@ const OrderTracking = () => {
         </nav>
       </div>
 
-      <div className="container mx-auto px-6 lg:px-12 pb-20">
+      <div className="w-full px-6 lg:px-12 pb-20">
         <div className="max-w-4xl mx-auto text-center mb-16">
            <div className="inline-flex items-center gap-3 px-5 py-2 bg-[#F2EDE7] rounded-full mb-8">
               <Sparkles className="w-3.5 h-3.5 text-[#D7282F]" />

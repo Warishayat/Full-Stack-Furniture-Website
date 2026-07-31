@@ -99,7 +99,7 @@ const Navbar = () => {
         {/* Promotional Banner */}
         <div className="bg-[#D7282F] text-white text-center py-2 px-4 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-red-700 transition-colors">
           <div className="text-xs md:text-sm font-medium tracking-wide">
-            Spring Sale - Up to 50% off - ends in
+            Midsummer Sale - Up to 50% off - ends in
           </div>
           <div className="text-[10px] md:text-xs font-bold tracking-wider flex items-center gap-1">
             {timeLeft.days} days {timeLeft.hours} hrs {timeLeft.mins} mins {timeLeft.secs} secs <ArrowRight className="w-3 h-3" />
@@ -107,7 +107,7 @@ const Navbar = () => {
         </div>
 
         {/* Top Row: Logo, Search, Icons */}
-        <div className="container mx-auto px-4 lg:px-12 py-4 flex items-center justify-between gap-4 md:gap-8">
+        <div className="w-full px-4 lg:px-12 py-4 flex items-center justify-between gap-4 md:gap-8">
           
           {/* Logo */}
           <Link to="/" className="flex items-center flex-shrink-0">
@@ -168,51 +168,15 @@ const Navbar = () => {
 
         {/* Bottom Row: Navigation Links */}
         <div className="hidden lg:block border-t border-gray-50 bg-[#F2EDE7]/10">
-          <div className="container mx-auto px-12">
-            <nav className="flex items-center justify-center gap-10">
-              {categories.slice(0, 8).map(cat => (
-                <div 
-                  key={cat._id} 
-                  className="relative group py-4"
-                  onMouseEnter={() => setActiveDropdown(cat._id)}
-                  onMouseLeave={() => setActiveDropdown(null)}
-                >
-                  <Link 
-                    to={`/products?category=${cat._id}`} 
-                    className={`text-[10px] font-black uppercase tracking-[0.2em] transition-colors flex items-center gap-1 ${activeDropdown === cat._id ? 'text-[#D7282F]' : 'text-gray-700'}`}
-                  >
-                    {cat.name}
-                    {cat.children?.length > 0 && <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${activeDropdown === cat._id ? 'rotate-180' : ''}`} />}
-                  </Link>
-
-                  {/* Dropdown Menu */}
-                  {cat.children?.length > 0 && (
-                    <div className={`absolute top-full left-1/2 -translate-x-1/2 w-64 bg-white shadow-2xl rounded-xl p-6 border border-gray-50 transition-all duration-300 ${activeDropdown === cat._id ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
-                      <div className="grid gap-4">
-                        <Link 
-                          to={`/products?category=${cat._id}`}
-                          className="text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-black mb-2"
-                        >
-                          View All {cat.name}
-                        </Link>
-                        {cat.children.map(child => (
-                          <Link 
-                            key={child._id}
-                            to={`/products?category=${child._id}`}
-                            className="flex items-center justify-between group/item"
-                          >
-                            <span className="text-xs font-bold text-gray-700 group-hover/item:text-[#D7282F] transition-colors">{child.name}</span>
-                            <ArrowRight className="w-3 h-3 text-gray-300 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all" />
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-              <div className="w-[1px] h-3 bg-gray-200 mx-2" />
-              <Link to="/about" className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-black transition-colors">Our Heritage</Link>
-              <Link to="/contact" className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 hover:text-black transition-colors">Concierge</Link>
+          <div className="w-full px-4 md:px-12">
+            <nav className="flex items-center justify-between py-4 whitespace-nowrap overflow-x-auto no-scrollbar">
+              <Link to="/products?category=sofas" className="text-[10px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em] text-gray-700 hover:text-black hover:underline underline-offset-4 transition-all">Sofas</Link>
+              <Link to="/products?category=sofa-cum-bed" className="text-[10px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em] text-gray-700 hover:text-black hover:underline underline-offset-4 transition-all">Sofa Cum Bed</Link>
+              <Link to="/products?category=beds" className="text-[10px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em] text-gray-700 hover:text-black hover:underline underline-offset-4 transition-all">Beds</Link>
+              <Link to="/products?category=recliner" className="text-[10px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em] text-gray-700 hover:text-black hover:underline underline-offset-4 transition-all">Recliner</Link>
+              <Link to="/track-order" className="text-[10px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em] text-gray-700 hover:text-black hover:underline underline-offset-4 transition-all">Track Order</Link>
+              <Link to="/about" className="text-[10px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em] text-gray-700 hover:text-black hover:underline underline-offset-4 transition-all">About Us</Link>
+              <Link to="/contact" className="text-[10px] font-black uppercase tracking-[0.1em] xl:tracking-[0.2em] text-gray-700 hover:text-black hover:underline underline-offset-4 transition-all">Contact Us</Link>
             </nav>
           </div>
         </div>

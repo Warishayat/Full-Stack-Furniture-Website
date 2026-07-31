@@ -40,7 +40,7 @@ const Hero = () => {
       <div className="absolute inset-0 z-0">
         <img
           src="/hero-light-sofa.png"
-          alt="Spring Sale"
+          alt="Midsummer Sale"
           className="w-full h-full object-cover object-center"
         />
         {/* Subtle overlay only to ensure white text readability */}
@@ -50,7 +50,7 @@ const Hero = () => {
       {/* Main Text Content */}
       <div className="relative z-10 w-full flex flex-col items-center justify-center flex-grow text-center px-4 mt-4 md:mt-8">
         <h2 className="text-white text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-serif mb-2 md:mb-4 drop-shadow-md font-medium tracking-wide">
-          Spring Sale
+          Midsummer Sale
         </h2>
         <h1 className="text-white text-[5rem] md:text-7xl lg:text-8xl xl:text-[8.5rem] font-serif drop-shadow-2xl leading-[1.1] md:leading-[0.95] font-medium tracking-tight mb-8 md:mb-12">
           Up to <br className="md:hidden" />

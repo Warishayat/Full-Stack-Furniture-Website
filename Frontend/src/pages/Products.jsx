@@ -168,7 +168,7 @@ const Products = () => {
 
   return (
     <div className="bg-white min-h-screen pt-32 lg:pt-40 pb-20">
-      <div className="container mx-auto px-6 lg:px-12">
+      <div className="w-full px-6 lg:px-12">
         {/* Breadcrumbs */}
         <nav className="flex text-xs text-gray-400 gap-2 items-center mb-8">
           <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>

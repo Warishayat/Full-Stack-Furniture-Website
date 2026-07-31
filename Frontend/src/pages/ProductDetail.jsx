@@ -282,7 +282,7 @@ const ProductDetail = () => {
 
   if (loading) return (
     <div className="bg-white min-h-screen pt-28 lg:pt-36 animate-pulse">
-      <div className="container mx-auto px-6 lg:px-12">
+      <div className="w-full px-6 lg:px-12">
         {/* Breadcrumbs skeleton */}
         <div className="h-3.5 bg-slate-100 rounded w-1/4 mb-8" />
         
@@ -353,7 +353,7 @@ const ProductDetail = () => {
   return (
     <div className="bg-white min-h-screen pt-28 lg:pt-36">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-6 lg:px-12 mb-8">
+      <div className="w-full px-6 lg:px-12 mb-8">
         <nav className="flex text-xs text-gray-500 gap-2 items-center">
           <Link to="/" className="hover:text-gray-900">Home</Link>
           <span>›</span>
@@ -363,7 +363,7 @@ const ProductDetail = () => {
         </nav>
       </div>
 
-      <div className="container mx-auto px-6 lg:px-12 pb-20">
+      <div className="w-full px-6 lg:px-12 pb-20">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           
           {/* Left: Product Media */}
@@ -829,7 +829,7 @@ const ProductDetail = () => {
 
       {/* Newsletter Block */}
       <div className="bg-[#F2EDE7] py-20">
-         <div className="container mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-12">
+         <div className="w-full px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="max-w-xl text-center md:text-left">
                <h2 className="text-4xl md:text-5xl font-serif text-gray-800 mb-6">JOIN US</h2>
                <p className="text-gray-600 mb-10 text-lg leading-relaxed">Sign up to our newsletter for exclusive offers and interior inspiration.</p>

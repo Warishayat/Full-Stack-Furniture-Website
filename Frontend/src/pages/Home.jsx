@@ -106,7 +106,7 @@ const Home = () => {
 
       {/* Premium Category Showcase Section */}
       <section className="py-24 bg-[#F2EDE7]/25 border-b border-gray-100">
-        <div className="container mx-auto px-6 lg:px-12">
+        <div className="w-full px-4 lg:px-12">
           <div className="mb-16 text-center lg:text-left flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div>
               <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">
@@ -144,7 +144,7 @@ const Home = () => {
         <div className="absolute top-0 right-0 w-80 h-80 bg-[#D7282F]/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-green-900/10 rounded-full blur-[100px] pointer-events-none" />
 
-        <div className="container mx-auto px-6 text-center relative z-10">
+        <div className="w-full px-6 text-center relative z-10">
           <span className="text-[#D7282F] font-black text-[9px] uppercase tracking-[0.5em] mb-4 block">
             Crafted for Royalty
           </span>
@@ -179,7 +179,7 @@ const Home = () => {
 
       {/* Flash Sofa Sale Section */}
       <section className="py-24 bg-white">
-        <div className="container mx-auto px-6 lg:px-12">
+        <div className="w-full px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
             {/* Large Banner */}
             <div className="lg:w-1/2 relative group overflow-hidden">
@@ -233,7 +233,7 @@ const Home = () => {
 
       {/* Sofa Cum Bed Section */}
       <section className="py-24 bg-[#F2EDE7]/30">
-        <div className="container mx-auto px-6 lg:px-12">
+        <div className="w-full px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row-reverse gap-16 lg:gap-24">
             {/* Large Banner */}
             <div className="lg:w-1/2 relative group overflow-hidden">
@@ -287,7 +287,7 @@ const Home = () => {
 
       {/* Testimonials - Patron Narratives */}
       <section className="py-32 bg-white">
-        <div className="container mx-auto px-6 lg:px-12 text-center">
+        <div className="w-full px-6 lg:px-12 text-center">
           <div className="max-w-3xl mx-auto mb-20">
             <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Verified Excellence</span>
             <h2 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 tracking-tighter leading-tight mb-8">
@@ -342,7 +342,7 @@ const Home = () => {
 
       {/* Trust Bar - Executive Standards */}
       <section className="bg-white py-16 border-t border-b border-gray-100">
-        <div className="container mx-auto px-6 lg:px-12">
+        <div className="w-full px-6 lg:px-12">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-12 items-center text-center">
             <div className="flex flex-col items-center gap-4 group">
               <div className="w-12 h-12 bg-[#F2EDE7] rounded-full flex items-center justify-center text-[#D7282F] group-hover:bg-[#D7282F] group-hover:text-white transition-all">
@@ -395,7 +395,7 @@ const Home = () => {
 
       {/* Bespoke Showroom & FAQ Accordion Section */}
       <section className="py-24 bg-white">
-        <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
+        <div className="w-full px-6 lg:px-12 max-w-4xl">
           <div className="mb-16 text-center">
             <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">
               Curator Assistance

@@ -50,7 +50,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-6 lg:px-12 pt-28 lg:pt-32">
+      <div className="w-full px-6 lg:px-12 pt-28 lg:pt-32">
         <nav className="flex text-sm text-gray-500 gap-2 mb-12">
           <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
           <span>›</span>
@@ -58,7 +58,7 @@ const Auth = () => {
         </nav>
       </div>
 
-      <div className="container mx-auto px-6 lg:px-12 flex flex-col items-center">
+      <div className="w-full px-6 lg:px-12 flex flex-col items-center">
         <div className="max-w-md w-full text-center">
           <h1 className="text-5xl md:text-6xl font-serif text-gray-800 mb-2">
             {isLogin ? 'Sign in' : 'Register'}

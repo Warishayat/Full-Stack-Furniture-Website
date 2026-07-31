@@ -5,7 +5,7 @@ const About = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-6 lg:px-12 pt-32 lg:pt-40">
+      <div className="w-full px-6 lg:px-12 pt-32 lg:pt-40">
         <nav className="flex text-xs text-gray-400 gap-2 items-center mb-8">
           <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
           <span>›</span>
@@ -22,7 +22,7 @@ const About = () => {
             alt="ComfortSeating Workshop"
           />
         </div>
-        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+        <div className="w-full px-6 lg:px-12 relative z-10">
           <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Our Heritage</span>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-black text-white mb-8 leading-tight tracking-tighter">
             Defining <span className="italic text-white/90">British</span> <br/> Mastery
@@ -32,7 +32,7 @@ const About = () => {
 
       {/* Origin Story */}
       <section className="py-32 bg-[#F2EDE7]/30">
-        <div className="container mx-auto px-6 lg:px-12">
+        <div className="w-full px-6 lg:px-12">
           <div className="flex flex-col lg:flex-row gap-24 items-center">
             <div className="lg:w-1/2">
                <div className="flex items-center gap-3 mb-6">
@@ -77,7 +77,7 @@ const About = () => {
 
       {/* Values */}
       <section className="py-32">
-        <div className="container mx-auto px-6 lg:px-12">
+        <div className="w-full px-6 lg:px-12">
           <div className="text-center mb-24 max-w-2xl mx-auto">
              <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Our Pillars</span>
              <h2 className="text-5xl lg:text-6xl font-serif font-black text-gray-900 tracking-tighter">The Comfort Standards</h2>
@@ -110,7 +110,7 @@ const About = () => {
 
       {/* CTA */}
       <section className="py-32 bg-gray-900 text-white relative overflow-hidden">
-         <div className="container mx-auto px-6 lg:px-12 text-center relative z-10">
+         <div className="w-full px-6 lg:px-12 text-center relative z-10">
             <h2 className="text-5xl lg:text-7xl font-serif font-black mb-12 tracking-tighter">Your sanctuary awaits.</h2>
             <Link to="/products" className="inline-flex items-center px-16 py-6 bg-[#D7282F] text-white font-black rounded-sm hover:bg-white hover:text-gray-900 transition-all shadow-2xl text-[10px] uppercase tracking-[0.3em]">
                Explore The Collection <ArrowRight className="w-4 h-4 ml-4" />

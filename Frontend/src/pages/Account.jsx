@@ -27,7 +27,7 @@ const Account = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-6 lg:px-12 pt-32 lg:pt-40">
+      <div className="w-full px-6 lg:px-12 pt-32 lg:pt-40">
         <nav className="flex text-xs text-gray-400 gap-2 items-center mb-8">
           <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
           <span>›</span>
@@ -35,7 +35,7 @@ const Account = () => {
         </nav>
       </div>
 
-      <div className="container mx-auto px-6 lg:px-12 pb-20">
+      <div className="w-full px-6 lg:px-12 pb-20">
         <div className="flex flex-col lg:flex-row gap-20">
           {/* Sidebar / Profile Summary */}
           <div className="lg:w-1/3">

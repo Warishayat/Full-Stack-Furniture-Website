@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const Bespoke = () => {
   return (
     <div className="bg-white min-h-screen pt-32 pb-20">
-      <div className="container mx-auto px-6 lg:px-20">
+      <div className="w-full px-6 lg:px-20">
         <div className="flex flex-col lg:flex-row gap-24 items-center mb-32">
            <div className="lg:w-1/2">
               <span className="text-accent uppercase tracking-[0.4em] text-[10px] font-bold mb-6 block animate-fade-in">Tailored for You</span>

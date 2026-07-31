@@ -20,7 +20,7 @@ const Wishlist = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-6 lg:px-12 pt-32 lg:pt-40">
+      <div className="w-full px-6 lg:px-12 pt-32 lg:pt-40">
         <nav className="flex text-xs text-gray-400 gap-2 items-center mb-8">
           <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
           <span>›</span>
@@ -28,7 +28,7 @@ const Wishlist = () => {
         </nav>
       </div>
 
-      <div className="container mx-auto px-6 lg:px-12 pb-24">
+      <div className="w-full px-6 lg:px-12 pb-24">
         <div className="mb-16">
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Your Collection</span>
            <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 mb-4 tracking-tighter">The <span className="italic text-gray-400">Wishlist</span></h1>

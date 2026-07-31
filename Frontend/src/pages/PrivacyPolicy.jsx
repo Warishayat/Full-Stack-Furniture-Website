@@ -5,7 +5,7 @@ const PrivacyPolicy = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Breadcrumbs */}
-      <div className="container mx-auto px-6 lg:px-12 pt-32 lg:pt-40">
+      <div className="w-full px-6 lg:px-12 pt-32 lg:pt-40">
         <nav className="flex text-xs text-gray-400 gap-2 items-center mb-8">
           <Link to="/" className="hover:text-gray-900 transition-colors">Home</Link>
           <span>›</span>
@@ -13,7 +13,7 @@ const PrivacyPolicy = () => {
         </nav>
       </div>
 
-      <div className="container mx-auto px-6 lg:px-12 pb-20">
+      <div className="w-full px-6 lg:px-12 pb-20">
         <div className="max-w-4xl mx-auto">
           <div className="mb-20">
              <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Legal Integrity</span>
