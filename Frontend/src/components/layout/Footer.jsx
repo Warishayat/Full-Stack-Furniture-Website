@@ -161,7 +161,7 @@ const Footer = () => {
             <p className="text-[10px] text-gray-400 leading-relaxed max-w-2xl">
               © 2026 ComfortSeating Ltd. All Rights Reserved. | Company no. 16900002
               <br />
-              ComfortSeating Ltd. is authorised and regulated by the Financial Conduct Authority, register number 719600 and act as a credit broker and not a lender.
+              ComfortSeating Ltd. is authorised and regulated by the Financial Conduct Authority, company number 16900002 and act as a credit broker and not a lender.
             </p>
           </div>
           
