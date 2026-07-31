@@ -159,7 +159,7 @@ const Footer = () => {
               <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 border-l border-gray-200 pl-2">Ltd.</span>
             </Link>
             <p className="text-[10px] text-gray-400 leading-relaxed max-w-2xl">
-              © 2026 ComfortSeating Ltd. All Rights Reserved. | Company no. 05349107 | Vat no. GB867099668
+              © 2026 ComfortSeating Ltd. All Rights Reserved. | Company no. 16900002
               <br />
               ComfortSeating Ltd. is authorised and regulated by the Financial Conduct Authority, register number 719600 and act as a credit broker and not a lender.
             </p>
