@@ -178,7 +178,7 @@ const Contact = () => {
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h4 className="font-black uppercase tracking-widest text-xs mb-2">Warranty Claims</h4>
-              <p className="text-gray-500 text-xs font-medium">Our lifetime quality guarantee details.</p>
+              <p className="text-gray-500 text-xs font-medium">Our 2-year quality guarantee details.</p>
             </Link>
             <Link to="/help" className="group">
               <div className="w-16 h-16 bg-[#F2EDE7] mx-auto mb-6 flex items-center justify-center group-hover:bg-[#D7282F] group-hover:text-white transition-all">

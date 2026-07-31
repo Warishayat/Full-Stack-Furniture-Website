@@ -152,7 +152,7 @@ const Home = () => {
             Handcrafted In <span className="italic text-gray-400">Great Britain</span>
           </h3>
           <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm mx-auto mb-8">
-            Every ComfortSeating piece is meticulously hand-carved and custom upholstered using heritage fabrics, sustainable hardwood frames, and premium cushioning for lifetime longevity.
+            Every ComfortSeating piece is meticulously hand-carved and custom upholstered using heritage fabrics, sustainable hardwood frames, and premium cushioning for 2-year guaranteed longevity.
           </p>
           
           {/* Key USPs styled beautifully */}
