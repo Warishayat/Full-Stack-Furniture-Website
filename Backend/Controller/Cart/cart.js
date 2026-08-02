@@ -45,6 +45,9 @@ const getCart = async (req, res) => {
         material: item.material,
         color: item.color,
         leg: item.leg,
+        firmness: item.firmness,
+        footstool: item.footstool,
+        coffeeTable: item.coffeeTable,
         price: item.price,
         quantity: item.quantity,
         image: item.image,
@@ -70,7 +73,7 @@ const getCart = async (req, res) => {
 
 const addToCart = async (req, res) => {
   try {
-    const { productId, variant, material, color, leg, quantity = 1 } = req.body;
+    const { productId, variant, material, color, leg, firmness, footstool, coffeeTable, quantity = 1 } = req.body;
     const userId = req.user.id;
 
     if (!productId || !variant) {
@@ -148,6 +151,8 @@ const addToCart = async (req, res) => {
       }
       
       finalPrice = selectedVariant.price;
+      if (footstool === 'Yes') finalPrice += 149;
+      if (coffeeTable === 'Yes') finalPrice += 199;
       finalImage = selectedVariant.images?.[0] || product.images?.[0] || "";
     } else {
       finalMaterial = material || "Mixed Fabrics";
@@ -166,7 +171,10 @@ const addToCart = async (req, res) => {
       item.variant === variant &&
       item.material === finalMaterial &&
       item.color === finalColor &&
-      item.leg === leg
+      item.leg === leg &&
+      item.firmness === firmness &&
+      item.footstool === footstool &&
+      item.coffeeTable === coffeeTable
     );
 
     if (index > -1) {
@@ -178,6 +186,9 @@ const addToCart = async (req, res) => {
         material: finalMaterial,
         color: finalColor,
         leg: leg,
+        firmness,
+        footstool,
+        coffeeTable,
         price: finalPrice,
         image: finalImage,
         quantity: qty

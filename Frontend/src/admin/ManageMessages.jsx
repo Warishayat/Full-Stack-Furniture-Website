@@ -75,7 +75,7 @@ const ManageMessages = () => {
       <div className="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
         <div>
           <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-4 block">Concierge Desk</span>
-          <h1 className="text-4xl lg:text-5xl font-serif font-black text-gray-900 tracking-tighter">Patron <span className="italic text-gray-400">Inquiries</span></h1>
+          <h1 className="text-4xl lg:text-5xl font-serif font-medium text-gray-900 tracking-tighter">Patron Inquiries</h1>
         </div>
         
         {/* Search & Filter Controls */}

@@ -16,7 +16,7 @@ const Warranty = () => {
       <div className="w-full px-6 lg:px-12 pb-20">
         <div className="max-w-3xl mx-auto text-center mb-24">
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Quality Promise</span>
-           <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 mb-8 tracking-tighter">2-Year <span className="italic text-gray-400">Assurance</span></h1>
+           <h1 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 mb-8 tracking-tighter">2-Year Assurance</h1>
            <p className="text-gray-600 text-lg leading-relaxed font-medium">Our furniture is built to last for generations. We stand behind every joint, stitch, and finish with our comprehensive warranty program.</p>
         </div>
 
@@ -28,7 +28,7 @@ const Warranty = () => {
            ].map((item, idx) => (
              <div key={idx} className="p-12 bg-[#F2EDE7] rounded-sm border border-gray-100 group hover:border-[#D7282F] transition-all duration-500">
                 <item.icon className="w-12 h-12 text-[#D7282F] mb-8" />
-                <h3 className="text-2xl font-serif font-black text-gray-900 mb-4 tracking-tight">{item.title}</h3>
+                <h3 className="text-2xl font-serif font-medium text-gray-900 mb-4 tracking-tight">{item.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed font-medium">{item.desc}</p>
              </div>
            ))}
@@ -36,7 +36,7 @@ const Warranty = () => {
 
         <div className="max-w-5xl mx-auto bg-gray-900 text-white rounded-sm overflow-hidden flex flex-col lg:flex-row shadow-2xl">
            <div className="lg:w-1/2 p-12 lg:p-20">
-              <h3 className="text-4xl font-serif font-black mb-10 tracking-tighter italic">Claim Process</h3>
+              <h3 className="text-4xl font-serif font-medium mb-10 tracking-tighter ">Claim Process</h3>
               <ul className="space-y-10">
                  <li className="flex gap-6">
                     <span className="w-10 h-10 rounded-full bg-[#D7282F] flex items-center justify-center text-xs font-black shrink-0">1</span>

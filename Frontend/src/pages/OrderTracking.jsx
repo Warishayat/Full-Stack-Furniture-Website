@@ -65,8 +65,8 @@ const OrderTracking = () => {
               <Sparkles className="w-3.5 h-3.5 text-[#D7282F]" />
               <span className="text-[10px] font-black text-gray-900 uppercase tracking-[0.3em]">White-Glove Logistics</span>
            </div>
-           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-black text-gray-900 mb-8 leading-tight tracking-tighter">
-              Track Your <br/><span className="italic text-gray-400">Masterpiece</span>
+           <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-medium text-gray-900 mb-8 leading-tight tracking-tighter">
+              Track Your <br/>Masterpiece
            </h1>
            
            <div className="max-w-xl mx-auto mb-10">
@@ -97,7 +97,7 @@ const OrderTracking = () => {
              <div className="p-10 lg:p-16 bg-gray-900 rounded-sm text-white flex flex-col md:flex-row justify-between items-center gap-10 shadow-2xl relative overflow-hidden mb-20">
                 <div className="relative z-10 text-center md:text-left">
                    <p className="text-[10px] font-black text-[#D7282F] uppercase tracking-[0.4em] mb-3">Current Status</p>
-                   <h2 className="text-4xl lg:text-5xl font-serif font-black italic capitalize">{order.orderStatus || 'Processing'}</h2>
+                   <h2 className="text-4xl lg:text-5xl font-serif font-medium  capitalize">{order.orderStatus || 'Processing'}</h2>
                 </div>
                 <div className="relative z-10 flex flex-wrap justify-center gap-12 text-center md:text-left">
                    <div>
@@ -124,7 +124,7 @@ const OrderTracking = () => {
                                <div className={`text-[10px] font-black uppercase tracking-widest mb-3 ${milestone.status === 'Complete' ? 'text-[#51823F]' : milestone.status === 'In Progress' ? 'text-[#D7282F]' : 'text-gray-300'}`}>
                                   {milestone.status}
                                </div>
-                               <h4 className="text-2xl font-serif font-black text-gray-900 mb-3 tracking-tight">{milestone.title}</h4>
+                               <h4 className="text-2xl font-serif font-medium text-gray-900 mb-3 tracking-tight">{milestone.title}</h4>
                                <p className="text-gray-500 text-sm leading-relaxed">{milestone.desc}</p>
                              </>
                            )}
@@ -134,7 +134,7 @@ const OrderTracking = () => {
                             <div className={`text-[10px] font-black uppercase tracking-widest mb-2 ${milestone.status === 'Complete' ? 'text-[#51823F]' : milestone.status === 'In Progress' ? 'text-[#D7282F]' : 'text-gray-300'}`}>
                               {milestone.status}
                             </div>
-                            <h4 className="text-xl font-serif font-black text-gray-900 mb-2 tracking-tight">{milestone.title}</h4>
+                            <h4 className="text-xl font-serif font-medium text-gray-900 mb-2 tracking-tight">{milestone.title}</h4>
                             <p className="text-gray-500 text-xs leading-relaxed">{milestone.desc}</p>
                         </div>
 
@@ -148,7 +148,7 @@ const OrderTracking = () => {
                                <div className={`text-[10px] font-black uppercase tracking-widest mb-3 ${milestone.status === 'Complete' ? 'text-[#51823F]' : milestone.status === 'In Progress' ? 'text-[#D7282F]' : 'text-gray-300'}`}>
                                   {milestone.status}
                                </div>
-                               <h4 className="text-2xl font-serif font-black text-gray-900 mb-3 tracking-tight">{milestone.title}</h4>
+                               <h4 className="text-2xl font-serif font-medium text-gray-900 mb-3 tracking-tight">{milestone.title}</h4>
                                <p className="text-gray-500 text-sm leading-relaxed">{milestone.desc}</p>
                              </>
                            )}
@@ -162,7 +162,7 @@ const OrderTracking = () => {
           <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 mb-24">
              <div className="p-10 bg-gray-900 text-white rounded-sm shadow-2xl relative overflow-hidden group">
                 <div className="relative z-10">
-                   <h3 className="text-3xl font-serif font-black mb-5 italic tracking-tight">Crafting Phase</h3>
+                   <h3 className="text-3xl font-serif font-medium mb-5  tracking-tight">Crafting Phase</h3>
                    <p className="text-gray-400 leading-relaxed mb-10 text-sm">
                       Your curation is currently with our master artisans. We use heritage techniques to ensure every stitch meets our signature standards.
                    </p>
@@ -174,7 +174,7 @@ const OrderTracking = () => {
              </div>
 
              <div className="p-10 bg-[#F2EDE7] rounded-sm group">
-                <h3 className="text-3xl font-serif font-black text-gray-900 mb-5 italic tracking-tight">Delivery Protocol</h3>
+                <h3 className="text-3xl font-serif font-medium text-gray-900 mb-5  tracking-tight">Delivery Protocol</h3>
                 <p className="text-gray-600 leading-relaxed mb-10 text-sm">
                    Upon final authentication, our concierge will coordinate a white-glove delivery experience tailored to your schedule.
                 </p>
@@ -188,7 +188,7 @@ const OrderTracking = () => {
 
         <div className="mt-32 p-12 lg:p-20 bg-gray-50 rounded-sm text-center max-w-4xl mx-auto border border-gray-100">
            <Package className="w-12 h-12 text-[#D7282F] mx-auto mb-8" />
-           <h3 className="text-3xl font-serif font-black text-gray-900 mb-4 italic tracking-tighter">Bespoke Concierge</h3>
+           <h3 className="text-3xl font-serif font-medium text-gray-900 mb-4  tracking-tighter">Bespoke Concierge</h3>
            <p className="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed mb-10 font-medium">
               For detailed status inquiries or architectural consultations, our specialists are available via our dedicated private line.
            </p>

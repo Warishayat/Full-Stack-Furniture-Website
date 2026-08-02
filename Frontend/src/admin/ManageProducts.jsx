@@ -619,7 +619,7 @@ const ManageProducts = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
         <div>
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-2 block">Archive Management</span>
-           <h1 className="text-4xl lg:text-6xl font-serif font-black text-gray-900 tracking-tighter">Inventory <span className="italic text-gray-400">Registry</span></h1>
+           <h1 className="text-4xl lg:text-6xl font-serif font-medium text-gray-900 tracking-tighter">Inventory Registry</h1>
         </div>
         <button type="button" 
           onClick={() => { resetForm(); setIsModalOpen(true); }}
@@ -672,7 +672,7 @@ const ManageProducts = () => {
                           </div>
                         </td>
                         <td className="p-8">
-                          <div className="font-serif font-black text-gray-900 text-2xl mb-1 tracking-tight">{product.title}</div>
+                          <div className="font-serif font-medium text-gray-900 text-2xl mb-1 tracking-tight">{product.title}</div>
                           <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
                             {product.variants?.length || 0} DIMENSIONS | {product.variants?.[0]?.materials?.length || 0} FINISHES
                           </div>
@@ -683,7 +683,7 @@ const ManageProducts = () => {
                            </span>
                         </td>
                         <td className="p-8">
-                          <div className="font-serif font-black text-xl text-gray-900">£{displayPrice.toLocaleString()}</div>
+                          <div className="font-serif font-medium text-xl text-gray-900">£{displayPrice.toLocaleString()}</div>
                         </td>
                         <td className="p-8">
                            <div className="flex items-center gap-3">
@@ -743,12 +743,12 @@ const ManageProducts = () => {
                             {product.category?.name || 'Curated'}
                           </span>
                         </div>
-                        <h4 className="font-serif font-black text-gray-900 text-xl tracking-tight truncate">{product.title}</h4>
+                        <h4 className="font-serif font-medium text-gray-900 text-xl tracking-tight truncate">{product.title}</h4>
                         <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest">
                           {product.variants?.length || 0} DIMENSIONS | {product.variants?.[0]?.materials?.length || 0} FINISHES
                         </p>
                         <div className="flex items-center gap-4 pt-1">
-                          <span className="font-serif font-black text-gray-900 text-lg">£{displayPrice.toLocaleString()}</span>
+                          <span className="font-serif font-medium text-gray-900 text-lg">£{displayPrice.toLocaleString()}</span>
                           <div className="flex items-center gap-1.5">
                             <div className={`w-1.5 h-1.5 rounded-full ${totalStock > 10 ? 'bg-green-500' : totalStock > 0 ? 'bg-[#D7282F]' : 'bg-gray-300'}`}></div>
                             <span className="text-[8px] font-bold uppercase tracking-widest text-gray-500">
@@ -993,7 +993,7 @@ const ManageProducts = () => {
                               ))}
                               
                               {formData.legs.length === 0 && (
-                                <p className="text-xs text-gray-400 italic text-center py-4">No legs configured for this sofa yet.</p>
+                                <p className="text-xs text-gray-400  text-center py-4">No legs configured for this sofa yet.</p>
                               )}
                             </div>
                           </div>
@@ -1295,7 +1295,7 @@ const ManageProducts = () => {
 
                           <p className="text-[10px] font-black text-[#D7282F] uppercase tracking-widest pt-4">Variant Image Gallery Mapping</p>
                           <div className="space-y-4">
-                            <p className="text-[10px] text-gray-400 italic">Select which product gallery assets from Step 2 belong to this specific size variant:</p>
+                            <p className="text-[10px] text-gray-400 ">Select which product gallery assets from Step 2 belong to this specific size variant:</p>
                             <div className="flex flex-wrap gap-3">
                               {imagePreviews.map((url, imgIdx) => {
                                 const isSelected = (variant.imageIndexes || []).includes(imgIdx);
@@ -1327,7 +1327,7 @@ const ManageProducts = () => {
                                   </div>
                                 );
                               })}
-                              {imagePreviews.length === 0 && <p className="text-[10px] text-gray-400 italic">Please upload collection assets in Step 2 first to link them to this size.</p>}
+                              {imagePreviews.length === 0 && <p className="text-[10px] text-gray-400 ">Please upload collection assets in Step 2 first to link them to this size.</p>}
                             </div>
                           </div>
                         </div>

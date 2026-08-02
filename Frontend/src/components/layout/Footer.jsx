@@ -129,7 +129,7 @@ const Footer = () => {
         <div className="border-y border-gray-100 py-16 mb-16">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
             <div className="max-w-xl text-center lg:text-left">
-               <h3 className="text-3xl font-serif font-black text-gray-900 mb-4 tracking-tighter">Join the <span className="italic text-[#D7282F]">Inner Circle</span></h3>
+               <h3 className="text-3xl font-serif font-medium text-gray-900 mb-4 tracking-tighter">Join the <span className=" text-[#D7282F]">Inner Circle</span></h3>
                <p className="text-gray-500 font-medium">Subscribe to receive early access to new curations and bespoke design insights.</p>
             </div>
             <form onSubmit={handleSubscribe} className="w-full lg:w-auto flex-1 max-w-lg relative group">

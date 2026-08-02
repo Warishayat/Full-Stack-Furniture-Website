@@ -32,8 +32,8 @@ const HelpCenter = () => {
       <div className="w-full px-6 lg:px-12 pb-20">
         <div className="max-w-4xl mb-16">
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Support Concierge</span>
-           <h1 className="text-5xl lg:text-8xl font-serif font-black text-gray-900 mb-12 tracking-tighter leading-tight">
-              How can we <br/><span className="italic text-gray-400">guide</span> you?
+           <h1 className="text-5xl lg:text-8xl font-serif font-medium text-gray-900 mb-12 tracking-tighter leading-tight">
+              How can we <br/>guide you?
            </h1>
            
            <div className="relative group max-w-2xl">
@@ -51,7 +51,7 @@ const HelpCenter = () => {
            {categories.map((cat, i) => (
              <Link key={i} to={cat.link} className="p-10 bg-[#F2EDE7] border border-gray-100 hover:border-[#D7282F] transition-all group">
                 <cat.icon className="w-10 h-10 text-[#D7282F] mb-8" />
-                <h3 className="text-2xl font-serif font-black text-gray-900 mb-4 tracking-tight">{cat.title}</h3>
+                <h3 className="text-2xl font-serif font-medium text-gray-900 mb-4 tracking-tight">{cat.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed mb-6 font-medium">{cat.desc}</p>
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-900 group-hover:text-[#D7282F] transition-colors">
                    View details <ChevronRight className="w-3 h-3" />
@@ -62,11 +62,11 @@ const HelpCenter = () => {
 
         {/* FAQ Section */}
         <div className="max-w-4xl mx-auto mb-32">
-           <h2 className="text-4xl font-serif font-black text-gray-900 mb-16 tracking-tighter text-center italic">Frequent Inquiries</h2>
+           <h2 className="text-4xl font-serif font-medium text-gray-900 mb-16 tracking-tighter text-center ">Frequent Inquiries</h2>
            <div className="space-y-12">
               {faqs.map((faq, i) => (
                 <div key={i} className="border-b border-gray-100 pb-10">
-                   <h4 className="text-2xl font-serif font-black text-gray-900 mb-4 tracking-tight">{faq.q}</h4>
+                   <h4 className="text-2xl font-serif font-medium text-gray-900 mb-4 tracking-tight">{faq.q}</h4>
                    <p className="text-gray-600 leading-relaxed font-medium">{faq.a}</p>
                 </div>
               ))}
@@ -77,7 +77,7 @@ const HelpCenter = () => {
         <div className="bg-gray-900 text-white p-12 lg:p-24 rounded-sm text-center relative overflow-hidden">
            <div className="relative z-10">
               <MessageCircle className="w-12 h-12 text-[#D7282F] mx-auto mb-8" />
-              <h2 className="text-4xl lg:text-6xl font-serif font-black mb-8 tracking-tighter italic">Still need assistance?</h2>
+              <h2 className="text-4xl lg:text-6xl font-serif font-medium mb-8 tracking-tighter ">Still need assistance?</h2>
               <p className="text-gray-400 text-lg mb-12 max-w-xl mx-auto leading-relaxed">
                  Our dedicated concierge team is available for real-time support and consultations.
               </p>

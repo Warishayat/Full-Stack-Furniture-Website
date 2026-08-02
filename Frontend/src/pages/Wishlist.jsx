@@ -31,7 +31,7 @@ const Wishlist = () => {
       <div className="w-full px-6 lg:px-12 pb-24">
         <div className="mb-16">
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Your Collection</span>
-           <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 mb-4 tracking-tighter">The <span className="italic text-gray-400">Wishlist</span></h1>
+           <h1 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 mb-4 tracking-tighter">The Wishlist</h1>
            <p className="text-gray-600 text-lg font-medium leading-relaxed max-w-2xl">
               A private archive of your desired curations, waiting to be brought home.
            </p>
@@ -40,7 +40,7 @@ const Wishlist = () => {
         {wishlist.length === 0 ? (
           <div className="py-32 text-center bg-[#F2EDE7] rounded-sm border border-gray-100">
             <Heart className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-            <h3 className="text-2xl font-serif font-black text-gray-900 mb-2">Selection Empty</h3>
+            <h3 className="text-2xl font-serif font-medium text-gray-900 mb-2">Selection Empty</h3>
             <p className="text-gray-500 font-medium mb-10">You haven't curated any pieces yet.</p>
             <Link to="/products" className="px-10 py-4 bg-gray-900 text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#D7282F] transition-all">
                Explore Gallery
@@ -69,7 +69,7 @@ const Wishlist = () => {
         {wishlist.length > 0 && (
           <div className="mt-20 p-12 bg-gray-900 text-white rounded-sm flex flex-col md:flex-row items-center justify-between gap-10">
              <div>
-                <h3 className="text-3xl font-serif font-black italic mb-2 tracking-tight">Ready to acquire?</h3>
+                <h3 className="text-3xl font-serif font-medium  mb-2 tracking-tight">Ready to acquire?</h3>
                 <p className="text-gray-400 font-medium">Your curated pieces are in stock and ready for immediate dispatch.</p>
              </div>
              <Link to="/cart" className="px-12 py-5 bg-[#D7282F] text-white font-black text-[10px] uppercase tracking-[0.4em] hover:bg-white hover:text-gray-900 transition-all flex items-center gap-4">

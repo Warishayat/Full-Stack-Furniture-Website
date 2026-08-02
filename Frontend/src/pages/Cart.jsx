@@ -64,7 +64,7 @@ const Cart = () => {
               <span className="text-gray-400">Shopping Cart</span>
             </nav>
             <h1 className="text-5xl lg:text-7xl font-serif font-bold text-gray-950 leading-tight mb-4">
-              Your <span className="italic text-[#D7282F]">Selection</span>
+              Your <span className=" text-[#D7282F]">Selection</span>
             </h1>
             <p className="text-gray-500 text-lg font-medium">
               Review and finalize your curated pieces for a refined living space.
@@ -155,6 +155,21 @@ const Cart = () => {
                                 Legs: <span className="text-gray-950">{item.leg}</span>
                               </span>
                             )}
+                            {item.firmness && (
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                Firmness: <span className="text-gray-950">{item.firmness}</span>
+                              </span>
+                            )}
+                            {item.footstool && item.footstool === 'Yes' && (
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                Matching Footstool: <span className="text-gray-950">Yes</span>
+                              </span>
+                            )}
+                            {item.coffeeTable && item.coffeeTable === 'Yes' && (
+                              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                                Coffee Table: <span className="text-gray-950">Yes</span>
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
@@ -238,7 +253,7 @@ const Cart = () => {
               <div className="absolute bottom-0 left-0 w-32 h-32 bg-gray-500/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-[60px]" />
               
               <h3 className="text-3xl font-serif font-bold mb-10 relative z-10 border-b border-white/10 pb-6">
-                Order <span className="italic text-[#D7282F]">Summary</span>
+                Order <span className=" text-[#D7282F]">Summary</span>
               </h3>
               
               <div className="space-y-6 mb-12 relative z-10">
@@ -290,7 +305,7 @@ const Cart = () => {
                 </div>
 
                 <div className="p-6 bg-white/5 rounded-3xl border border-white/5">
-                  <p className="text-[10px] text-gray-300 leading-relaxed italic text-center">
+                  <p className="text-[10px] text-gray-300 leading-relaxed  text-center">
                     "Our commitment to quality ensures that every piece in your selection is crafted to last generations."
                   </p>
                 </div>

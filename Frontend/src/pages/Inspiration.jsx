@@ -47,8 +47,8 @@ const Inspiration = () => {
       <div className="w-full px-6 lg:px-12 pb-20">
         <div className="max-w-4xl mb-24">
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Comfort Interiors</span>
-           <h1 className="text-5xl lg:text-8xl font-serif font-black text-gray-900 mb-8 tracking-tighter leading-[0.9]">
-              Curate Your <br/><span className="italic text-gray-400 text-6xl lg:text-7xl">Sanctuary</span>
+           <h1 className="text-5xl lg:text-8xl font-serif font-medium text-gray-900 mb-8 tracking-tighter leading-[0.9]">
+              Curate Your <br/>Sanctuary
            </h1>
            <p className="text-gray-600 text-lg lg:text-xl font-medium leading-relaxed max-w-2xl">
               Explore our curated galleries of architectural spaces featuring ComfortSeating pieces—where heritage meets modern living.
@@ -74,7 +74,7 @@ const Inspiration = () => {
                 <div className="flex justify-between items-end">
                    <div>
                       <span className="text-[#D7282F] uppercase tracking-widest text-[9px] font-black block mb-2">{gallery.category}</span>
-                      <h3 className="text-3xl font-serif font-black text-gray-900 tracking-tighter">{gallery.title}</h3>
+                      <h3 className="text-3xl font-serif font-medium text-gray-900 tracking-tighter">{gallery.title}</h3>
                    </div>
                    <ArrowRight className="w-6 h-6 text-gray-300 group-hover:text-[#D7282F] transition-colors" />
                 </div>
@@ -86,7 +86,7 @@ const Inspiration = () => {
         <div className="bg-gray-900 text-white p-12 lg:p-24 rounded-sm mb-32 relative overflow-hidden">
            <div className="max-w-2xl relative z-10">
               <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-8 block">Customer Homes</span>
-              <h2 className="text-4xl lg:text-6xl font-serif font-black mb-10 tracking-tighter italic">Real Spaces. Real Stories.</h2>
+              <h2 className="text-4xl lg:text-6xl font-serif font-medium mb-10 tracking-tighter ">Real Spaces. Real Stories.</h2>
               <p className="text-gray-400 text-lg mb-12 leading-relaxed font-medium">
                  Join our community of collectors and designers. Share your ComfortSeating sanctuary and inspire others to define their own luxury.
               </p>
@@ -117,7 +117,7 @@ const Inspiration = () => {
         {/* CTA */}
         <div className="text-center py-24 border-t border-gray-100">
            <Sparkles className="w-10 h-10 text-[#D7282F] mx-auto mb-8" />
-           <h2 className="text-4xl font-serif font-black text-gray-900 mb-10 tracking-tighter italic">Ready to curate your home?</h2>
+           <h2 className="text-4xl font-serif font-medium text-gray-900 mb-10 tracking-tighter ">Ready to curate your home?</h2>
            <Link to="/products" className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-gray-900 border-b-2 border-gray-900 pb-2 hover:text-[#D7282F] hover:border-[#D7282F] transition-all">
               Explore The Full Collection <ArrowRight className="w-4 h-4" />
            </Link>

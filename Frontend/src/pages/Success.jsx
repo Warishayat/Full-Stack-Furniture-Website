@@ -59,8 +59,8 @@ const Success = () => {
             <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">
               Transaction Approved
             </span>
-            <h1 className="text-4xl md:text-5xl font-serif font-black text-gray-900 mb-6 tracking-tighter">
-              Payment <span className="italic text-gray-400">Successful</span>
+            <h1 className="text-4xl md:text-5xl font-serif font-medium text-gray-900 mb-6 tracking-tighter">
+              Payment Successful
             </h1>
             
             <p className="text-sm text-gray-500 mb-8 max-w-md mx-auto leading-relaxed font-medium">
@@ -72,7 +72,7 @@ const Success = () => {
                 <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.3em] mb-1">
                   Order Reference
                 </p>
-                <p className="text-lg text-gray-900 font-serif font-black tracking-widest">
+                <p className="text-lg text-gray-900 font-serif font-medium tracking-widest">
                   {orderId.slice(-8).toUpperCase()}
                 </p>
               </div>

@@ -37,6 +37,9 @@ export const CartProvider = ({ children }) => {
             material: item.material,
             color: item.color,
             leg: item.leg,
+            firmness: item.firmness,
+            footstool: item.footstool,
+            coffeeTable: item.coffeeTable,
             image: item.image
           });
         } catch (err) {
@@ -67,7 +70,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = async (productId, quantity = 1, options = {}) => {
-    const { variant, material, color, price, title, image } = options;
+    const { variant, material, color, leg, firmness, footstool, coffeeTable, price, title, image } = options;
     
     if (!user) {
       // Guest mode: save to localStorage
@@ -77,7 +80,10 @@ export const CartProvider = ({ children }) => {
         item.variant === variant &&
         item.material === material &&
         item.color === color &&
-        item.leg === options.leg
+        item.leg === leg &&
+        item.firmness === firmness &&
+        item.footstool === footstool &&
+        item.coffeeTable === coffeeTable
       );
 
       if (existingItemIndex > -1) {
@@ -91,7 +97,10 @@ export const CartProvider = ({ children }) => {
           variant: variant || 'Standard',
           material: material || '',
           color: color || 'Default',
-          leg: options.leg || '',
+          leg: leg || '',
+          firmness: firmness || '',
+          footstool: footstool || '',
+          coffeeTable: coffeeTable || '',
           quantity,
           price: Number(price) || 0
         };
@@ -112,7 +121,10 @@ export const CartProvider = ({ children }) => {
         variant,
         material,
         color,
-        leg: options.leg,
+        leg,
+        firmness,
+        footstool,
+        coffeeTable,
         image
       });
       toast.success('Item added to cart');

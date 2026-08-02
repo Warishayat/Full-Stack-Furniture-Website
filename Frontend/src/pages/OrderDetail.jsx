@@ -87,7 +87,7 @@ const OrderDetail = () => {
               { (user?.role === 'admin' || user?.isAdmin) ? 'Back to Order Management' : 'Back to Order History'}
             </Link>
             <h1 className="text-4xl lg:text-5xl font-serif font-bold text-primary-950">
-              Order <span className="text-accent italic">#{order._id.slice(-8).toUpperCase()}</span>
+              Order <span className="text-accent ">#{order._id.slice(-8).toUpperCase()}</span>
             </h1>
           </div>
           
@@ -257,7 +257,7 @@ const OrderDetail = () => {
                    <div>
                       <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-1">Delivery Address</p>
                       {order.shippingAddress?.address ? (
-                        <address className="not-italic font-bold text-primary-950 text-sm leading-relaxed">
+                        <address className="not- font-bold text-primary-950 text-sm leading-relaxed">
                           {order.shippingAddress.fullName && (
                             <span className="block text-xs font-black text-primary-500 mb-1">Recipient: {order.shippingAddress.fullName}</span>
                           )}
@@ -269,7 +269,7 @@ const OrderDetail = () => {
                           )}
                         </address>
                       ) : (
-                        <p className="text-sm font-bold text-primary-400 italic">Digital Delivery / Pick-up</p>
+                        <p className="text-sm font-bold text-primary-400 ">Digital Delivery / Pick-up</p>
                       )}
                    </div>
                 </div>
@@ -298,7 +298,7 @@ const OrderDetail = () => {
                   )}
                   <div className="h-px bg-white/10 my-6" />
                   <div className="flex justify-between items-end">
-                     <span className="text-sm font-serif font-bold italic">Total Value</span>
+                     <span className="text-sm font-serif font-bold ">Total Value</span>
                      <span className="text-4xl font-serif font-bold text-accent">£{order.totalPrice?.toLocaleString()}</span>
                   </div>
                </div>

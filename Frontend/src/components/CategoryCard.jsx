@@ -25,8 +25,8 @@ const CategoryCard = memo(({ category }) => {
              Archive Selection
            </span>
         </div>
-        <h3 className="text-xl sm:text-2xl lg:text-4xl font-serif font-black text-white leading-tight mb-3 lg:mb-6 transform transition-transform duration-700 group-hover:-translate-y-2 tracking-tighter">
-          {category.name} <span className="italic text-gray-400">Series</span>
+        <h3 className="text-xl sm:text-2xl lg:text-4xl font-serif font-medium text-white leading-tight mb-3 lg:mb-6 transform transition-transform duration-700 group-hover:-translate-y-2 tracking-tighter">
+          {category.name} Series
         </h3>
         
         <div className="flex items-center gap-2 sm:gap-4 text-white/70 group-hover:text-white transition-colors duration-500">

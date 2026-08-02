@@ -44,8 +44,8 @@ const Contact = () => {
           {/* Left: Contact Info */}
           <div className="lg:w-1/3">
             <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Concierge Service</span>
-            <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 mb-8 tracking-tighter leading-tight">
-              How can we <br/><span className="italic text-gray-400">assist</span> you?
+            <h1 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 mb-8 tracking-tighter leading-tight">
+              How can we <br/>assist you?
             </h1>
             <p className="text-gray-600 mb-12 font-medium leading-relaxed">
               Our specialists are available for architectural consultations, bespoke orders, and logistics inquiries.
@@ -163,7 +163,7 @@ const Contact = () => {
         {/* FAQ Preview */}
         <div className="mt-32 border-t border-gray-100 pt-20">
           <div className="text-center mb-16">
-            <h3 className="text-3xl font-serif font-black text-gray-900 italic">Common Questions</h3>
+            <h3 className="text-3xl font-serif font-medium text-gray-900 ">Common Questions</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
             <Link to="/track-order" className="group">

@@ -63,7 +63,7 @@ const ManageOrders = () => {
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-12">
         <div>
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-3 block">Global Logistics</span>
-           <h1 className="text-4xl lg:text-6xl font-serif font-black text-gray-900 tracking-tighter">Logistics <span className="italic text-gray-400">Registry</span></h1>
+           <h1 className="text-4xl lg:text-6xl font-serif font-medium text-gray-900 tracking-tighter">Logistics Registry</h1>
         </div>
         
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto">
@@ -128,7 +128,7 @@ const ManageOrders = () => {
                          <div className="w-10 h-10 bg-[#F2EDE7] rounded-sm flex items-center justify-center text-gray-900 group-hover/link:bg-[#D7282F] group-hover/link:text-white transition-all">
                             <Hash className="w-4 h-4" />
                          </div>
-                         <span className="font-serif font-black text-gray-900 text-lg group-hover/link:text-[#D7282F] transition-colors underline decoration-[#D7282F]/20 underline-offset-8">
+                         <span className="font-serif font-medium text-gray-900 text-lg group-hover/link:text-[#D7282F] transition-colors underline decoration-[#D7282F]/20 underline-offset-8">
                             {order._id.slice(-8).toUpperCase()}
                          </span>
                        </Link>

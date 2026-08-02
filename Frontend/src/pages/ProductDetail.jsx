@@ -47,6 +47,9 @@ const ProductDetail = () => {
   const [selectedColorIdx, setSelectedColorIdx] = useState(0);
   const [selectedLegIdx, setSelectedLegIdx] = useState(0);
   const [isViewingLeg, setIsViewingLeg] = useState(false);
+  const [firmness, setFirmness] = useState('Firm Medium - (Balanced)');
+  const [footstool, setFootstool] = useState('No');
+  const [coffeeTable, setCoffeeTable] = useState('No');
   const [hoveredSwatchIdx, setHoveredSwatchIdx] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
@@ -221,8 +224,11 @@ const ProductDetail = () => {
   const currentColor = currentMaterial?.colors?.[selectedColorIdx];
   const currentLeg = product?.legs?.[selectedLegIdx];
 
-  const currentPrice = currentVariant?.price || product?.price || 0;
-  const currentOldPrice = currentVariant?.oldPrice || product?.oldprice || 0;
+  const basePrice = currentVariant?.price || product?.price || 0;
+  const baseOldPrice = currentVariant?.oldPrice || product?.oldprice || 0;
+  const extrasPrice = (footstool === 'Yes' ? 149 : 0) + (coffeeTable === 'Yes' ? 199 : 0);
+  const currentPrice = basePrice + extrasPrice;
+  const currentOldPrice = baseOldPrice + extrasPrice;
   const currentStock = currentVariant?.stock || 0;
 
   useEffect(() => {
@@ -260,6 +266,9 @@ const ProductDetail = () => {
           material: currentMaterial?.name,
           color: currentColor?.name,
           leg: currentLeg?.name,
+          firmness,
+          footstool,
+          coffeeTable,
           price: currentPrice,
           title: product.title,
           image: isViewingLeg ? (currentVariant?.images?.[0] || product?.images?.[0] || activeImage) : activeImage
@@ -438,7 +447,7 @@ const ProductDetail = () => {
               <div className="flex items-baseline gap-4 mb-4">
                 <span className="text-4xl font-bold text-[#D7282F]">£{currentPrice.toLocaleString()}</span>
                 {currentOldPrice > currentPrice && (
-                  <span className="text-lg text-gray-400 line-through font-medium italic">was £{currentOldPrice.toLocaleString()}</span>
+                  <span className="text-lg text-gray-400 line-through font-medium ">was £{currentOldPrice.toLocaleString()}</span>
                 )}
                 <span className="bg-[#D7282F] text-white text-[10px] font-bold px-2 py-0.5 ml-2 uppercase">SAVE</span>
               </div>
@@ -658,6 +667,45 @@ const ProductDetail = () => {
 
               </div>
 
+              {/* Extra Options */}
+              <div className="space-y-6 border-t border-gray-100 pt-8">
+                <div className="space-y-3 flex flex-col">
+                  <label className="text-sm font-bold text-gray-900">Firmness</label>
+                  <select 
+                    value={firmness} 
+                    onChange={(e) => setFirmness(e.target.value)}
+                    className="w-full p-3 border border-gray-200 text-sm text-gray-700 focus:outline-none focus:border-gray-900 bg-white cursor-pointer"
+                  >
+                    <option value="Firm Medium - (Balanced)">Firm Medium - (Balanced)</option>
+                    <option value="Firm Strong Support">Firm Strong Support</option>
+                  </select>
+                </div>
+
+                <div className="space-y-3 flex flex-col">
+                  <label className="text-sm font-bold text-gray-900">Matching Footstool (+£149)</label>
+                  <select 
+                    value={footstool} 
+                    onChange={(e) => setFootstool(e.target.value)}
+                    className="w-full p-3 border border-gray-200 text-sm text-gray-700 focus:outline-none focus:border-gray-900 bg-white cursor-pointer"
+                  >
+                    <option value="No">No</option>
+                    <option value="Yes">Yes (+£149)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-3 flex flex-col">
+                  <label className="text-sm font-bold text-gray-900">Matching Coffee Table (+£199)</label>
+                  <select 
+                    value={coffeeTable} 
+                    onChange={(e) => setCoffeeTable(e.target.value)}
+                    className="w-full p-3 border border-gray-200 text-sm text-gray-700 focus:outline-none focus:border-gray-900 bg-white cursor-pointer"
+                  >
+                    <option value="No">No</option>
+                    <option value="Yes">Yes (+£199)</option>
+                  </select>
+                </div>
+              </div>
+
               {/* Checkout Block */}
               <div className="mt-10 p-6 bg-gray-50 border border-gray-100 space-y-6">
                 <div className="flex items-center gap-4">
@@ -697,7 +745,7 @@ const ProductDetail = () => {
                      </div>
                      <div>
                         <p className="text-[9px] font-black uppercase text-gray-400 tracking-widest">Estimated Delivery</p>
-                        <p className="text-gray-900 font-bold text-sm font-serif italic">{getEstimatedDeliveryRange()}</p>
+                        <p className="text-gray-900 font-bold text-sm font-serif ">{getEstimatedDeliveryRange()}</p>
                      </div>
                   </div>
               </div>
@@ -746,19 +794,19 @@ const ProductDetail = () => {
                        <div className="grid grid-cols-3 gap-8">
                           <div>
                             <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Width</p>
-                            <p className="text-gray-900 text-xl font-serif font-black italic">
+                            <p className="text-gray-900 text-xl font-serif font-medium ">
                               {currentVariant?.dimensions?.width || product.specifications?.dimensions?.width || '--'} {currentVariant?.dimensions?.unit || product.specifications?.dimensions?.unit || 'cm'}
                             </p>
                           </div>
                           <div>
                             <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Height</p>
-                            <p className="text-gray-900 text-xl font-serif font-black italic">
+                            <p className="text-gray-900 text-xl font-serif font-medium ">
                               {currentVariant?.dimensions?.height || product.specifications?.dimensions?.height || '--'} {currentVariant?.dimensions?.unit || product.specifications?.dimensions?.unit || 'cm'}
                             </p>
                           </div>
                           <div>
                             <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Depth</p>
-                            <p className="text-gray-900 text-xl font-serif font-black italic">
+                            <p className="text-gray-900 text-xl font-serif font-medium ">
                               {currentVariant?.dimensions?.length || product.specifications?.dimensions?.length || '--'} {currentVariant?.dimensions?.unit || product.specifications?.dimensions?.unit || 'cm'}
                             </p>
                           </div>
@@ -791,7 +839,7 @@ const ProductDetail = () => {
                        <div className="flex flex-col md:flex-row gap-12">
                           <div className="flex-1">
                              <p className="font-black uppercase text-[10px] text-gray-400 mb-2 tracking-widest">Lead Time</p>
-                             <p className="text-gray-900 text-3xl font-serif font-black italic">{getEstimatedDeliveryRange()}</p>
+                             <p className="text-gray-900 text-3xl font-serif font-medium ">{getEstimatedDeliveryRange()}</p>
                              <p className="text-xs text-gray-400 mt-2">Calculated dynamically based on standard white-glove shipping queue.</p>
                           </div>
                           <div className="flex-1">
@@ -856,7 +904,7 @@ const ProductDetail = () => {
              >
                <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50">
                  <div>
-                   <h3 className="text-lg font-serif font-black text-gray-900 uppercase tracking-wider">
+                   <h3 className="text-lg font-serif font-medium text-gray-900 uppercase tracking-wider">
                      {product?.title} - Size Guide
                    </h3>
                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
@@ -1070,7 +1118,7 @@ const ReviewsSection = ({ productId, reviews = [], setReviews }) => {
         {/* Right: Review List */}
         <div className="lg:w-3/5">
           <div className="flex items-baseline gap-4 mb-10">
-             <h3 className="text-4xl font-serif text-gray-900 italic">Patron Gallery</h3>
+             <h3 className="text-4xl font-serif text-gray-900 ">Patron Gallery</h3>
              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest border-l pl-4 border-gray-200">{reviews.length} Contributions</span>
           </div>
 
@@ -1097,7 +1145,7 @@ const ReviewsSection = ({ productId, reviews = [], setReviews }) => {
                       <div className="flex gap-1 mb-4 text-[#D7282F]">
                          {[...Array(5)].map((_, i) => <Star key={i} className={`w-3 h-3 ${i < r.rating ? 'fill-current' : 'text-gray-100'}`} />)}
                       </div>
-                      <p className="text-sm text-gray-600 leading-relaxed italic font-medium">
+                      <p className="text-sm text-gray-600 leading-relaxed  font-medium">
                          "{r.comment}"
                       </p>
                    </div>

@@ -66,10 +66,9 @@ const ProductCard = memo(({ product }) => {
 
   return (
     <div className="group bg-white overflow-hidden transition-all duration-300 flex flex-col h-full relative">
-      {/* Sale Badge */}
       {oldPrice > minPrice && (
         <div className="absolute top-4 left-4 z-10">
-          <span className="bg-[#D7282F] text-white text-[10px] font-bold px-3 py-1 rounded-sm shadow-sm uppercase">
+          <span className="bg-gray-700 text-white text-[10px] font-bold px-3 py-1 rounded-sm shadow-sm uppercase">
             £{(oldPrice - minPrice).toLocaleString()} OFF
           </span>
         </div>
@@ -145,9 +144,9 @@ const ProductCard = memo(({ product }) => {
         
         <div className="mt-auto">
           <div className="flex items-baseline gap-2 mb-1">
-            <span className="text-2xl font-bold text-[#D7282F]">£{minPrice.toLocaleString()}</span>
+            <span className="text-2xl font-bold text-gray-700">£{minPrice.toLocaleString()}</span>
             {oldPrice > minPrice && (
-              <span className="text-sm text-gray-400 line-through font-medium italic">was £{oldPrice.toLocaleString()}</span>
+              <span className="text-sm text-gray-500 line-through font-medium">was £{oldPrice.toLocaleString()}</span>
             )}
           </div>
           <div className="flex items-center gap-1 text-[10px] font-bold text-[#51823F]">

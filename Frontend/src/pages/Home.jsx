@@ -112,11 +112,11 @@ const Home = () => {
               <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">
                 The Curated Archive
               </span>
-              <h3 className="text-4xl md:text-5xl font-serif font-black text-gray-900 tracking-tighter">
-                Shop by <span className="italic text-gray-400">Collection</span>
+              <h3 className="text-4xl md:text-5xl font-serif font-medium text-gray-900 tracking-tighter">
+                Shop by Collection
               </h3>
             </div>
-            <p className="text-xs text-gray-400 font-black uppercase tracking-widest max-w-xs lg:text-right leading-relaxed">
+            <p className="text-lg text-gray-500 font-medium max-w-xs lg:text-right leading-relaxed">
               Explore our architectural series, handcrafted to define spaces and elevate environments.
             </p>
           </div>
@@ -148,8 +148,8 @@ const Home = () => {
           <span className="text-[#D7282F] font-black text-[9px] uppercase tracking-[0.5em] mb-4 block">
             Crafted for Royalty
           </span>
-          <h3 className="text-3xl font-serif font-black text-white tracking-tight mb-4">
-            Handcrafted In <span className="italic text-gray-400">Great Britain</span>
+          <h3 className="text-3xl font-serif font-medium text-white tracking-tight mb-4">
+            Handcrafted In Great Britain
           </h3>
           <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm mx-auto mb-8">
             Every ComfortSeating piece is meticulously hand-carved and custom upholstered using heritage fabrics, sustainable hardwood frames, and premium cushioning for 2-year guaranteed longevity.
@@ -193,8 +193,8 @@ const Home = () => {
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-700" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-12">
                 <span className="text-[10px] font-black uppercase tracking-[0.6em] mb-6">Seasonal Event</span>
-                <h2 className="text-7xl md:text-9xl font-serif font-black mb-10 leading-[0.8] tracking-tighter">
-                  Flash<br /><span className="italic text-gray-400">Sofa</span> Sale
+                <h2 className="text-7xl md:text-9xl font-serif font-medium mb-10 leading-[0.8] tracking-tighter">
+                  Flash<br />Sofa Sale
                 </h2>
                 <Link to="/products?category=sofas" className="px-12 py-5 bg-white text-gray-900 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-[#D7282F] hover:text-white transition-all shadow-2xl">
                   Explore The Collection
@@ -207,7 +207,7 @@ const Home = () => {
             <div className="lg:w-1/2">
                <div className="mb-12">
                   <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Handcrafted Excellence</span>
-                  <h3 className="text-4xl font-serif font-black text-gray-900 tracking-tighter">Featured <span className="italic text-gray-400">Masterpieces</span></h3>
+                  <h3 className="text-4xl font-serif font-medium text-gray-900 tracking-tighter">Featured Masterpieces</h3>
                </div>
                 <div className="grid grid-cols-2 gap-8 lg:gap-12 animate-fade-in">
                   {loading ? (
@@ -247,8 +247,8 @@ const Home = () => {
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-700" />
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-12">
                 <span className="text-[10px] font-black uppercase tracking-[0.6em] mb-6">Versatile Elegance</span>
-                <h2 className="text-7xl md:text-9xl font-serif font-black mb-10 leading-[0.8] tracking-tighter">
-                  Sofa<br /><span className="italic text-gray-400">Beds</span>
+                <h2 className="text-7xl md:text-9xl font-serif font-medium mb-10 leading-[0.8] tracking-tighter">
+                  Sofa<br />Beds
                 </h2>
                 <Link to="/products?category=sofa-bed" className="px-12 py-5 bg-white text-gray-900 text-[10px] font-black uppercase tracking-[0.3em] hover:bg-[#D7282F] hover:text-white transition-all shadow-2xl">
                   Shop Sofa Beds
@@ -261,7 +261,7 @@ const Home = () => {
             <div className="lg:w-1/2">
                <div className="mb-12">
                   <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">Smart Living</span>
-                  <h3 className="text-4xl font-serif font-black text-gray-900 tracking-tighter">Sofa <span className="italic text-gray-400">Cum Bed</span></h3>
+                  <h3 className="text-4xl font-serif font-medium text-gray-900 tracking-tighter">Sofa Cum Bed</h3>
                </div>
                 <div className="grid grid-cols-2 gap-8 lg:gap-12 animate-fade-in">
                   {loading ? (
@@ -290,14 +290,14 @@ const Home = () => {
         <div className="w-full px-6 lg:px-12 text-center">
           <div className="max-w-3xl mx-auto mb-20">
             <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Verified Excellence</span>
-            <h2 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 tracking-tighter leading-tight mb-8">
-              What our patrons <br /><span className="italic text-gray-400">experience</span>
+            <h2 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 tracking-tighter leading-tight mb-8">
+              What our patrons <br />experience
             </h2>
           </div>
           
           <div className="flex flex-col items-center mb-24 p-10 bg-[#F2EDE7]/50 border border-gray-50 rounded-sm">
             <div className="flex items-center gap-4 mb-4">
-              <span className="text-3xl font-serif font-black italic">Excellent</span>
+              <span className="text-3xl font-serif font-medium ">Excellent</span>
               <div className="flex gap-1.5">
                 {[...Array(5)].map((_, i) => (
                   <div key={i} className={`w-10 h-10 flex items-center justify-center ${i < Math.round(ratingData.averageRating) ? 'bg-green-600' : 'bg-gray-200'} shadow-sm`}>
@@ -307,7 +307,7 @@ const Home = () => {
               </div>
             </div>
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
-              Rated {ratingData.averageRating} / 5 based on {ratingData.totalReviews.toLocaleString()} reviews on <span className="text-gray-900 font-black italic underline decoration-[#D7282F]">★ Trustpilot</span>
+              Rated {ratingData.averageRating} / 5 based on {ratingData.totalReviews.toLocaleString()} reviews on <span className="text-gray-900 font-black  underline decoration-[#D7282F]">★ Trustpilot</span>
             </p>
           </div>
 
@@ -325,9 +325,9 @@ const Home = () => {
                   </span>
                 </div>
                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">{review.userId?.name || 'Private Patron'}</p>
-                <p className="text-[9px] text-gray-400 mb-6 font-medium italic">Verified Acquisition</p>
-                <p className="text-lg font-serif font-black text-gray-800 mb-4 tracking-tight line-clamp-1">"{review.comment.split(' ')[0]} Masterpiece"</p>
-                <p className="text-xs text-gray-500 leading-relaxed line-clamp-4 font-medium italic">
+                <p className="text-[9px] text-gray-400 mb-6 font-medium ">Verified Acquisition</p>
+                <p className="text-lg font-serif font-medium text-gray-800 mb-4 tracking-tight line-clamp-1">"{review.comment.split(' ')[0]} Masterpiece"</p>
+                <p className="text-xs text-gray-500 leading-relaxed line-clamp-4 font-medium ">
                   "{review.comment}"
                 </p>
                 <div className="absolute bottom-0 right-0 p-2 opacity-10 group-hover:opacity-100 transition-opacity">
@@ -350,7 +350,7 @@ const Home = () => {
               </div>
               <div>
                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Global Logistics</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">White-Glove Delivery</p>
+                <p className="text-[9px] font-bold text-gray-400 ">White-Glove Delivery</p>
               </div>
             </div>
             <div className="flex flex-col items-center gap-4 group">
@@ -359,7 +359,7 @@ const Home = () => {
               </div>
               <div>
                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Comfort Returns</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">14-Day Assurance</p>
+                <p className="text-[9px] font-bold text-gray-400 ">14-Day Assurance</p>
               </div>
             </div>
             <div className="flex flex-col items-center gap-4 group">
@@ -368,7 +368,7 @@ const Home = () => {
               </div>
               <div>
                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Capital Strategy</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">0% APR Available</p>
+                <p className="text-[9px] font-bold text-gray-400 ">0% APR Available</p>
               </div>
             </div>
             <div className="flex flex-col items-center gap-4 group">
@@ -377,7 +377,7 @@ const Home = () => {
               </div>
               <div>
                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">Patron Rating</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">29,000+ Five-Star</p>
+                <p className="text-[9px] font-bold text-gray-400 ">29,000+ Five-Star</p>
               </div>
             </div>
             <div className="flex flex-col items-center gap-4 group">
@@ -386,7 +386,7 @@ const Home = () => {
               </div>
               <div>
                 <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">British Lineage</p>
-                <p className="text-[9px] font-bold text-gray-400 italic">Family Operated</p>
+                <p className="text-[9px] font-bold text-gray-400 ">Family Operated</p>
               </div>
             </div>
           </div>
@@ -395,13 +395,13 @@ const Home = () => {
 
       {/* Bespoke Showroom & FAQ Accordion Section */}
       <section className="py-24 bg-white">
-        <div className="w-full px-6 lg:px-12 max-w-4xl">
+        <div className="w-full px-6 lg:px-12 max-w-4xl mx-auto">
           <div className="mb-16 text-center">
             <span className="text-[#D7282F] font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">
               Curator Assistance
             </span>
-            <h3 className="text-3xl md:text-5xl font-serif font-black text-gray-900 tracking-tighter">
-              Bespoke <span className="italic text-gray-400">Inquiries</span>
+            <h3 className="text-3xl md:text-5xl font-serif font-medium text-gray-900 tracking-tighter">
+              Bespoke Inquiries
             </h3>
           </div>
 

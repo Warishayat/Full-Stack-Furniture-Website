@@ -185,6 +185,10 @@ const Checkout = () => {
         variant: item.variant,
         material: item.material,
         color: item.color,
+        leg: item.leg,
+        firmness: item.firmness,
+        footstool: item.footstool,
+        coffeeTable: item.coffeeTable,
         quantity: item.quantity,
         price: item.price
       }));
@@ -243,7 +247,7 @@ const Checkout = () => {
       
       {/* Branded Trustpilot Mini Header */}
       <div className="border-b border-gray-100 bg-white py-4 px-6 md:px-12 flex flex-col justify-center items-center text-xs font-semibold text-gray-500 gap-2">
-        <Link to="/" className="text-2xl font-serif font-black tracking-widest text-slate-900 hover:text-green-700 transition-colors">
+        <Link to="/" className="text-2xl font-serif font-medium tracking-widest text-slate-900 hover:text-green-700 transition-colors">
           ComfortSeating <span className="text-sm font-sans font-light tracking-widest text-slate-400">LTD</span>
         </Link>
         <div className="flex items-center justify-between w-full max-w-sm px-4">
@@ -287,7 +291,7 @@ const Checkout = () => {
                 >
                   Continue as guest
                 </button>
-                <p className="text-xs text-slate-400 mt-4 leading-relaxed italic">
+                <p className="text-xs text-slate-400 mt-4 leading-relaxed ">
                   You can register your account later on completion.
                 </p>
               </div>
@@ -848,6 +852,21 @@ const Checkout = () => {
                             Legs: {item.leg}
                           </div>
                         )}
+                        {item.firmness && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 font-bold uppercase tracking-wider">
+                            Firmness: {item.firmness}
+                          </div>
+                        )}
+                        {item.footstool && item.footstool === 'Yes' && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 font-bold uppercase tracking-wider">
+                            Matching Footstool: Yes
+                          </div>
+                        )}
+                        {item.coffeeTable && item.coffeeTable === 'Yes' && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 font-bold uppercase tracking-wider">
+                            Coffee Table: Yes
+                          </div>
+                        )}
                         <div className="flex items-center gap-1.5 text-green-700 text-[10px] font-black uppercase tracking-widest">
                           <Truck className="w-3.5 h-3.5 shrink-0" />
                           <span>In stock. Fast delivery.</span>
@@ -886,7 +905,7 @@ const Checkout = () => {
                   <div className="h-[1px] bg-slate-100 w-full my-4" />
 
                   <div className="flex justify-between items-baseline text-slate-900">
-                    <span className="text-lg font-serif font-black">Total</span>
+                    <span className="text-lg font-serif font-medium">Total</span>
                     <div className="text-right">
                       <span className="text-2xl font-black text-slate-900">&pound;{(cartTotal + (assemblyService ? 50 : 0)).toLocaleString()}</span>
                       <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Including VAT &pound;0.00</p>

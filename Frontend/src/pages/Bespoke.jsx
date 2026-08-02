@@ -8,7 +8,7 @@ const Bespoke = () => {
         <div className="flex flex-col lg:flex-row gap-24 items-center mb-32">
            <div className="lg:w-1/2">
               <span className="text-accent uppercase tracking-[0.4em] text-[10px] font-bold mb-6 block animate-fade-in">Tailored for You</span>
-              <h1 className="text-6xl lg:text-8xl font-serif font-bold text-primary-950 mb-10 leading-tight">Bespoke <br/><span className="italic text-shine">Signature</span> Design</h1>
+              <h1 className="text-6xl lg:text-8xl font-serif font-bold text-primary-950 mb-10 leading-tight">Bespoke <br/><span className=" text-shine">Signature</span> Design</h1>
               <p className="text-lg text-primary-500 mb-12 leading-relaxed">
                  For those who seek the extraordinary. Our bespoke service allows you to work directly with our master designers to create unique pieces tailored specifically to your architectural space and personal aesthetic.
               </p>
@@ -22,7 +22,7 @@ const Bespoke = () => {
                  <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 to-transparent" />
                  <div className="absolute bottom-12 left-12 right-12 text-white">
                     <p className="text-accent uppercase tracking-[0.3em] text-[10px] font-bold mb-4">Phase 01</p>
-                    <h3 className="text-3xl font-serif font-bold italic">The Art of Measurement</h3>
+                    <h3 className="text-3xl font-serif font-bold ">The Art of Measurement</h3>
                  </div>
               </div>
            </div>

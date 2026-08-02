@@ -24,14 +24,14 @@ const TestFeed = () => {
     <div className="animate-fade-in p-6 lg:p-10">
       <div className="mb-12">
         <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Diagnostics & Testing</span>
-        <h2 className="text-4xl lg:text-5xl font-serif font-black text-gray-900 tracking-tighter mb-4">Meta Catalog <span className="italic text-gray-400">Feed</span></h2>
+        <h2 className="text-4xl lg:text-5xl font-serif font-medium text-gray-900 tracking-tighter mb-4">Meta Catalog Feed</h2>
         <p className="text-gray-600 text-lg font-medium leading-relaxed max-w-2xl">
           Use this page to verify and download the product catalog feed tailored for Meta/Facebook Commerce Manager.
         </p>
       </div>
 
       <div className="bg-[#F2EDE7] p-10 border border-gray-100 mt-8 max-w-2xl">
-        <h3 className="text-2xl font-serif font-black text-gray-900 mb-4">Export Feed</h3>
+        <h3 className="text-2xl font-serif font-medium text-gray-900 mb-4">Export Feed</h3>
         <p className="text-gray-600 mb-8 font-medium">Click the button below to generate and download the latest product inventory in CSV format.</p>
         
         <button type="button" 

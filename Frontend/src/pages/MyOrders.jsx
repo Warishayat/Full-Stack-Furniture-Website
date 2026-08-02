@@ -59,7 +59,7 @@ const MyOrders = () => {
       <div className="w-full px-6 lg:px-12 pb-24">
         <div className="mb-16">
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Past Acquisitions</span>
-           <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 mb-4 tracking-tighter">My <span className="italic text-gray-400">Orders</span></h1>
+           <h1 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 mb-4 tracking-tighter">My Orders</h1>
            <p className="text-gray-600 text-lg font-medium leading-relaxed max-w-2xl">
               A detailed archive of your curated pieces and their logistics status.
            </p>
@@ -68,7 +68,7 @@ const MyOrders = () => {
         {orders.length === 0 ? (
           <div className="py-32 text-center bg-[#F2EDE7] rounded-sm border border-gray-100">
             <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-6" />
-            <h3 className="text-2xl font-serif font-black text-gray-900 mb-2">No Acquisitions Yet</h3>
+            <h3 className="text-2xl font-serif font-medium text-gray-900 mb-2">No Acquisitions Yet</h3>
             <p className="text-gray-500 font-medium mb-10">Your collection is waiting for its first masterpiece.</p>
             <Link to="/products" className="px-10 py-4 bg-gray-900 text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#D7282F] transition-all">
                Explore Collection
@@ -124,7 +124,7 @@ const MyOrders = () => {
                           />
                         </div>
                         <div className="flex-1 text-center md:text-left">
-                          <h4 className="text-xl font-serif font-black text-gray-900 mb-1">{item.title || item.product?.title || 'Handcrafted Piece'}</h4>
+                          <h4 className="text-xl font-serif font-medium text-gray-900 mb-1">{item.title || item.product?.title || 'Handcrafted Piece'}</h4>
                           {item.variant && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Variant: {item.variant?.name || (typeof item.variant === 'string' ? item.variant : '')}</p>}
                           {item.color && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Color: {item.color?.name || (typeof item.color === 'string' ? item.color : '')}</p>}
                           {item.leg && <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Legs: {item.leg?.name || (typeof item.leg === 'string' ? item.leg : '')}</p>}
@@ -132,7 +132,7 @@ const MyOrders = () => {
                           <p className="text-sm font-bold text-[#D7282F]">£{(item.price || 0).toLocaleString()}</p>
                         </div>
                         <div className="text-right hidden md:block">
-                          <p className="text-lg font-serif font-black text-gray-900 italic">
+                          <p className="text-lg font-serif font-medium text-gray-900 ">
                             £{( (item.price || 0) * item.quantity ).toLocaleString()}
                           </p>
                         </div>

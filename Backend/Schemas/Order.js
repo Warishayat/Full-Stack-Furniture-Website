@@ -28,6 +28,10 @@ const OrderItemSchema = new Schema(
       name: String, // Wooden
     },
 
+    firmness: { name: String },
+    footstool: { name: String },
+    coffeeTable: { name: String },
+
     color: {
       name: String, // Black
     },

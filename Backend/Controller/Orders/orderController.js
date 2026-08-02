@@ -608,6 +608,10 @@ const jwt = require("jsonwebtoken");
       const variantDoc = productDoc.variants.find(v => v.name === (item.variant || "Standard"));
       const securePrice = variantDoc ? variantDoc.price : 0;
 
+      let finalSecurePrice = securePrice;
+      if (item.footstool === 'Yes') finalSecurePrice += 149;
+      if (item.coffeeTable === 'Yes') finalSecurePrice += 199;
+
       return {
         product: productDoc._id,
         title: productDoc.title,
@@ -615,9 +619,13 @@ const jwt = require("jsonwebtoken");
         variant: { name: item.variant || "Standard" },
         material: { name: item.material || "" },
         color: { name: item.color || "Default" },
+        leg: { name: item.leg || "" },
+        firmness: { name: item.firmness || "" },
+        footstool: { name: item.footstool || "" },
+        coffeeTable: { name: item.coffeeTable || "" },
         sku: variantDoc?.sku || item.sku || "",
         quantity: Number(item.quantity) || 1,
-        price: securePrice, // CRITICAL FIX: NEVER TRUST FRONTEND PRICES
+        price: finalSecurePrice, // CRITICAL FIX: NEVER TRUST FRONTEND PRICES
       };
     }));
 

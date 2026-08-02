@@ -49,11 +49,19 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
       const variantName = getFieldValue(item.variant) || 'Standard';
       const materialName = getFieldValue(item.material);
       const colorName = getFieldValue(item.color);
+      const legName = getFieldValue(item.leg);
+      const firmnessName = getFieldValue(item.firmness);
+      const footstoolName = getFieldValue(item.footstool);
+      const coffeeTableName = getFieldValue(item.coffeeTable);
       
       const detailsArray = [];
       if (variantName) detailsArray.push(variantName);
       if (materialName) detailsArray.push(materialName);
       if (colorName) detailsArray.push(colorName);
+      if (legName) detailsArray.push(`Legs: ${legName}`);
+      if (firmnessName) detailsArray.push(`Firmness: ${firmnessName}`);
+      if (footstoolName === 'Yes') detailsArray.push('Matching Footstool: Yes');
+      if (coffeeTableName === 'Yes') detailsArray.push('Coffee Table: Yes');
       const detailsStr = detailsArray.join(" • ");
 
       return `

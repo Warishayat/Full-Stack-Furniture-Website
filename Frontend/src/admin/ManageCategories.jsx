@@ -119,7 +119,7 @@ const ManageCategories = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
         <div>
            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-2 block">Organizational Architecture</span>
-           <h1 className="text-4xl lg:text-6xl font-serif font-black text-gray-900 tracking-tighter">Departmental <span className="italic text-gray-400">Registry</span></h1>
+           <h1 className="text-4xl lg:text-6xl font-serif font-medium text-gray-900 tracking-tighter">Departmental Registry</h1>
         </div>
         <button type="button" 
           onClick={() => { resetForm(); setIsModalOpen(true); }}
@@ -166,7 +166,7 @@ const ManageCategories = () => {
                       </div>
                     </td>
                     <td className="p-8">
-                      <div className="font-serif font-black text-gray-900 text-2xl tracking-tight">{cat.name}</div>
+                      <div className="font-serif font-medium text-gray-900 text-2xl tracking-tight">{cat.name}</div>
                       <div className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Slug: {cat.slug}</div>
                     </td>
                     <td className="p-8">
@@ -175,7 +175,7 @@ const ManageCategories = () => {
                             <ChevronRight className="w-3 h-3 text-[#D7282F]" /> {cat.parent.name || 'Sub-Department'}
                          </div>
                        ) : (
-                         <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-500 rounded-full w-fit text-[9px] font-black uppercase tracking-widest border border-gray-200 italic">
+                         <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-500 rounded-full w-fit text-[9px] font-black uppercase tracking-widest border border-gray-200 ">
                             <Hash className="w-3 h-3" /> Root Collection
                          </div>
                        )}
@@ -210,7 +210,7 @@ const ManageCategories = () => {
           <div className="bg-white rounded-sm shadow-2xl w-full max-w-lg border border-gray-100 animate-fade-in-up">
             <div className="flex justify-between items-center p-10 border-b border-gray-50">
               <div>
-                <h2 className="text-3xl font-serif font-black text-gray-900 tracking-tight">{editingId ? 'Modify Orchestration' : 'New Orchestration'}</h2>
+                <h2 className="text-3xl font-serif font-medium text-gray-900 tracking-tight">{editingId ? 'Modify Orchestration' : 'New Orchestration'}</h2>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">{editingId ? 'Update departmental entity settings.' : 'Define a new departmental entity.'}</p>
               </div>
               <button type="button" onClick={() => setIsModalOpen(false)} className="w-10 h-10 flex items-center justify-center bg-gray-50 rounded-full text-gray-400 hover:text-gray-900 transition-all">

@@ -70,7 +70,7 @@ const AdminDashboard = () => {
             <div className="bg-[#F2EDE7] p-10 lg:sticky lg:top-40 border border-gray-100 rounded-sm">
               <div className="mb-12">
                  <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-2 block">Executive Suite</span>
-                 <h2 className="text-3xl font-serif font-black text-gray-900 tracking-tighter">Command <span className="italic text-gray-400">Center</span></h2>
+                 <h2 className="text-3xl font-serif font-medium text-gray-900 tracking-tighter">Command Center</h2>
               </div>
               
               <nav className="space-y-2">
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
               <div className="animate-fade-in">
                 <div className="mb-16">
                    <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Real-time Performance</span>
-                   <h1 className="text-5xl lg:text-7xl font-serif font-black text-gray-900 tracking-tighter mb-4">Enterprise <span className="italic text-gray-400">Overview</span></h1>
+                   <h1 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 tracking-tighter mb-4">Enterprise Overview</h1>
                    <p className="text-gray-600 text-lg font-medium leading-relaxed max-w-2xl">
                       Orchestrating excellence across your bespoke furniture empire.
                    </p>
@@ -129,7 +129,7 @@ const AdminDashboard = () => {
                       </div>
                       <div>
                         <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest mb-2">{stat.label}</p>
-                        <p className="text-4xl font-serif font-black text-gray-900">{stat.val}</p>
+                        <p className="text-4xl font-serif font-medium text-gray-900">{stat.val}</p>
                       </div>
                     </div>
                   ))}
@@ -138,7 +138,7 @@ const AdminDashboard = () => {
                 {/* Hero Section */}
                 <div className="bg-gray-900 p-12 lg:p-20 text-white relative overflow-hidden mb-16">
                    <div className="relative z-10 max-w-2xl">
-                      <h3 className="text-4xl lg:text-5xl font-serif font-black italic mb-8 tracking-tight leading-tight text-white">System Integrity: <span className="text-[#D7282F]">Optimal</span></h3>
+                      <h3 className="text-4xl lg:text-5xl font-serif font-medium  mb-8 tracking-tight leading-tight text-white">System Integrity: <span className="text-[#D7282F]">Optimal</span></h3>
                       <p className="text-gray-400 text-lg font-medium leading-relaxed mb-10">Global logistics and inventory synchronization are operating within peak parameters. Continue curating excellence.</p>
                       <div className="flex gap-6">
                          <Link to="/admin/products" className="px-10 py-4 bg-white text-gray-900 font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#D7282F] hover:text-white transition-all">New Orchestration</Link>
@@ -151,7 +151,7 @@ const AdminDashboard = () => {
                 {/* Recent Orders Section */}
                 <div className="border border-gray-100 p-10 lg:p-16">
                    <div className="flex items-center justify-between mb-12">
-                      <h3 className="text-3xl font-serif font-black text-gray-900 tracking-tight">Recent <span className="italic text-gray-400">Acquisitions</span></h3>
+                      <h3 className="text-3xl font-serif font-medium text-gray-900 tracking-tight">Recent Acquisitions</h3>
                       <Link to="/admin/orders" className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D7282F] hover:underline">Full Registry</Link>
                    </div>
                    <div className="overflow-x-auto">

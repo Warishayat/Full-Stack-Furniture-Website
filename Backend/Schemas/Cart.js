@@ -29,6 +29,9 @@ const CartSchema = new Schema(
         leg: {
           type: String, // e.g. "Wooden"
         },
+        firmness: { type: String },
+        footstool: { type: String },
+        coffeeTable: { type: String },
 
         color: {
           type: String, // e.g. "Black"
