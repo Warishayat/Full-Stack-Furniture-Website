@@ -226,7 +226,15 @@ const ProductDetail = () => {
 
   const basePrice = currentVariant?.price || product?.price || 0;
   const baseOldPrice = currentVariant?.oldPrice || product?.oldprice || 0;
-  const extrasPrice = (footstool === 'Yes' ? 149 : 0) + (coffeeTable === 'Yes' ? 199 : 0);
+  
+  const catNameStr = product?.category?.name?.toLowerCase() || '';
+  const titleStr = product?.title?.toLowerCase() || '';
+  const isSofa = catNameStr.includes('sofa') || titleStr.includes('sofa');
+  const isBed = catNameStr.includes('bed') || titleStr.includes('bed');
+  const isRecliner = catNameStr.includes('recliner') || titleStr.includes('recliner');
+  const showExtraOptions = (isSofa || isBed) && !isRecliner;
+
+  const extrasPrice = showExtraOptions ? ((footstool === 'Yes' ? 149 : 0) + (coffeeTable === 'Yes' ? 199 : 0)) : 0;
   const currentPrice = basePrice + extrasPrice;
   const currentOldPrice = baseOldPrice + extrasPrice;
   const currentStock = currentVariant?.stock || 0;
@@ -266,9 +274,9 @@ const ProductDetail = () => {
           material: currentMaterial?.name,
           color: currentColor?.name,
           leg: currentLeg?.name,
-          firmness,
-          footstool,
-          coffeeTable,
+          firmness: showExtraOptions ? firmness : '',
+          footstool: showExtraOptions ? footstool : 'No',
+          coffeeTable: showExtraOptions ? coffeeTable : 'No',
           price: currentPrice,
           title: product.title,
           image: isViewingLeg ? (currentVariant?.images?.[0] || product?.images?.[0] || activeImage) : activeImage
@@ -668,6 +676,7 @@ const ProductDetail = () => {
               </div>
 
               {/* Extra Options */}
+              {showExtraOptions && (
               <div className="space-y-6 border-t border-gray-100 pt-8">
                 <div className="space-y-3 flex flex-col">
                   <label className="text-sm font-bold text-gray-900">Firmness</label>
@@ -705,6 +714,7 @@ const ProductDetail = () => {
                   </select>
                 </div>
               </div>
+              )}
 
               {/* Checkout Block */}
               <div className="mt-10 p-6 bg-gray-50 border border-gray-100 space-y-6">
