@@ -445,14 +445,14 @@ const ProductDetail = () => {
               </div>
 
               <div className="flex items-baseline gap-4 mb-4">
-                <span className="text-4xl font-bold text-[#D7282F]">£{currentPrice.toLocaleString()}</span>
+                <span className="text-4xl font-bold text-gray-700">£{currentPrice.toLocaleString()}</span>
                 {currentOldPrice > currentPrice && (
                   <span className="text-lg text-gray-400 line-through font-medium ">was £{currentOldPrice.toLocaleString()}</span>
                 )}
-                <span className="bg-[#D7282F] text-white text-[10px] font-bold px-2 py-0.5 ml-2 uppercase">SAVE</span>
+                <span className="bg-gray-700 text-white text-[10px] font-bold px-2 py-0.5 ml-2 uppercase">SAVE</span>
               </div>
 
-              <div className="text-sm font-bold text-[#D7282F] mb-8 flex items-center gap-2">
+              <div className="text-sm font-bold text-gray-700 mb-8 flex items-center gap-2">
                  <CreditCard className="w-4 h-4" /> Pay in Easy Interest-Free Monthly Installments
               </div>
 
@@ -467,7 +467,7 @@ const ProductDetail = () => {
                            setIsSizeGuideOpen(true);
                            setZoomScale(1);
                          }}
-                         className="text-xs font-extrabold text-[#D7282F] uppercase tracking-widest cursor-pointer hover:text-gray-900 underline underline-offset-4 decoration-2 transition-colors"
+                         className="text-xs font-extrabold text-gray-700 uppercase tracking-widest cursor-pointer hover:text-gray-900 underline underline-offset-4 decoration-2 transition-colors"
                        >
                          Size guide
                        </span>
