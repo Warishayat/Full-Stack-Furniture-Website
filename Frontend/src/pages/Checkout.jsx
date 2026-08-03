@@ -173,7 +173,10 @@ const Checkout = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const handlePaymentSubmit = async () => {
-
+    if (paymentMethod === 'card') {
+      toast.error('Stripe account is under review and will be fixed in 1-2 working days. Please book your order using Cash on Delivery (COD).');
+      return;
+    }
 
     try {
       setPaymentLoading(true);
@@ -225,7 +228,11 @@ const Checkout = () => {
       if (data.url) {
         // Save order info locally to clean guest cart on land
         localStorage.setItem('pending_guest_order_id', data.orderId);
-        window.location.href = data.url;
+        if (data.url.startsWith('/')) {
+          navigate(data.url);
+        } else {
+          window.location.href = data.url;
+        }
       } else {
         toast.error('Stripe redirect URL not found.');
       }
@@ -772,6 +779,19 @@ const Checkout = () => {
                         <div>
                           <p className="text-sm font-bold text-slate-800">Secure Payment</p>
                           <p className="text-xs text-slate-500 mt-0.5">Pay securely via Stripe (Card, Clearpay, Klarna)</p>
+                        </div>
+                      </div>
+
+                      <div 
+                        onClick={() => setPaymentMethod('cod')}
+                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3 ${paymentMethod === 'cod' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
+                      >
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'cod' ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
+                          {paymentMethod === 'cod' && <Check className="w-3 h-3 stroke-[3]" />}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-slate-800">Cash on Delivery (COD)</p>
+                          <p className="text-xs text-slate-500 mt-0.5">Pay with cash upon delivery of your items</p>
                         </div>
                       </div>
                     </div>
