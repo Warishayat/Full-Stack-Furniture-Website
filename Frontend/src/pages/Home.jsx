@@ -152,7 +152,7 @@ const Home = () => {
             Handcrafted In Great Britain
           </h3>
           <p className="text-xs text-gray-400 font-medium leading-relaxed max-w-sm mx-auto mb-8">
-            Every ComfortSeating piece is meticulously hand-carved and custom upholstered using heritage fabrics, sustainable hardwood frames, and premium cushioning for 2-year guaranteed longevity.
+            Every ComfortSitting piece is meticulously hand-carved and custom upholstered using heritage fabrics, sustainable hardwood frames, and premium cushioning for 2-year guaranteed longevity.
           </p>
           
           {/* Key USPs styled beautifully */}
@@ -417,7 +417,7 @@ const Home = () => {
               },
               {
                 q: "What warranty do you offer on frames?",
-                a: "Every single ComfortSeating frame is backed by our signature 2-Year Quality Frame Guarantee, insuring your pieces against structural defects for generations to come."
+                a: "Every single ComfortSitting frame is backed by our signature 2-Year Quality Frame Guarantee, insuring your pieces against structural defects for generations to come."
               },
               {
                 q: "Do you offer flexible financing?",

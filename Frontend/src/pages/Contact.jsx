@@ -79,7 +79,7 @@ const Contact = () => {
                 <div>
                   <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Headquarters</h4>
                   <p className="text-sm font-medium text-gray-600 leading-relaxed">
-                    ComfortSeating Ltd.<br/>
+                    ComfortSitting Ltd.<br/>
                     Unit 2 Waverledge Street., Waverledge Business Park<br/>
                     Blackburn, England, BB6 7LS
                   </p>

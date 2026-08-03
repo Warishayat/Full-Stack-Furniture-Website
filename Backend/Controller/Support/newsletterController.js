@@ -18,7 +18,7 @@ exports.subscribe = async (req, res) => {
 
     res.status(201).json({ 
       success: true, 
-      message: "Welcome to the ComfortSeating inner circle. You will now receive our latest curations." 
+      message: "Welcome to the ComfortSitting inner circle. You will now receive our latest curations." 
     });
   } catch (error) {
     console.error("Newsletter Error:", error);

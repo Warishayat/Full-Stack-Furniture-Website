@@ -112,7 +112,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center flex-shrink-0">
             <div className="flex items-center gap-2">
-              <span className="text-2xl md:text-3xl font-bold tracking-tighter text-black">ComfortSeating</span>
+              <span className="text-2xl md:text-3xl font-bold tracking-tighter text-black">ComfortSitting</span>
               <span className="text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-gray-400 border-l border-gray-200 pl-2">Ltd.</span>
             </div>
           </Link>
@@ -204,7 +204,7 @@ const Navbar = () => {
           <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)} />
           <div className="absolute inset-y-0 right-0 w-72 bg-white flex flex-col p-10 overflow-y-auto">
             <div className="flex justify-between items-center mb-8">
-               <span className="font-bold tracking-tighter text-xl text-slate-900">ComfortSeating Ltd.</span>
+               <span className="font-bold tracking-tighter text-xl text-slate-900">ComfortSitting Ltd.</span>
                <button type="button" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-900"><X className="w-6 h-6" /></button>
             </div>
             <nav className="flex flex-col gap-6">

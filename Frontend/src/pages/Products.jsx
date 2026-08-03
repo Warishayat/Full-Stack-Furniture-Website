@@ -180,7 +180,7 @@ const Products = () => {
         <div className="mb-20 flex flex-col md:flex-row items-end justify-between gap-10">
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 mb-4">
-               <span className="text-blue-600 uppercase tracking-[0.4em] text-[10px] font-black">Comfort Seating Gallery</span>
+               <span className="text-blue-600 uppercase tracking-[0.4em] text-[10px] font-black">Comfort Sitting Gallery</span>
             </div>
             <h1 className="text-4xl md:text-7xl font-serif font-medium text-gray-900 mb-6 tracking-tighter">
               {searchQuery ? `Search: ${searchQuery}` : activeFilters.category ? categories.find(c => c._id === activeFilters.category)?.name || 'Collection' : 'The Full Collection'}

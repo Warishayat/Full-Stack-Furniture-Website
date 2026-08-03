@@ -19,7 +19,7 @@ const About = () => {
           <img 
             src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2601&auto=format&fit=crop" 
             className="w-full h-full object-cover opacity-30 brightness-50"
-            alt="ComfortSeating Workshop"
+            alt="ComfortSitting Workshop"
           />
         </div>
         <div className="w-full px-6 lg:px-12 relative z-10">
@@ -44,7 +44,7 @@ const About = () => {
                 <span className="text-[#D7282F] ">Curated</span> for Life.
               </h2>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed font-medium">
-                Founded in the heart of London, ComfortSeating Ltd. began with a singular mission: to restore the artistry of traditional British upholstery for the modern era. We believe furniture shouldn't just be functional—it should be an architectural statement.
+                Founded in the heart of London, ComfortSitting Ltd. began with a singular mission: to restore the artistry of traditional British upholstery for the modern era. We believe furniture shouldn't just be functional—it should be an architectural statement.
               </p>
               <p className="text-lg text-gray-600 mb-12 leading-relaxed">
                 Our design philosophy merges heritage craftsmanship with contemporary silhouettes. Every piece is built by hand in our dedicated workshops, using ethically sourced materials and time-honored techniques that have defined British luxury for centuries.
@@ -63,7 +63,7 @@ const About = () => {
             </div>
             <div className="lg:w-1/2 relative">
                <div className="aspect-[4/5] rounded-sm overflow-hidden shadow-2xl shadow-gray-200">
-                  <img src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover" alt="ComfortSeating Craftsmanship" />
+                  <img src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover" alt="ComfortSitting Craftsmanship" />
                </div>
                <div className="absolute -bottom-10 -right-10 bg-[#D7282F] p-12 text-white max-w-[280px] shadow-2xl">
                   <Heart className="w-8 h-8 mb-6" />

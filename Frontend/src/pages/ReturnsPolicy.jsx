@@ -18,7 +18,7 @@ const ReturnsPolicy = () => {
           <div className="mb-20">
              <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Satisfaction Guarantee</span>
              <h1 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 mb-8 tracking-tighter">Returns & Refunds</h1>
-             <p className="text-gray-600 text-lg leading-relaxed font-medium">At ComfortSeating Ltd., we want you to be completely enamored with your new furniture. If it's not the perfect fit, our 14-day hassle-free return policy ensures your peace of mind.</p>
+             <p className="text-gray-600 text-lg leading-relaxed font-medium">At ComfortSitting Ltd., we want you to be completely enamored with your new furniture. If it's not the perfect fit, our 14-day hassle-free return policy ensures your peace of mind.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
