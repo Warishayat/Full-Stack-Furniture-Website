@@ -87,6 +87,7 @@ const Auth = () => {
                 type="email"
                 name="email"
                 required
+                autoComplete="off"
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full px-6 py-4 border border-gray-200 rounded-sm focus:border-gray-400 outline-none transition-all placeholder:text-gray-300"
@@ -99,6 +100,7 @@ const Auth = () => {
                 type="password"
                 name="password"
                 required
+                autoComplete="new-password"
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full px-6 py-4 border border-gray-200 rounded-sm focus:border-gray-400 outline-none transition-all placeholder:text-gray-300"

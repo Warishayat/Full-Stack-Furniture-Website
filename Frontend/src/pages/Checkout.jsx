@@ -314,6 +314,7 @@ const Checkout = () => {
                     <input
                       type="email"
                       required
+                      autoComplete="off"
                       placeholder="Email Address"
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
@@ -325,6 +326,7 @@ const Checkout = () => {
                     <input
                       type="password"
                       required
+                      autoComplete="new-password"
                       placeholder="Password"
                       value={loginPassword}
                       onChange={(e) => setLoginPassword(e.target.value)}
