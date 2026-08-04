@@ -19,7 +19,7 @@ const About = () => {
           <img 
             src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2601&auto=format&fit=crop" 
             className="w-full h-full object-cover opacity-30 brightness-50"
-            alt="ComfortSitting Workshop"
+            alt="EliteSeating Workshop"
           />
         </div>
         <div className="w-full px-6 lg:px-12 relative z-10">
@@ -44,7 +44,7 @@ const About = () => {
                 <span className="text-[#D7282F] ">Curated</span> for Life.
               </h2>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed font-medium">
-                Founded in the heart of London, ComfortSitting Ltd. began with a singular mission: to restore the artistry of traditional British upholstery for the modern era. We believe furniture shouldn't just be functional—it should be an architectural statement.
+                Founded in the heart of London, EliteSeating Ltd. began with a singular mission: to restore the artistry of traditional British upholstery for the modern era. We believe furniture shouldn't just be functional—it should be an architectural statement.
               </p>
               <p className="text-lg text-gray-600 mb-12 leading-relaxed">
                 Our design philosophy merges heritage craftsmanship with contemporary silhouettes. Every piece is built by hand in our dedicated workshops, using ethically sourced materials and time-honored techniques that have defined British luxury for centuries.
@@ -63,7 +63,7 @@ const About = () => {
             </div>
             <div className="lg:w-1/2 relative">
                <div className="aspect-[4/5] rounded-sm overflow-hidden shadow-2xl shadow-gray-200">
-                  <img src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover" alt="ComfortSitting Craftsmanship" />
+                  <img src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover" alt="EliteSeating Craftsmanship" />
                </div>
                <div className="absolute -bottom-10 -right-10 bg-[#D7282F] p-12 text-white max-w-[280px] shadow-2xl">
                   <Heart className="w-8 h-8 mb-6" />
@@ -80,7 +80,7 @@ const About = () => {
         <div className="w-full px-6 lg:px-12">
           <div className="text-center mb-24 max-w-2xl mx-auto">
              <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Our Pillars</span>
-             <h2 className="text-5xl lg:text-6xl font-serif font-medium text-gray-900 tracking-tighter">The Comfort Standards</h2>
+             <h2 className="text-5xl lg:text-6xl font-serif font-medium text-gray-900 tracking-tighter">The Elite Standards</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-20">
             <div className="group">

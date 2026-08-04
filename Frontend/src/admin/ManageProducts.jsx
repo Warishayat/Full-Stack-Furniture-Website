@@ -839,7 +839,7 @@ const ManageProducts = () => {
                           value={formData.title}
                           onChange={handleInputChange}
                           className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:bg-white focus:border-indigo-600/20 focus:ring-4 focus:ring-indigo-50/50 outline-none transition-all text-lg font-bold text-slate-900"
-                          placeholder="Comfort Sitting Masterpiece"
+                          placeholder="Elite Seating Masterpiece"
                           required
                         />
                       </div>

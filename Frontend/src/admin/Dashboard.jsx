@@ -65,7 +65,7 @@ const AdminDashboard = () => {
       <div className="max-w-[1600px] mx-auto px-6 lg:px-12">
         <div className="flex flex-col lg:flex-row gap-12 xl:gap-20">
           
-          {/* Comfort Sidebar */}
+          {/* Elite Sidebar */}
           <div className="lg:w-80 shrink-0">
             <div className="bg-[#F2EDE7] p-10 lg:sticky lg:top-40 border border-gray-100 rounded-sm">
               <div className="mb-12">
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
                     { label: 'Active Depts', val: stats.categories, icon: Tags, color: 'bg-gray-900' },
                     { label: 'Total Commissions', val: stats.orders, icon: ShoppingCart, color: 'bg-gray-900' },
                     { label: 'Patron Inquiries', val: stats.messages, icon: Mail, color: 'bg-gray-900' },
-                    { label: 'Comfort Circle', val: stats.subscribers, icon: Users, color: 'bg-gray-900' },
+                    { label: 'Elite Circle', val: stats.subscribers, icon: Users, color: 'bg-gray-900' },
                     { label: 'Net Revenue', val: `£${ordersResData.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, icon: TrendingUp, color: 'bg-[#D7282F]' }
                   ].map((stat, i) => (
                     <div key={i} className="bg-[#F2EDE7] p-10 border border-gray-100 group hover:border-[#D7282F] transition-all duration-500">

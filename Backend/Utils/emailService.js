@@ -90,7 +90,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
 
     // Setup beautiful, luxury themed email template
     const mailOptions = {
-      from: `"ComfortSitting LTD" <${process.env.EMAIL_USER}>`,
+      from: `"EliteSeating LTD" <${process.env.EMAIL_USER}>`,
       to: recipientEmail,
       subject: `Your Order is Confirmed: #${orderIdShort}`,
       html: `
@@ -110,7 +110,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                   <!-- Luxury Header -->
                   <tr>
                     <td align="center" style="background-color: #1e293b; padding: 40px 40px 32px 40px; color: #ffffff;">
-                      <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; font-family: Garamond, Georgia, serif;">ComfortSitting</h1>
+                      <h1 style="margin: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; font-family: Garamond, Georgia, serif;">EliteSeating</h1>
                       <p style="margin: 4px 0 24px 0; font-size: 9px; letter-spacing: 0.3em; color: #94a3b8; font-weight: 600; text-transform: uppercase;">Premium Bespoke Seating</p>
                       
                       <div style="width: 48px; height: 1px; background-color: #ef4444; margin: 0 auto 24px auto;"></div>
@@ -231,11 +231,11 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
                     <td align="center" style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 32px 40px; text-align: center;">
                       <p style="margin: 0; font-size: 13px; color: #475569; font-weight: 500;">Need assistance with your luxurious seating layout?</p>
                       <p style="margin: 8px 0 0 0; font-size: 12px; color: #64748b;">
-                        Reach out to our specialist concierges at <a href="mailto:comfortsitting152@gmail.com" style="color: #ef4444; text-decoration: none; font-weight: bold;">comfortsitting152@gmail.com</a>
+                        Reach out to our specialist concierges at <a href="mailto:eliteseating152@gmail.com" style="color: #ef4444; text-decoration: none; font-weight: bold;">eliteseating152@gmail.com</a>
                       </p>
                       <div style="margin: 24px 0; height: 1px; background-color: #e2e8f0; width: 100%;"></div>
                       <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.6;">
-                        &copy; ${new Date().getFullYear()} ComfortSitting LTD. All rights reserved.<br />
+                        &copy; ${new Date().getFullYear()} EliteSeating LTD. All rights reserved.<br />
                         High-End Premium Artisan Seating Manufacturers & White-Glove Logistics.
                       </p>
                     </td>
@@ -261,17 +261,17 @@ const sendWelcomeEmail = async (recipientEmail, name) => {
   try {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) return;
     const mailOptions = {
-      from: `"ComfortSitting" <${process.env.EMAIL_USER}>`,
+      from: `"EliteSeating" <${process.env.EMAIL_USER}>`,
       to: recipientEmail,
-      subject: "Welcome to Premium Membership - ComfortSitting",
+      subject: "Welcome to Premium Membership - EliteSeating",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
-          <h2 style="color: #51823f;">Welcome to ComfortSitting, ${name}!</h2>
+          <h2 style="color: #51823f;">Welcome to EliteSeating, ${name}!</h2>
           <p>Thank you for becoming a Premium Member.</p>
           <p>Your account has been successfully created along with your recent order. You can now log in to track your orders, save your details for faster checkout, and enjoy exclusive premium member benefits.</p>
           <p>If you have any questions, feel free to reply to this email.</p>
           <br/>
-          <p>Best regards,<br/>The ComfortSitting Team</p>
+          <p>Best regards,<br/>The EliteSeating Team</p>
         </div>
       `,
     };

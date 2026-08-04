@@ -18,7 +18,7 @@ const PrivacyPolicy = () => {
           <div className="mb-20">
              <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Legal Integrity</span>
              <h1 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 mb-8 tracking-tighter">Privacy Protocol</h1>
-             <p className="text-gray-600 text-lg leading-relaxed font-medium">At ComfortSitting Ltd., your privacy is as important to us as your comfort. We are committed to protecting your personal data with the highest security standards.</p>
+             <p className="text-gray-600 text-lg leading-relaxed font-medium">At EliteSeating Ltd., your privacy is as important to us as your comfort. We are committed to protecting your personal data with the highest security standards.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">

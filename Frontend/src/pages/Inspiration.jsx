@@ -46,12 +46,12 @@ const Inspiration = () => {
 
       <div className="w-full px-6 lg:px-12 pb-20">
         <div className="max-w-4xl mb-24">
-           <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Comfort Interiors</span>
+           <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Elite Interiors</span>
            <h1 className="text-5xl lg:text-8xl font-serif font-medium text-gray-900 mb-8 tracking-tighter leading-[0.9]">
               Curate Your <br/>Sanctuary
            </h1>
            <p className="text-gray-600 text-lg lg:text-xl font-medium leading-relaxed max-w-2xl">
-              Explore our curated galleries of architectural spaces featuring ComfortSitting pieces—where heritage meets modern living.
+              Explore our curated galleries of architectural spaces featuring EliteSeating pieces—where heritage meets modern living.
            </p>
         </div>
 
@@ -88,7 +88,7 @@ const Inspiration = () => {
               <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-8 block">Customer Homes</span>
               <h2 className="text-4xl lg:text-6xl font-serif font-medium mb-10 tracking-tighter ">Real Spaces. Real Stories.</h2>
               <p className="text-gray-400 text-lg mb-12 leading-relaxed font-medium">
-                 Join our community of collectors and designers. Share your ComfortSitting sanctuary and inspire others to define their own luxury.
+                 Join our community of collectors and designers. Share your EliteSeating sanctuary and inspire others to define their own luxury.
               </p>
               <button type="button" className="px-12 py-5 bg-[#D7282F] text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:text-gray-900 transition-all">
                  Share Your Space
@@ -103,7 +103,7 @@ const Inspiration = () => {
         <div className="mb-32 text-center">
            <div className="flex items-center justify-center gap-3 mb-12">
               <FaInstagram className="w-5 h-5 text-[#D7282F]" />
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">#MyComfortSitting Sanctuary</span>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">#MyEliteSeating Sanctuary</span>
            </div>
            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-8">
               {socialFeed.map((img, i) => (

@@ -23,9 +23,9 @@ router.get("/product.csv", async (req, res) => {
         availability: availability,
         condition: "new", 
         price: formattedPrice,
-        link: `https://comfortsittingltd.co.uk/product/${product._id.toString()}`,
+        link: `https://eliteseatingltd.co.uk/product/${product._id.toString()}`,
         image_link: firstImage,
-        brand: "Comfort Sitting Ltd."
+        brand: "Elite Seating Ltd."
       };
     });
 

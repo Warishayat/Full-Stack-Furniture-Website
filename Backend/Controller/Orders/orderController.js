@@ -649,32 +649,13 @@ const jwt = require("jsonwebtoken");
         country: shippingAddress?.country || "GB",
       },
       assemblyService: Boolean(assemblyService),
-      paymentMethod: paymentMethodType === "cod" ? "cod" : "card",
+      paymentMethod: "card",
       paymentStatus: "pending",
-      orderStatus: paymentMethodType === "cod" ? "confirmed" : "processing",
+      orderStatus: "processing",
       notes: deliveryDate ? `Delivery Date: ${deliveryDate}` : "",
     });
 
     await order.save();
-
-    if (paymentMethodType === "cod") {
-      // Clear cart
-      if (resolvedUser) {
-        await Cart.findOneAndUpdate({ user: resolvedUser._id }, { items: [], totalPrice: 0 });
-      }
-      
-      // Send confirmation email
-      const finalEmail = email || resolvedUser?.email;
-      if (finalEmail) {
-        sendOrderConfirmationEmail(finalEmail, order).catch(err => console.log("Email error:", err));
-      }
-      
-      return res.status(200).json({
-        success: true,
-        url: `/success?orderId=${order._id}`,
-        orderId: order._id,
-      });
-    }
 
     // Map to Stripe line items
     const lineItems = orderItems.map((item) => ({

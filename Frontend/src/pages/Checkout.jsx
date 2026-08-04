@@ -173,11 +173,6 @@ const Checkout = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const handlePaymentSubmit = async () => {
-    if (paymentMethod === 'card') {
-      toast.error('Stripe account is under review and will be fixed in 1-2 working days. Please book your order using Cash on Delivery (COD).');
-      return;
-    }
-
     try {
       setPaymentLoading(true);
 
@@ -255,7 +250,7 @@ const Checkout = () => {
       {/* Branded Trustpilot Mini Header */}
       <div className="border-b border-gray-100 bg-white py-4 px-6 md:px-12 flex flex-col justify-center items-center text-xs font-semibold text-gray-500 gap-2">
         <Link to="/" className="text-2xl font-serif font-medium tracking-widest text-slate-900 hover:text-green-700 transition-colors">
-          ComfortSitting <span className="text-sm font-sans font-light tracking-widest text-slate-400">LTD</span>
+          EliteSeating <span className="text-sm font-sans font-light tracking-widest text-slate-400">LTD</span>
         </Link>
         <div className="flex items-center justify-between w-full max-w-sm px-4">
           <span>Excellent 4.6 out of 5</span>
@@ -779,19 +774,6 @@ const Checkout = () => {
                         <div>
                           <p className="text-sm font-bold text-slate-800">Secure Payment</p>
                           <p className="text-xs text-slate-500 mt-0.5">Pay securely via Stripe (Card, Clearpay, Klarna)</p>
-                        </div>
-                      </div>
-
-                      <div 
-                        onClick={() => setPaymentMethod('cod')}
-                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3 ${paymentMethod === 'cod' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
-                      >
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'cod' ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
-                          {paymentMethod === 'cod' && <Check className="w-3 h-3 stroke-[3]" />}
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-800">Cash on Delivery (COD)</p>
-                          <p className="text-xs text-slate-500 mt-0.5">Pay with cash upon delivery of your items</p>
                         </div>
                       </div>
                     </div>
