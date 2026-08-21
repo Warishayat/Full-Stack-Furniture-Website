@@ -282,45 +282,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials - Patron Narratives */}
-      <section className="py-32 bg-white">
-        <div className="w-full px-6 lg:px-12 text-center">
-          <div className="max-w-3xl mx-auto mb-20">
-            <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Verified Excellence</span>
-            <h2 className="text-5xl lg:text-7xl font-serif font-medium text-gray-900 tracking-tighter leading-tight mb-8">
-              What our patrons <br />experience
-            </h2>
-          </div>
-          
-
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {reviews.slice(0, 4).map((review, i) => (
-              <div key={i} className="bg-white p-10 text-left border border-gray-100 hover:border-[#D7282F] transition-all group relative overflow-hidden">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(review.rating || 5)].map((_, i) => (
-                    <div key={i} className="w-5 h-5 bg-green-600 flex items-center justify-center shadow-sm">
-                      <span className="text-white text-[10px]">★</span>
-                    </div>
-                  ))}
-                  <span className="ml-4 text-[9px] text-gray-400 font-black uppercase tracking-widest flex items-center gap-2">
-                    <ShieldCheck className="w-3 h-3 text-[#D7282F]" /> Authenticated
-                  </span>
-                </div>
-                <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-1">{review.userId?.name || 'Private Patron'}</p>
-                <p className="text-[9px] text-gray-400 mb-6 font-medium ">Verified Acquisition</p>
-                <p className="text-lg font-serif font-medium text-gray-800 mb-4 tracking-tight line-clamp-1">"{review.comment.split(' ')[0]} Masterpiece"</p>
-                <p className="text-xs text-gray-500 leading-relaxed line-clamp-4 font-medium ">
-                  "{review.comment}"
-                </p>
-                <div className="absolute bottom-0 right-0 p-2 opacity-10 group-hover:opacity-100 transition-opacity">
-                   <Crown className="w-6 h-6 text-[#D7282F]" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
 
       {/* Trust Bar - Executive Standards */}
