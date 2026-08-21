@@ -22,6 +22,24 @@ const Checkout = () => {
   // Page States: 'gate' (Image 1 selection) or 'form' (Image 2 form steps)
   const [checkoutFlow, setCheckoutFlow] = useState('gate');
   const [isGuestFlow, setIsGuestFlow] = useState(false);
+  const [ratingData, setRatingData] = useState({ averageRating: 0, totalReviews: 0 });
+
+  useEffect(() => {
+    const fetchRating = async () => {
+      try {
+        const { data } = await API.get('/review/overall');
+        if (data.success && data.totalReviews > 0) {
+          setRatingData({
+            averageRating: parseFloat((data.averageRating || 0).toFixed(1)),
+            totalReviews: data.totalReviews
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch rating:', err);
+      }
+    };
+    fetchRating();
+  }, []);
 
   // If user is already logged in, skip the gate
   useEffect(() => {
@@ -247,15 +265,11 @@ const Checkout = () => {
   return (
     <div className="bg-slate-50 min-h-screen text-slate-800 pt-24 lg:pt-36">
       
-      {/* Branded Trustpilot Mini Header */}
+      {/* Branded Verified Reviews Mini Header */}
       <div className="border-b border-gray-100 bg-white py-4 px-6 md:px-12 flex flex-col justify-center items-center text-xs font-semibold text-gray-500 gap-2">
         <Link to="/" className="text-2xl font-serif font-medium tracking-widest text-slate-900 hover:text-green-700 transition-colors">
           EliteSeating <span className="text-sm font-sans font-light tracking-widest text-slate-400">LTD</span>
         </Link>
-        <div className="flex items-center justify-between w-full max-w-sm px-4">
-          <span>Excellent 4.6 out of 5</span>
-          <span className="text-green-500 font-extrabold flex items-center">★ Trustpilot</span>
-        </div>
       </div>
 
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
@@ -274,7 +288,6 @@ const Checkout = () => {
                 <img src="https://img.icons8.com/color/48/000000/visa.png" className="h-6" alt="Visa" />
                 <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="h-6" alt="Mastercard" />
                 <img src="https://img.icons8.com/color/48/000000/maestro.png" className="h-6" alt="Maestro" />
-                <img src="https://img.icons8.com/color/48/000000/paypal.png" className="h-6" alt="PayPal" />
               </div>
             </div>
 
@@ -381,7 +394,6 @@ const Checkout = () => {
                   <img src="https://img.icons8.com/color/48/000000/visa.png" className="h-5" alt="Visa" />
                   <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="h-5" alt="Mastercard" />
                   <img src="https://img.icons8.com/color/48/000000/maestro.png" className="h-5" alt="Maestro" />
-                  <img src="https://img.icons8.com/color/48/000000/paypal.png" className="h-5" alt="PayPal" />
                 </div>
 
                 {/* Progress Steps Indicator */}

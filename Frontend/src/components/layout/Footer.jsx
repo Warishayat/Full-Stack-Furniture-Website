@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [ratingData, setRatingData] = useState({ averageRating: 4.6, totalReviews: 30069 });
+  const [ratingData, setRatingData] = useState({ averageRating: 0, totalReviews: 0 });
 
   useEffect(() => {
     const fetchRating = async () => {
@@ -19,15 +19,14 @@ const Footer = () => {
           const dbCount = data.totalReviews || 0;
           
           if (dbCount > 0) {
-            const blendedRating = ((30069 * 4.6) + (dbCount * dbRating)) / (30069 + dbCount);
             setRatingData({
-              averageRating: parseFloat(blendedRating.toFixed(1)),
-              totalReviews: 30069 + dbCount
+              averageRating: parseFloat(dbRating.toFixed(1)),
+              totalReviews: dbCount
             });
           }
         }
       } catch (err) {
-        console.error('Failed to fetch dynamic Trustpilot stats:', err);
+        console.error('Failed to fetch dynamic review stats:', err);
       }
     };
     fetchRating();
@@ -99,24 +98,11 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Trustpilot Section */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-green-500 text-2xl font-bold">★</span>
-              <span className="text-xl font-bold">Trustpilot</span>
-            </div>
-            <div className="flex gap-1 mb-2">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className={`w-6 h-6 flex items-center justify-center ${i < Math.round(ratingData.averageRating) ? 'bg-green-500' : 'bg-gray-200'}`}>
-                  <span className="text-white text-xs">★</span>
-                </div>
-              ))}
-            </div>
-            <p className="text-xs font-bold mb-8">TrustScore {ratingData.averageRating} | {ratingData.totalReviews.toLocaleString()} reviews</p>
-            
+
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Payment options:</p>
             <div className="flex flex-wrap gap-2">
-              {['VISA', 'MASTERCARD', 'PAYPAL'].map((p) => (
+              {['VISA', 'MASTERCARD'].map((p) => (
                 <div key={p} className="px-3 py-1 border border-gray-200 rounded text-[10px] font-bold text-gray-400">
                   {p}
                 </div>

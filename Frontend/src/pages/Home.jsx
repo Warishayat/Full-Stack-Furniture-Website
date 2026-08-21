@@ -13,7 +13,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [openFaq, setOpenFaq] = useState(null);
-  const [ratingData, setRatingData] = useState({ averageRating: 4.6, totalReviews: 30069 });
+  const [ratingData, setRatingData] = useState({ averageRating: 0, totalReviews: 0 });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,13 +34,10 @@ const Home = () => {
         if (overallRes?.data?.success) {
           const dbRating = overallRes.data.averageRating || 0;
           const dbCount = overallRes.data.totalReviews || 0;
-          if (dbCount > 0) {
-            const blendedRating = ((30069 * 4.6) + (dbCount * dbRating)) / (30069 + dbCount);
-            setRatingData({
-              averageRating: parseFloat(blendedRating.toFixed(1)),
-              totalReviews: 30069 + dbCount
-            });
-          }
+          setRatingData({
+            averageRating: parseFloat(dbRating.toFixed(1)),
+            totalReviews: dbCount
+          });
         }
       } catch (error) {
         console.error('Error fetching home data:', error);
@@ -295,21 +292,7 @@ const Home = () => {
             </h2>
           </div>
           
-          <div className="flex flex-col items-center mb-24 p-10 bg-[#F2EDE7]/50 border border-gray-50 rounded-sm">
-            <div className="flex items-center gap-4 mb-4">
-              <span className="text-3xl font-serif font-medium ">Excellent</span>
-              <div className="flex gap-1.5">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className={`w-10 h-10 flex items-center justify-center ${i < Math.round(ratingData.averageRating) ? 'bg-green-600' : 'bg-gray-200'} shadow-sm`}>
-                    <span className="text-white text-xl">★</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
-              Rated {ratingData.averageRating} / 5 based on {ratingData.totalReviews.toLocaleString()} reviews on <span className="text-gray-900 font-black  underline decoration-[#D7282F]">★ Trustpilot</span>
-            </p>
-          </div>
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {reviews.slice(0, 4).map((review, i) => (
