@@ -99,6 +99,9 @@ const Footer = () => {
           </div>
 
           <div>
+            <div className="trustpilot-widget mb-8" data-locale="en-US" data-template-id="56278e9abfbbba0bdcd568bc" data-businessunit-id="6a7987fa254a994d52d90630" data-style-height="52px" data-style-width="100%" data-token="387e78c2-3e26-4779-ac50-3071185415ef">
+              <a href="https://www.trustpilot.com/review/eliteseatingltd.co.uk" target="_blank" rel="noopener">Trustpilot</a>
+            </div>
 
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Payment options:</p>
             <div className="flex flex-wrap gap-2">

@@ -284,6 +284,15 @@ const Home = () => {
 
 
 
+      {/* Trustpilot Review Collector Widget */}
+      <section className="bg-white py-12 border-t border-gray-100">
+        <div className="w-full px-6 lg:px-12">
+          <div className="trustpilot-widget" data-locale="en-US" data-template-id="56278e9abfbbba0bdcd568bc" data-businessunit-id="6a7987fa254a994d52d90630" data-style-height="52px" data-style-width="100%" data-token="387e78c2-3e26-4779-ac50-3071185415ef">
+            <a href="https://www.trustpilot.com/review/eliteseatingltd.co.uk" target="_blank" rel="noopener">Trustpilot</a>
+          </div>
+        </div>
+      </section>
+
       {/* Trust Bar - Executive Standards */}
       <section className="bg-white py-16 border-t border-b border-gray-100">
         <div className="w-full px-6 lg:px-12">
