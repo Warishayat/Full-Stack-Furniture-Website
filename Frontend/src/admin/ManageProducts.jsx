@@ -115,6 +115,15 @@ const ManageProducts = () => {
   const [sizeChart, setSizeChart] = useState(null);
   const [sizeChartPreview, setSizeChartPreview] = useState(null);
   
+  const [expandedMaterials, setExpandedMaterials] = useState({});
+  const toggleMaterial = (vIdx, mIdx) => {
+    const key = `${vIdx}-${mIdx}`;
+    setExpandedMaterials(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
+
   const fileInputRef = useRef(null);
   const sizeChartRef = useRef(null);
 
@@ -614,6 +623,16 @@ const ManageProducts = () => {
     }
   };
 
+  const isVideo = (url, index) => {
+    if (!url) return false;
+    if (url.startsWith('blob:')) {
+      const blobIdx = imagePreviews.slice(0, index).filter(u => u && u.startsWith('blob:')).length;
+      const file = images[blobIdx];
+      return file && file.type.startsWith('video/');
+    }
+    return !!url.match(/\.(mp4|mov|webm|ogg)$/i) || url.includes('video/upload');
+  };
+
   return (
     <div className="pb-20 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-12">
@@ -1019,7 +1038,7 @@ const ManageProducts = () => {
                       className="border-4 border-dashed border-slate-100 rounded-[3rem] p-20 hover:border-purple-200 hover:bg-purple-50/30 transition-all cursor-pointer group relative overflow-hidden"
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <input type="file" multiple ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
+                      <input type="file" multiple ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*,video/mp4,video/quicktime,video/webm" />
                       <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                         <UploadCloud className="w-10 h-10 text-gray-300 group-hover:text-blue-500 transition-colors" />
                       </div>
@@ -1032,9 +1051,13 @@ const ManageProducts = () => {
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Collection Assets ({imagePreviews.length})</p>
                         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
                           {imagePreviews.map((url, idx) => (
-                            <div key={idx} className="relative group aspect-square rounded-2xl border border-gray-100 shadow-xl">
+                            <div key={idx} className="relative group aspect-square rounded-2xl border border-gray-100 shadow-xl bg-black overflow-hidden">
                               <div className="w-full h-full rounded-2xl overflow-hidden relative">
-                                <img src={url} alt={`Asset preview ${idx}`} className="w-full h-full object-cover" />
+                                {isVideo(url, idx) ? (
+                                  <video src={url} className="w-full h-full object-cover" autoPlay loop muted playsInline />
+                                ) : (
+                                  <img src={url} alt={`Asset preview ${idx}`} className="w-full h-full object-cover" />
+                                )}
                                 <button 
                                   type="button"
                                   onClick={() => removeImage(idx)}
@@ -1045,7 +1068,11 @@ const ManageProducts = () => {
                               </div>
                               {/* Hover Zoom Preview */}
                               <div className="fixed z-[99999] pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.3)] border-4 border-white overflow-hidden scale-95 group-hover:scale-100 flex items-center justify-center">
-                                <img src={url} alt={`Enlarged preview ${idx}`} className="w-full h-full object-contain" />
+                                {isVideo(url, idx) ? (
+                                  <video src={url} className="w-full h-full object-contain bg-black" autoPlay loop muted playsInline />
+                                ) : (
+                                  <img src={url} alt={`Enlarged preview ${idx}`} className="w-full h-full object-contain" />
+                                )}
                                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase">
                                   Preview
                                 </div>
@@ -1310,7 +1337,11 @@ const ManageProducts = () => {
                                           : 'border-transparent opacity-30 grayscale hover:opacity-100 hover:grayscale-0'
                                       }`}
                                     >
-                                      <img src={url} alt={`Variant Preview ${imgIdx}`} className="w-full h-full object-cover" />
+                                      {isVideo(url, imgIdx) ? (
+                                        <video src={url} className="w-full h-full object-cover bg-black" autoPlay loop muted playsInline />
+                                      ) : (
+                                        <img src={url} alt={`Variant Preview ${imgIdx}`} className="w-full h-full object-cover" />
+                                      )}
                                       {isSelected && (
                                         <div className="absolute inset-0 bg-blue-600/30 flex items-center justify-center">
                                           <Check className="w-5 h-5 text-white stroke-[4]" />
@@ -1319,7 +1350,11 @@ const ManageProducts = () => {
                                     </button>
                                     {/* Hover Zoom Preview */}
                                     <div className="fixed z-[99999] pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.3)] border-4 border-white overflow-hidden scale-95 group-hover:scale-100 flex items-center justify-center">
-                                      <img src={url} alt={`Enlarged Variant Preview ${imgIdx}`} className="w-full h-full object-contain" />
+                                      {isVideo(url, imgIdx) ? (
+                                        <video src={url} className="w-full h-full object-contain bg-black" autoPlay loop muted playsInline />
+                                      ) : (
+                                        <img src={url} alt={`Enlarged Variant Preview ${imgIdx}`} className="w-full h-full object-contain" />
+                                      )}
                                       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-full text-xs font-bold tracking-widest uppercase">
                                         Preview
                                       </div>
@@ -1332,12 +1367,17 @@ const ManageProducts = () => {
                           </div>
                         </div>
 
-                        {variant.materials.map((material, mIdx) => (
-                          <div key={mIdx} className="bg-white p-8 rounded-[2.5rem] border-2 border-indigo-50/50 shadow-xl shadow-indigo-500/5 space-y-8 relative overflow-hidden">
+                        {variant.materials.map((material, mIdx) => {
+                          const isExpanded = expandedMaterials[`${vIdx}-${mIdx}`];
+                          return (
+                          <div key={mIdx} className="bg-white p-8 rounded-[2.5rem] border-2 border-indigo-50/50 shadow-xl shadow-indigo-500/5 space-y-8 relative overflow-hidden transition-all">
                              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/30 rounded-full -mr-16 -mt-16 blur-2xl" />
-                             <div className="flex items-center justify-between border-b border-slate-100 pb-6 relative z-10">
-                                <div className="flex-1">
-                                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2">Material Composition</label>
+                             <div 
+                               className="flex items-center justify-between border-b border-slate-100 pb-6 relative z-10 cursor-pointer"
+                               onClick={() => toggleMaterial(vIdx, mIdx)}
+                             >
+                                <div className="flex-1" onClick={(e) => e.stopPropagation()}>
+                                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2 cursor-text">Material Composition</label>
                                    <input
                                      type="text"
                                      value={material.name}
@@ -1350,12 +1390,18 @@ const ManageProducts = () => {
                                      placeholder="e.g. Luxury Velvet Finish"
                                    />
                                 </div>
-                                <button type="button" onClick={() => removeMaterial(vIdx, mIdx)} className="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-red-500 transition-all">
-                                   <Trash2 className="w-5 h-5" />
-                                </button>
+                                <div className="flex gap-2">
+                                   <button type="button" onClick={(e) => { e.stopPropagation(); toggleMaterial(vIdx, mIdx); }} className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-900 transition-all bg-gray-50 rounded-full">
+                                      {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                                   </button>
+                                   <button type="button" onClick={(e) => { e.stopPropagation(); removeMaterial(vIdx, mIdx); }} className="w-10 h-10 flex items-center justify-center text-gray-300 hover:text-red-500 transition-all bg-gray-50 rounded-full">
+                                      <Trash2 className="w-4 h-4" />
+                                   </button>
+                                </div>
                              </div>
 
-                             <div className="grid grid-cols-1 gap-6 relative z-10">
+                             {isExpanded && (
+                             <div className="grid grid-cols-1 gap-6 relative z-10 animate-fade-in">
                                 {material.colors.map((color, cIdx) => {
                                   const swatchSrc = color.swatchPreviewUrl || color.swatchImage;
                                   return (
@@ -1426,8 +1472,9 @@ const ManageProducts = () => {
                                   + Add Fabric Colour Finish
                                 </button>
                              </div>
+                             )}
                           </div>
-                        ))}
+                        )})}
                         <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-100">
                           <button type="button" onClick={() => addMaterial(vIdx)} className="px-8 py-4 bg-gray-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[#D7282F] transition-all shadow-xl">
                             + Add Material Collection

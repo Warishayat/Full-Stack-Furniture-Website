@@ -13,36 +13,30 @@ const ProductCard = memo(({ product }) => {
   const { minPrice, oldPrice, displayImage, allColors, defaultVariantName, defaultMaterialName } = useMemo(() => {
     let min = Infinity;
     let old = 0;
-    let img = product.images?.[0] || '';
     let colors = new Map();
-    let defaultVariantName = '';
-    let defaultMaterialName = '';
+    let cheapestVariant = null;
+    let variant2c2 = null;
+    let variant3plus2 = null;
 
     if (product.variants && product.variants.length > 0) {
-      const lastVariant = product.variants[product.variants.length - 1];
-      defaultVariantName = lastVariant.name || '';
-      
-      if (product.images && product.images.length > 0) {
-        img = product.images[0];
-      } else if (lastVariant.images && lastVariant.images.length > 0) {
-        img = lastVariant.images[0];
-      }
-
-      if (lastVariant.materials && lastVariant.materials.length > 0) {
-        defaultMaterialName = lastVariant.materials[0].name || '';
-      }
-
       product.variants.forEach(variant => {
+        const vName = (variant.name || '').toLowerCase();
+        if (vName.includes('2c2')) {
+          variant2c2 = variant;
+        } else if (vName.includes('3+2')) {
+          variant3plus2 = variant;
+        }
+
         if (variant.price < min) {
           min = variant.price;
           old = variant.oldPrice || 0;
+          cheapestVariant = variant;
         }
         if (variant.materials) {
           variant.materials.forEach(material => {
             if (material.colors) {
               material.colors.forEach(color => {
                 if (color.name) {
-                  // Only add if not present, or if current has a swatch image
                   if (!colors.has(color.name) || (color.swatchImage && !colors.get(color.name).swatchImage)) {
                     colors.set(color.name, { name: color.name, swatchImage: color.swatchImage });
                   }
@@ -54,6 +48,26 @@ const ProductCard = memo(({ product }) => {
       });
     }
 
+    let defaultVariantName = '';
+    let defaultMaterialName = '';
+    let img = product.images?.[0] || '';
+
+    // Priority: 2c2 -> 3+2 -> cheapestVariant
+    const targetVariant = variant2c2 || variant3plus2 || cheapestVariant;
+
+    if (targetVariant) {
+      defaultVariantName = targetVariant.name || '';
+      
+      // Prioritize the target variant's image so it matches the name!
+      if (targetVariant.images && targetVariant.images.length > 0) {
+        img = targetVariant.images[0];
+      }
+
+      if (targetVariant.materials && targetVariant.materials.length > 0) {
+        defaultMaterialName = targetVariant.materials[0].name || '';
+      }
+    }
+
     return { 
       minPrice: min === Infinity ? (product.price || 0) : min, 
       oldPrice: old || (product.oldPrice || 0), 
@@ -63,6 +77,10 @@ const ProductCard = memo(({ product }) => {
       defaultMaterialName
     };
   }, [product]);
+
+  const isVideo = (url) => {
+    return url && (!!url.match(/\.(mp4|mov|webm|ogg)$/i) || url.includes('video/upload'));
+  };
 
   return (
     <div className="group bg-white overflow-hidden transition-all duration-300 flex flex-col h-full relative">
@@ -83,13 +101,19 @@ const ProductCard = memo(({ product }) => {
       </button>
 
       {/* Image Container */}
-      <Link to={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-gray-50 flex items-center justify-center">
+      <Link to={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-gray-50 flex items-center justify-center group">
         <img
-          src={displayImage}
+          src={isVideo(displayImage) ? displayImage.replace(/\.(mp4|mov|webm|ogg)$/i, '.jpg') : displayImage}
           alt={product.title}
           loading="lazy"
           className="w-full h-full object-contain object-center mix-blend-multiply scale-125 origin-center group-hover:scale-[1.35] transition-transform duration-700"
         />
+        {isVideo(displayImage) && (
+          <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full z-10 flex items-center gap-1.5">
+             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+             <span className="text-[9px] text-white font-bold uppercase tracking-widest">Video</span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
       </Link>
       

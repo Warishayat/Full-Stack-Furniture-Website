@@ -248,6 +248,10 @@ const ProductDetail = () => {
     setIsViewingLeg(false);
   }, [product, currentVariant]);
 
+  const isVideo = (url) => {
+    return url && (!!url.match(/\.(mp4|mov|webm|ogg)$/i) || url.includes('video/upload'));
+  };
+
   const getCategoryLabel = () => {
     if (!product) return 'Size';
     const catName = product.category?.name?.toLowerCase() || '';
@@ -391,11 +395,19 @@ const ProductDetail = () => {
                   <span className="bg-[#D7282F] text-white text-[10px] font-bold px-4 py-1 uppercase shadow-sm">Hot Sell</span>
                </div>
                
-               <img 
-                 src={activeImage} 
-                 alt={product.title} 
-                 className="w-full h-auto object-contain aspect-square transition-opacity duration-300"
-               />
+               {isVideo(activeImage) ? (
+                 <video 
+                   src={activeImage} 
+                   className="w-full h-auto object-contain aspect-square transition-opacity duration-300"
+                   autoPlay loop muted playsInline
+                 />
+               ) : (
+                 <img 
+                   src={activeImage} 
+                   alt={product.title} 
+                   className="w-full h-auto object-contain aspect-square transition-opacity duration-300"
+                 />
+               )}
 
                {/* Carousel Arrows */}
                {(currentVariant?.images?.length > 1 || product?.images?.length > 1) && (
@@ -421,11 +433,15 @@ const ProductDetail = () => {
                  <button type="button" 
                    key={idx}
                    onClick={() => setActiveImage(img)}
-                   className={`w-20 h-20 border-2 flex-shrink-0 transition-all ${
+                   className={`w-20 h-20 border-2 flex-shrink-0 transition-all bg-black overflow-hidden ${
                      activeImage === img ? 'border-[#D7282F]' : 'border-gray-50 opacity-80 hover:opacity-100 hover:border-gray-200'
                    }`}
                  >
-                   <img src={img} className="w-full h-full object-cover" />
+                   {isVideo(img) ? (
+                     <video src={img} className="w-full h-full object-cover" autoPlay loop muted playsInline />
+                   ) : (
+                     <img src={img} className="w-full h-full object-cover" />
+                   )}
                  </button>
                ))}
             </div>
@@ -466,10 +482,10 @@ const ProductDetail = () => {
 
               {/* Selection Sections */}
               <div className="space-y-8 border-t border-gray-100 pt-8">
-                {product.variants?.length > 1 && (
+                {(product.variants?.length > 0) && (
                   <div className="space-y-3">
                     <label className="text-sm font-bold text-gray-900 flex justify-between">
-                       <span>{getCategoryLabel()} size: <span className="text-gray-400 font-medium">{currentVariant?.name}</span></span>
+                       <span>{getCategoryLabel()} size: <span className="text-gray-400 font-medium">{currentVariant?.name || 'Standard'}</span></span>
                        <span 
                          onClick={() => {
                            setIsSizeGuideOpen(true);
@@ -480,6 +496,7 @@ const ProductDetail = () => {
                          Size guide
                        </span>
                     </label>
+                    {product.variants?.length > 1 && (
                     <div className="relative">
                       <select 
                         value={selectedVariantIdx}
@@ -492,6 +509,7 @@ const ProductDetail = () => {
                       </select>
                       <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
+                    )}
                   </div>
                 )}
 
@@ -603,6 +621,7 @@ const ProductDetail = () => {
                     </div>
 
                     {/* Order Free Swatches Button */}
+                    {!isRecliner && (
                     <button type="button" 
                       onClick={() => setIsSwatchesModalOpen(true)}
                       className="w-full mt-6 py-4 border border-gray-300 rounded-sm flex flex-col items-center justify-center hover:bg-gray-50 transition-colors group"
@@ -610,6 +629,7 @@ const ProductDetail = () => {
                       <span className="text-sm font-bold text-gray-900 flex items-center gap-1">Order free swatches <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
                       <span className="text-[10px] text-gray-500 font-medium mt-1">Free first-class delivery</span>
                     </button>
+                    )}
                   </div>
                 )}
 
