@@ -7,7 +7,7 @@ const {protect} = require("../Middleware/authMiddleware");
 const {adminOnly} = require("../Middleware/checkAdmin");
 
 orderRouter.post("/createCheckoutSession", protect, createCheckoutSession);
-orderRouter.post("/createPayItMonthlyCheckout", protect, createPayItMonthlyCheckout);
+orderRouter.post("/createPayItMonthlyCheckout", createPayItMonthlyCheckout);
 orderRouter.post("/createOrderAndSession", createOrderAndSession);
 orderRouter.post("/verifyPayment", protect, verifyPayment);
 orderRouter.post("/webhook",express.raw({ type: "application/json" }), webhookHandler);
