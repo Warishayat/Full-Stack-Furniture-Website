@@ -199,8 +199,31 @@ exports.pimWebhookHandler = async (req, res) => {
       const outcome = applicationData.decision?.outcome;
       
       if (outcome === 'SUCCESS') {
+        // Only send if it wasn't already paid to prevent duplicate emails
+        const wasPending = order.paymentStatus === 'pending';
+        
         order.paymentStatus = 'paid';
         order.orderStatus = 'confirmed';
+        
+        if (wasPending) {
+          const { sendOrderConfirmationEmail } = require('../../Utils/emailService');
+          const User = require('../../Schemas/User');
+          
+          let finalEmail = applicationData.personal_details?.email || applicationData.email || "eliteseating152@gmail.com";
+          if (order.user) {
+            const userDoc = await User.findById(order.user);
+            if (userDoc) finalEmail = userDoc.email;
+          }
+          if (finalEmail) {
+            sendOrderConfirmationEmail(finalEmail, order).catch(err => console.log("Email error:", err));
+          }
+          
+          // Clear cart if user exists
+          if (order.user) {
+            const Cart = require('../../Schemas/Cart');
+            await Cart.findOneAndDelete({ user: order.user });
+          }
+        }
       } else if (outcome === 'FAILED' || outcome === 'RECALLED' || outcome === 'CANCELLED') {
         order.paymentStatus = 'failed';
         order.orderStatus = 'cancelled';

@@ -31,6 +31,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
     if (order.paymentMethod === "afterpay_clearpay") formattedPaymentMethod = "Clearpay / Afterpay";
     else if (order.paymentMethod === "klarna") formattedPaymentMethod = "Klarna";
     else if (order.paymentMethod === "cod") formattedPaymentMethod = "Cash on Delivery";
+    else if (order.paymentMethod === "PayItMonthly" || order.paymentMethod === "payitmonthly") formattedPaymentMethod = "PayItMonthly Finance";
 
 
     // Helper to safely extract names from field objects
@@ -92,6 +93,7 @@ const sendOrderConfirmationEmail = async (recipientEmail, order) => {
     const mailOptions = {
       from: `"EliteSeating LTD" <${process.env.EMAIL_USER}>`,
       to: recipientEmail,
+      bcc: process.env.EMAIL_USER,
       subject: `Your Order is Confirmed: #${orderIdShort}`,
       html: `
         <!DOCTYPE html>
