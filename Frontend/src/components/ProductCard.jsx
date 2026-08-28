@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { ShoppingCart, Heart, ArrowRight, Star, CheckCircle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import klarnaImg from '../assets/klarna.webp';
+import payItMonthlyImg from '../assets/payitmonthly.webp';
 
 const ProductCard = memo(({ product }) => {
   const { addToCart } = useCart();
@@ -172,6 +174,23 @@ const ProductCard = memo(({ product }) => {
             {oldPrice > minPrice && (
               <span className="text-sm text-gray-500 line-through font-medium">was £{oldPrice.toLocaleString()}</span>
             )}
+          </div>
+          
+          <div className="flex items-center flex-wrap gap-1 text-[10px] text-gray-600 mb-2">
+            <span>Or from <strong>£{(minPrice / 12).toFixed(2)}</strong>/mo with</span>
+            <div className="inline-flex items-center gap-1 ml-0.5">
+              <img 
+                src={payItMonthlyImg} 
+                alt="PayItMonthly" 
+                className="h-[13px] w-auto object-contain rounded-sm"
+              />
+              <span className="text-gray-400 font-bold mx-0.5">•</span>
+              <img 
+                src={klarnaImg} 
+                alt="Klarna" 
+                className="h-[13px] w-auto object-contain rounded-sm"
+              />
+            </div>
           </div>
           <div className="flex items-center gap-1 text-[10px] font-bold text-[#51823F]">
             <CheckCircle className="w-3 h-3" />

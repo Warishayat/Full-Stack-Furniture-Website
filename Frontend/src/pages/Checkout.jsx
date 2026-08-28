@@ -5,6 +5,10 @@ import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import { toast } from 'react-toastify';
 import { ShieldCheck, Truck, RotateCcw, Award, Check, CreditCard, ChevronRight, ArrowLeft } from 'lucide-react';
+import klarnaImg from '../assets/klarna.webp';
+import payItMonthlyImg from '../assets/payitmonthly.webp';
+import clearpayImg from '../assets/clearpayafterpay.webp';
+import mastercardImg from '../assets/mastercard.webp';
 
 const Checkout = () => {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -236,7 +240,11 @@ const Checkout = () => {
         assemblyService
       };
 
-      const { data } = await API.post('/api/order/createOrderAndSession', payload);
+      const endpoint = paymentMethod === 'PayItMonthly' 
+        ? '/api/order/createPayItMonthlyCheckout' 
+        : '/api/order/createOrderAndSession';
+
+      const { data } = await API.post(endpoint, payload);
 
       if (data.url) {
         // Save order info locally to clean guest cart on land
@@ -247,7 +255,7 @@ const Checkout = () => {
           window.location.href = data.url;
         }
       } else {
-        toast.error('Stripe redirect URL not found.');
+        toast.error('Payment redirect URL not found.');
       }
 
     } catch (error) {
@@ -780,14 +788,39 @@ const Checkout = () => {
                     <div className="grid grid-cols-1 gap-4">
                       <div 
                         onClick={() => setPaymentMethod('card')}
-                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex items-center gap-3 ${paymentMethod === 'card' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
+                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${paymentMethod === 'card' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
                       >
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'card' ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
-                          {paymentMethod === 'card' && <Check className="w-3 h-3 stroke-[3]" />}
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'card' ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
+                            {paymentMethod === 'card' && <Check className="w-3 h-3 stroke-[3]" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-slate-800">Secure Payment (Stripe)</p>
+                            <p className="text-xs text-slate-500 mt-0.5">Pay securely via Card, Clearpay, Klarna</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-800">Secure Payment</p>
-                          <p className="text-xs text-slate-500 mt-0.5">Pay securely via Stripe (Card, Clearpay, Klarna)</p>
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto pl-8 sm:pl-0">
+                          <img src={mastercardImg} alt="Mastercard" className="h-[20px] w-auto object-contain rounded-sm" />
+                          <img src={clearpayImg} alt="Clearpay" className="h-[20px] w-auto object-contain rounded-sm" />
+                          <img src={klarnaImg} alt="Klarna" className="h-[20px] w-auto object-contain rounded-sm" />
+                        </div>
+                      </div>
+
+                      <div 
+                        onClick={() => setPaymentMethod('PayItMonthly')}
+                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${paymentMethod === 'PayItMonthly' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'PayItMonthly' ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
+                            {paymentMethod === 'PayItMonthly' && <Check className="w-3 h-3 stroke-[3]" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-slate-800">Pay Monthly (PayItMonthly)</p>
+                            <p className="text-xs text-slate-500 mt-0.5">Interest-free finance options powered by PayItMonthly</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto pl-8 sm:pl-0">
+                          <img src={payItMonthlyImg} alt="PayItMonthly" className="h-[20px] w-auto object-contain rounded-sm" />
                         </div>
                       </div>
                     </div>

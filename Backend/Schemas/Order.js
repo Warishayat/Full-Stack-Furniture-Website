@@ -80,7 +80,7 @@ const OrderSchema = new Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["afterpay_clearpay", "card", "cod","klarna"],
+      enum: ["afterpay_clearpay", "card", "cod","klarna", "PayItMonthly"],
       required: true,
     },
 
@@ -95,6 +95,9 @@ const OrderSchema = new Schema(
       enum: ["processing", "confirmed", "shipped", "delivered", "cancelled"],
       default: "processing",
     },
+
+    pimApplicationId: String,
+    pimReference: String,
 
     stripeSessionId: String,
     stripePaymentIntentId: String,

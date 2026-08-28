@@ -500,26 +500,23 @@ const getOrderById = async (req, res) => {
 
     let order = null;
 
-    // =========================
-    // 1. FULL MONGO ID CHECK
-    // =========================
     if (/^[0-9a-fA-F]{24}$/.test(cleanId)) {
       order = await Order.findById(cleanId)
         .populate("user", "name email")
         .populate("items.product");
     }
 
-    // =========================
-    // 2. SHORT ID FALLBACK (SAFE VERSION)
-    // =========================
     if (!order) {
-      const orders = await Order.find()
-        .populate("user", "name email")
-        .populate("items.product");
-
-      order = orders.find((o) =>
-        o._id.toString().slice(-8).toLowerCase() === cleanId.toLowerCase()
-      );
+      order = await Order.findOne({
+        $expr: {
+          $eq: [
+            { $substrCP: [{ $toString: "$_id" }, 16, 8] },
+            cleanId.toLowerCase()
+          ]
+        }
+      })
+      .populate("user", "name email")
+      .populate("items.product");
     }
 
     if (!order) {
@@ -529,9 +526,6 @@ const getOrderById = async (req, res) => {
       });
     }
 
-    // =========================
-    // CLEAN RESPONSE
-    // =========================
     const orderObj = order.toObject();
 
     orderObj.items = orderObj.items.map((item) => ({
@@ -545,11 +539,9 @@ const getOrderById = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("getOrderById Error:", error.message);
-
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Failed to retrieve order",
     });
   }
 };
@@ -593,10 +585,8 @@ const jwt = require("jsonwebtoken");
         });
         await newUser.save();
         resolvedUser = newUser;
-        
-        // Resolved user
       } else {
-        resolvedUser = existingUser;
+        return res.status(400).json({ success: false, message: "An account with this email already exists. Please log in first to continue." });
       }
     }
 

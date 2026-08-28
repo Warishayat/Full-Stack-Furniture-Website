@@ -9,7 +9,11 @@ const API = axios.create({
 
 
 API.interceptors.request.use((req) => {
-  const user = JSON.parse(localStorage.getItem('user'));
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem('user'));
+  } catch (e) {}
+
   if (user && user.token) {
     req.headers.Authorization = `Bearer ${user.token}`;
   }

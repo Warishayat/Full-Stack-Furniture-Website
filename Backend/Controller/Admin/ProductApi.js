@@ -593,7 +593,8 @@ const SearchProduct = async (req, res) => {
       return res.status(200).json(cachedData);
     }
 
-    const searchRegex = new RegExp(query, "i");
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const searchRegex = new RegExp(escapedQuery, "i");
 
     const skip = (page - 1) * limit;
 

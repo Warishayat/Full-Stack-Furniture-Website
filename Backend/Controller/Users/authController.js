@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const RegisterUser = async (req, res) => {
     try {
-        const {name, email, password, role} = req.body;
+        const {name, email, password} = req.body;
         if(!name || !email || !password){
             return res.status(400).json({message: "Please fill all the required fields"});
         }
@@ -17,12 +17,11 @@ const RegisterUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            role
+            role: "user"
         });
         await newUser.save();
         res.status(201).json({message: "User registered successfully"});
     } catch (error) {
-        console.log(error);
         res.status(500).json({message: "Internal server error"});
     }
 }
@@ -54,8 +53,7 @@ const LoginUser = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("LOGIN ERROR:", error.message || error);
-        res.status(500).json({message: error.message || "Internal server error"});
+        res.status(500).json({message: "Internal server error"});
     }
 }
 

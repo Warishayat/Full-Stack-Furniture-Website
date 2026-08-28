@@ -5,6 +5,8 @@ import API from '../services/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import klarnaImg from '../assets/klarna.webp';
+import payItMonthlyImg from '../assets/payitmonthly.webp';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -468,16 +470,38 @@ const ProductDetail = () => {
                 </span>
               </div>
 
-              <div className="flex items-baseline gap-4 mb-4">
-                <span className="text-4xl font-bold text-gray-700">£{currentPrice.toLocaleString()}</span>
-                {currentOldPrice > currentPrice && (
-                  <span className="text-lg text-gray-400 line-through font-medium ">was £{currentOldPrice.toLocaleString()}</span>
-                )}
-                <span className="bg-gray-700 text-white text-[10px] font-bold px-2 py-0.5 ml-2 uppercase">SAVE</span>
-              </div>
+              <div className="flex flex-col gap-2 mb-8">
+                <div className="flex items-baseline gap-4">
+                  <span className="text-4xl font-bold text-gray-700">£{currentPrice.toLocaleString()}</span>
+                  {currentOldPrice > currentPrice && (
+                    <span className="text-lg text-gray-400 line-through font-medium ">was £{currentOldPrice.toLocaleString()}</span>
+                  )}
+                  {currentOldPrice > currentPrice && (
+                    <span className="bg-gray-700 text-white text-[10px] font-bold px-2 py-0.5 ml-2 uppercase">SAVE</span>
+                  )}
+                </div>
+                
+                <div className="flex items-center flex-wrap gap-2 text-sm text-gray-600 mt-1">
+                  <span>Or from <strong>£{(currentPrice / 12).toFixed(2)}</strong>/mo with</span>
+                  <div className="inline-flex items-center gap-1.5 ml-1">
+                    <img 
+                      src={payItMonthlyImg} 
+                      alt="PayItMonthly" 
+                      className="h-[18px] w-auto object-contain rounded-sm"
+                    />
+                    <span className="text-gray-400 font-bold mx-0.5">•</span>
+                    <img 
+                      src={klarnaImg} 
+                      alt="Klarna" 
+                      className="h-[18px] w-auto object-contain rounded-sm"
+                    />
+                  </div>
+                </div>
 
-              <div className="text-sm font-bold text-gray-700 mb-8 flex items-center gap-2">
-                 <CreditCard className="w-4 h-4" /> Pay in Easy Interest-Free Monthly Installments
+                <div className="mt-3 flex items-center gap-2 text-sm font-medium text-gray-700 bg-gray-50 p-2 rounded w-fit border border-gray-100">
+                  <Calendar className="w-4 h-4 text-[#D7282F]" />
+                  <span>Estimated Delivery: <strong>{getEstimatedDeliveryRange()}</strong></span>
+                </div>
               </div>
 
               {/* Selection Sections */}
