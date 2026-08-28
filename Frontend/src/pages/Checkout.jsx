@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import API from '../services/api';
 import { toast } from 'react-toastify';
-import { Check, ArrowLeft, ShieldCheck, Truck, Clock } from 'lucide-react';
+import { ShieldCheck, Truck, RotateCcw, Award, Check, CreditCard, ChevronRight, ArrowLeft } from 'lucide-react';
 import klarnaImg from '../assets/klarna.webp';
 import payItMonthlyImg from '../assets/payitmonthly.webp';
 import clearpayImg from '../assets/clearpayafterpay.webp';
 import mastercardImg from '../assets/mastercard.webp';
 
 const Checkout = () => {
-  const { cartItems, cartTotal } = useCart();
+  const { cartItems, cartTotal, clearCart } = useCart();
   const { user, login } = useAuth();
   const navigate = useNavigate();
 
@@ -23,10 +23,29 @@ const Checkout = () => {
     }
   }, [cartItems, navigate]);
 
-  // Page Flow States: 'gate' or 'form'
+  // Page States: 'gate' (Image 1 selection) or 'form' (Image 2 form steps)
   const [checkoutFlow, setCheckoutFlow] = useState('gate');
   const [isGuestFlow, setIsGuestFlow] = useState(false);
+  const [ratingData, setRatingData] = useState({ averageRating: 0, totalReviews: 0 });
 
+  useEffect(() => {
+    const fetchRating = async () => {
+      try {
+        const { data } = await API.get('/review/overall');
+        if (data.success && data.totalReviews > 0) {
+          setRatingData({
+            averageRating: parseFloat((data.averageRating || 0).toFixed(1)),
+            totalReviews: data.totalReviews
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch rating:', err);
+      }
+    };
+    fetchRating();
+  }, []);
+
+  // If user is already logged in, skip the gate
   useEffect(() => {
     if (user) {
       setCheckoutFlow('form');
@@ -37,28 +56,26 @@ const Checkout = () => {
     }
   }, [user, isGuestFlow]);
 
-  // Facebook Pixel / Analytics Tracking
+  // InitiateCheckout tracking
   useEffect(() => {
     if (cartItems.length > 0 && window.fbq && !window.initiateCheckoutTracked) {
       window.fbq('track', 'InitiateCheckout', {
         value: cartTotal,
         currency: 'GBP',
-        num_items: cartItems.length,
+        num_items: cartItems.length
       });
       window.initiateCheckoutTracked = true;
     }
   }, [cartItems, cartTotal]);
 
-  // Gate Login State
+  // Login form state (Gate existing customer)
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
 
-  // Form Step State
   const [currentStep, setCurrentStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState('card');
 
-  // Customer & Address State
   const [title, setTitle] = useState('');
   const [firstName, setFirstName] = useState('');
   const [surname, setSurname] = useState('');
@@ -68,7 +85,7 @@ const Checkout = () => {
   const [city, setCity] = useState('');
   const [postcode, setPostcode] = useState('');
 
-  // Different Delivery Address State
+  // Deliver to different address state
   const [differentAddress, setDifferentAddress] = useState(false);
   const [diffTitle, setDiffTitle] = useState('');
   const [diffFirstName, setDiffFirstName] = useState('');
@@ -78,11 +95,12 @@ const Checkout = () => {
   const [diffCity, setDiffCity] = useState('');
   const [diffPostcode, setDiffPostcode] = useState('');
 
-  // Account creation options for guest flow
+  // Save account & newsletters state
   const [createAccount, setCreateAccount] = useState(false);
   const [checkoutPassword, setCheckoutPassword] = useState('');
+  const [newsletter, setNewsletter] = useState(''); // Yes or No
 
-  // Dynamic Delivery Dates Generation
+  // Dynamic Delivery Dates Options (today + 9 days to today + 13 days)
   const getDynamicDeliveryOptions = () => {
     const options = [];
     const descs = [
@@ -90,7 +108,7 @@ const Checkout = () => {
       'Complimentary Premium Weekend Delivery Slot',
       'Complimentary Premium White-Glove Fitting',
       'Complimentary Room of Choice White-Glove Delivery',
-      'Complimentary Direct Concierge White-Glove Delivery',
+      'Complimentary Direct Concierge White-Glove Delivery'
     ];
 
     for (let i = 0; i < 5; i++) {
@@ -100,13 +118,13 @@ const Checkout = () => {
       const dateString = deliveryDate.toLocaleDateString('en-GB', {
         weekday: 'long',
         day: 'numeric',
-        month: 'long',
+        month: 'long'
       });
 
       options.push({
         id: `date-${i}`,
         date: dateString,
-        desc: descs[i % descs.length],
+        desc: descs[i % descs.length]
       });
     }
     return options;
@@ -116,7 +134,7 @@ const Checkout = () => {
   const [selectedDeliveryDate, setSelectedDeliveryDate] = useState('');
   const [assemblyService, setAssemblyService] = useState(false);
 
-  // Populate user info if logged in
+  // Set default email if user is logged in
   useEffect(() => {
     if (user) {
       setEmail(user.email || '');
@@ -126,14 +144,13 @@ const Checkout = () => {
     }
   }, [user]);
 
-  // Set default selected delivery date
+  // Automatically select first delivery date option
   useEffect(() => {
     if (!selectedDeliveryDate && deliveryOptions.length > 0) {
       setSelectedDeliveryDate(deliveryOptions[0].date);
     }
   }, [selectedDeliveryDate, deliveryOptions]);
 
-  // Existing Customer Login Handler
   const handleGateLogin = async (e) => {
     e.preventDefault();
     if (!loginEmail || !loginPassword) {
@@ -153,7 +170,6 @@ const Checkout = () => {
     }
   };
 
-  // Step 1 Validation
   const handleStep1Submit = (e) => {
     e.preventDefault();
     if (!firstName || !surname || !email || !phone || !addressLine || !postcode) {
@@ -168,72 +184,71 @@ const Checkout = () => {
       toast.error('Please enter a password for your new account.');
       return;
     }
+    // Advance to Step 2
     setCurrentStep(2);
   };
 
-  // Payment Submit Handler
+  const handleStep2Submit = () => {
+    setCurrentStep(3);
+  };
+
   const [paymentLoading, setPaymentLoading] = useState(false);
 
   const handlePaymentSubmit = async () => {
     try {
       setPaymentLoading(true);
 
-      const itemsPayload = cartItems.map((item) => ({
-        product: item.product || item._id,
+      const itemsPayload = cartItems.map(item => ({
+        product: item.product,
         title: item.title,
         image: item.image,
-        variant: item.variant || '',
-        material: item.material || '',
-        color: item.color || '',
-        leg: item.leg || '',
-        firmness: item.firmness || '',
-        footstool: item.footstool || '',
-        coffeeTable: item.coffeeTable || '',
+        variant: item.variant,
+        material: item.material,
+        color: item.color,
+        leg: item.leg,
+        firmness: item.firmness,
+        footstool: item.footstool,
+        coffeeTable: item.coffeeTable,
         quantity: item.quantity,
-        price: item.price,
+        price: item.price
       }));
 
-      const finalAddress = differentAddress
-        ? {
-          fullName: `${diffTitle ? diffTitle + ' ' : ''}${diffFirstName} ${diffSurname}`.trim(),
-          phone: diffPhone || phone,
-          address: diffAddressLine,
-          city: diffCity,
-          postalCode: diffPostcode,
-          country: 'GB',
-        }
-        : {
-          fullName: `${title ? title + ' ' : ''}${firstName} ${surname}`.trim(),
-          phone,
-          address: addressLine,
-          city,
-          postalCode: postcode,
-          country: 'GB',
-        };
+      const finalAddress = differentAddress ? {
+        fullName: `${diffTitle ? diffTitle + ' ' : ''}${diffFirstName} ${diffSurname}`.trim(),
+        phone: diffPhone || phone,
+        address: `${diffAddressLine}`,
+        city: diffCity,
+        postalCode: diffPostcode,
+        country: 'GB'
+      } : {
+        fullName: `${title ? title + ' ' : ''}${firstName} ${surname}`.trim(),
+        phone,
+        address: `${addressLine}`,
+        city,
+        postalCode: postcode,
+        country: 'GB'
+      };
 
       const payload = {
         items: itemsPayload,
-        lineItems: itemsPayload,
         shippingAddress: finalAddress,
         email,
-        createAccount: user ? false : createAccount,
+        createAccount,
         password: checkoutPassword,
         deliveryDate: selectedDeliveryDate,
         paymentMethodType: paymentMethod,
-        assemblyService,
+        assemblyService
       };
 
-      const endpoint =
-        paymentMethod === 'PayItMonthly'
-          ? '/api/order/createPayItMonthlyCheckout'
-          : '/api/order/createOrderAndSession';
+      const endpoint = paymentMethod === 'PayItMonthly'
+        ? '/api/order/createPayItMonthlyCheckout'
+        : '/api/order/createOrderAndSession';
 
       const { data } = await API.post(endpoint, payload);
 
       if (data.url) {
-        if (data.orderId) {
-          localStorage.setItem('pending_guest_order_id', data.orderId);
-        }
+        // Save order info locally to clean guest cart on land
+        localStorage.setItem('pending_guest_order_id', data.orderId);
         if (data.url.startsWith('/')) {
           navigate(data.url);
         } else {
@@ -242,52 +257,55 @@ const Checkout = () => {
       } else {
         toast.error('Payment redirect URL not found.');
       }
+
     } catch (error) {
       console.error('Payment redirect error:', error);
-      toast.error(
-        error.response?.data?.message || 'Failed to initialize payment process.'
-      );
+      toast.error(error.response?.data?.message || 'Failed to initialize payment.');
     } finally {
       setPaymentLoading(false);
     }
   };
 
-  if (cartItems.length === 0) return null;
+  if (cartItems.length === 0) {
+    return null; // handled by useEffect
+  }
 
   return (
-    <div className="bg-slate-50 min-h-screen text-slate-800 pt-24 lg:pt-36 font-sans">
-      {/* Header Banner */}
-      <div className="border-b border-slate-100 bg-white py-4 px-6 md:px-12 flex flex-col justify-center items-center text-xs font-semibold text-slate-500 gap-2">
-        <Link
-          to="/"
-          className="text-2xl font-serif font-medium tracking-widest text-slate-900 hover:text-green-700 transition-colors"
-        >
+    <div className="bg-slate-50 min-h-screen text-slate-800 pt-24 lg:pt-36">
+
+      {/* Branded Verified Reviews Mini Header */}
+      <div className="border-b border-gray-100 bg-white py-4 px-6 md:px-12 flex flex-col justify-center items-center text-xs font-semibold text-gray-500 gap-2">
+        <Link to="/" className="text-2xl font-serif font-medium tracking-widest text-slate-900 hover:text-green-700 transition-colors">
           EliteSeating <span className="text-sm font-sans font-light tracking-widest text-slate-400">LTD</span>
         </Link>
       </div>
 
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        {/* Flow 1: Customer Gate */}
+
+        {/* State 1: Gate (Sign In / Guest checkout gate) */}
         {checkoutFlow === 'gate' && (
           <div className="max-w-4xl mx-auto animate-fade-in">
+
+            {/* Header Title Block */}
             <div className="text-center mb-12">
               <h1 className="text-4xl md:text-5xl font-serif text-slate-900 mb-4">Secure checkout</h1>
               <div className="h-0.5 w-16 bg-red-500 mx-auto mb-6" />
-              <div className="flex justify-center items-center gap-4 opacity-80 mb-8">
+
+              {/* Payment Card Icons */}
+              <div className="flex justify-center gap-3 opacity-80 mb-8">
                 <img src="https://img.icons8.com/color/48/000000/visa.png" className="h-6" alt="Visa" />
-                <img src={mastercardImg} className="h-6" alt="Mastercard" />
+                <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="h-6" alt="Mastercard" />
                 <img src="https://img.icons8.com/color/48/000000/maestro.png" className="h-6" alt="Maestro" />
-                <img src={klarnaImg} className="h-5" alt="Klarna" />
-                <img src={clearpayImg} className="h-5" alt="Clearpay" />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-11 gap-8 items-center bg-white rounded-3xl border border-slate-100 shadow-xl p-8 md:p-12">
+            {/* Split Gateway View */}
+            <div className="grid grid-cols-1 md:grid-cols-11 gap-12 items-center bg-white rounded-3xl border border-slate-100 shadow-xl p-8 md:p-12">
+
               {/* Guest Side */}
               <div className="md:col-span-5 flex flex-col justify-center text-center md:text-left h-full">
                 <h2 className="text-2xl font-serif text-slate-800 font-black mb-6">New customer</h2>
-                <button
-                  type="button"
+                <button type="button"
                   onClick={() => {
                     setIsGuestFlow(true);
                     setCheckoutFlow('form');
@@ -296,40 +314,48 @@ const Checkout = () => {
                 >
                   Continue as guest
                 </button>
-                <p className="text-xs text-slate-400 mt-4 leading-relaxed">
-                  You can register your account later upon order completion.
+                <p className="text-xs text-slate-400 mt-4 leading-relaxed ">
+                  You can register your account later on completion.
                 </p>
               </div>
 
-              {/* Divider */}
+              {/* Vertical Divider */}
               <div className="md:col-span-1 flex md:flex-col justify-center items-center h-full relative py-4 md:py-0">
                 <div className="w-full md:w-[1px] h-[1px] md:h-32 bg-slate-200" />
-                <span className="bg-slate-50 border border-slate-200 text-xs text-slate-400 font-extrabold px-3 py-1.5 rounded-full absolute">
-                  or
-                </span>
+                <span className="bg-slate-50 border border-slate-200 text-xs text-slate-400 font-extrabold px-3 py-1.5 rounded-full absolute">or</span>
               </div>
 
-              {/* Existing Customer Side */}
+              {/* Member Sign In Side */}
               <form onSubmit={handleGateLogin} className="md:col-span-5 flex flex-col justify-center h-full">
                 <h2 className="text-2xl font-serif text-slate-800 font-black mb-6">Existing customer</h2>
+
                 <div className="space-y-4 mb-6">
-                  <input
-                    type="email"
-                    required
-                    placeholder="Email Address"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    className="w-full px-4 py-3.5 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm transition-all"
-                  />
-                  <input
-                    type="password"
-                    required
-                    placeholder="Password"
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    className="w-full px-4 py-3.5 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm transition-all"
-                  />
+                  <div>
+                    <label className="sr-only">Email</label>
+                    <input
+                      type="email"
+                      required
+                      autoComplete="off"
+                      placeholder="Email Address"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      className="w-full px-4 py-3.5 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="sr-only">Password</label>
+                    <input
+                      type="password"
+                      required
+                      autoComplete="new-password"
+                      placeholder="Password"
+                      value={loginPassword}
+                      onChange={(e) => setLoginPassword(e.target.value)}
+                      className="w-full px-4 py-3.5 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm transition-all"
+                    />
+                  </div>
                 </div>
+
                 <button
                   type="submit"
                   disabled={loginLoading}
@@ -338,29 +364,29 @@ const Checkout = () => {
                   {loginLoading ? 'Signing In...' : 'Sign in'}
                 </button>
               </form>
+
             </div>
 
+            {/* Back to Cart Action */}
             <div className="mt-8 text-center">
-              <Link
-                to="/cart"
-                className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-800 transition-colors"
-              >
+              <Link to="/cart" className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-slate-800 transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Return to basket
               </Link>
             </div>
+
           </div>
         )}
 
-        {/* Flow 2: Multi-step Checkout Form */}
+        {/* State 2: Step-by-Step Checkout Form (Image 2) */}
         {checkoutFlow === 'form' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start animate-fade-in-up">
-            {/* Left Steps Column */}
+
+            {/* Left Column: Form & Steps */}
             <div className="lg:col-span-8 bg-white border border-slate-100 shadow-xl rounded-3xl p-6 md:p-10">
+
+              {/* Back to basket */}
               <div className="mb-6 flex justify-between items-center border-b border-slate-100 pb-4">
-                <Link
-                  to="/cart"
-                  className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 transition-colors"
-                >
+                <Link to="/cart" className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-700 transition-colors">
                   ‹ Return to basket
                 </Link>
                 <span className="text-[10px] uppercase font-black tracking-widest px-3 py-1 bg-slate-100 text-slate-500 rounded-full">
@@ -368,41 +394,51 @@ const Checkout = () => {
                 </span>
               </div>
 
-              {/* Progress Steps Header */}
+              {/* Secure Checkout Header with Card Icons */}
               <div className="mb-10 text-center">
                 <h1 className="text-3xl font-serif text-slate-900 mb-2">Secure checkout</h1>
-                <div className="h-[1px] w-12 bg-red-400 mx-auto mb-6" />
+                <div className="h-[1px] w-12 bg-red-400 mx-auto mb-4" />
+                <div className="flex justify-center gap-2 opacity-75 mb-6">
+                  <img src="https://img.icons8.com/color/48/000000/visa.png" className="h-5" alt="Visa" />
+                  <img src="https://img.icons8.com/color/48/000000/mastercard.png" className="h-5" alt="Mastercard" />
+                  <img src="https://img.icons8.com/color/48/000000/maestro.png" className="h-5" alt="Maestro" />
+                </div>
+
+                {/* Progress Steps Indicator */}
                 <div className="flex justify-between items-center max-w-md mx-auto relative px-2 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  {/* Connecting Line */}
                   <div className="absolute top-2.5 left-0 right-0 h-[2px] bg-slate-100 -z-10" />
 
+                  {/* Step 1 */}
                   <div className="flex flex-col items-center gap-1 bg-white px-2">
-                    <span
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors ${currentStep >= 1 ? 'bg-[#51823F] text-white' : 'bg-slate-200 text-slate-500'
-                        }`}
-                    >
-                      {currentStep > 1 ? <Check className="w-3.5 h-3.5" /> : '1'}
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${currentStep >= 1 ? 'bg-[#51823F] text-white' : 'bg-slate-200 text-slate-500'}`}>
+                      {currentStep > 1 ? <Check className="w-3 h-3" /> : '1'}
                     </span>
                     <span className={currentStep === 1 ? 'text-[#51823F] font-extrabold' : ''}>Details</span>
                   </div>
 
+                  {/* Step 2 */}
                   <div className="flex flex-col items-center gap-1 bg-white px-2">
-                    <span
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors ${currentStep >= 2 ? 'bg-[#51823F] text-white' : 'bg-slate-200 text-slate-500'
-                        }`}
-                    >
-                      {currentStep > 2 ? <Check className="w-3.5 h-3.5" /> : '2'}
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${currentStep >= 2 ? 'bg-[#51823F] text-white' : 'bg-slate-200 text-slate-500'}`}>
+                      {currentStep > 2 ? <Check className="w-3 h-3" /> : '2'}
                     </span>
                     <span className={currentStep === 2 ? 'text-[#51823F] font-extrabold' : ''}>Dates</span>
                   </div>
 
+                  {/* Step 3 */}
                   <div className="flex flex-col items-center gap-1 bg-white px-2">
-                    <span
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs transition-colors ${currentStep >= 3 ? 'bg-[#51823F] text-white' : 'bg-slate-200 text-slate-500'
-                        }`}
-                    >
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] ${currentStep >= 3 ? 'bg-[#51823F] text-white' : 'bg-slate-200 text-slate-500'}`}>
                       3
                     </span>
                     <span className={currentStep === 3 ? 'text-[#51823F] font-extrabold' : ''}>Payment</span>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="flex flex-col items-center gap-1 bg-white px-2 opacity-50">
+                    <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-[10px]">
+                      4
+                    </span>
+                    <span>Confirmation</span>
                   </div>
                 </div>
               </div>
@@ -410,10 +446,13 @@ const Checkout = () => {
               {/* Step 1: Billing and Delivery Address */}
               {currentStep === 1 && (
                 <form onSubmit={handleStep1Submit} className="space-y-8 animate-fade-in-up">
+
+                  {/* Address Section Title */}
                   <h3 className="text-xl font-bold font-serif text-slate-900 pb-2 border-b border-slate-100">
                     1. Billing and delivery address
                   </h3>
 
+                  {/* Title Select Checkboxes */}
                   <div className="space-y-2">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Title</p>
                     <div className="flex gap-4 text-xs font-semibold">
@@ -431,260 +470,278 @@ const Checkout = () => {
                     </div>
                   </div>
 
+                  {/* Name and Contact Inputs */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input
-                      type="text"
-                      required
-                      placeholder="First name *"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:border-green-600 outline-none"
-                    />
-                    <input
-                      type="text"
-                      required
-                      placeholder="Surname *"
-                      value={surname}
-                      onChange={(e) => setSurname(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:border-green-600 outline-none"
-                    />
-                    <input
-                      type="email"
-                      required
-                      placeholder="Email address *"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:border-green-600 outline-none"
-                    />
-                    <input
-                      type="tel"
-                      required
-                      placeholder="Contact telephone number *"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:border-green-600 outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-4">
-                    <input
-                      type="text"
-                      required
-                      placeholder="Address or street line 1 *"
-                      value={addressLine}
-                      onChange={(e) => setAddressLine(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:border-green-600 outline-none"
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
                       <input
                         type="text"
                         required
-                        placeholder="Town / City *"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:border-green-600 outline-none"
+                        placeholder="First name"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
                       />
+                    </div>
+                    <div>
                       <input
                         type="text"
                         required
-                        placeholder="Postcode *"
-                        value={postcode}
-                        onChange={(e) => setPostcode(e.target.value)}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm focus:border-green-600 outline-none"
+                        placeholder="Surname"
+                        value={surname}
+                        onChange={(e) => setSurname(e.target.value)}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="email"
+                        required
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
+                      />
+                    </div>
+                    <div>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="Contact number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
                       />
                     </div>
                   </div>
 
-                  {/* Different Delivery Address Toggle */}
+                  {/* Address Postcode Fields */}
+                  <div className="space-y-4">
+                    <div>
+                      <input
+                        type="text"
+                        required
+                        placeholder="Start typing your address or street"
+                        value={addressLine}
+                        onChange={(e) => setAddressLine(e.target.value)}
+                        className="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <input
+                          type="text"
+                          required
+                          placeholder="City"
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Postcode"
+                          value={postcode}
+                          onChange={(e) => setPostcode(e.target.value)}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Deliver to different address toggle */}
                   <div className="pt-4 border-t border-slate-100">
-                    <label className="flex items-center gap-3 cursor-pointer text-sm font-medium text-slate-700">
+                    <label className="flex items-center gap-3 cursor-pointer text-sm font-semibold select-none">
                       <input
                         type="checkbox"
                         checked={differentAddress}
                         onChange={() => setDifferentAddress(!differentAddress)}
-                        className="rounded text-green-600 w-4 h-4 focus:ring-green-500"
+                        className="rounded text-green-600 focus:ring-green-500 w-4 h-4"
                       />
-                      Deliver to a different address?
+                      Deliver to a different address
                     </label>
+                  </div>
 
-                    {differentAddress && (
-                      <div className="mt-6 space-y-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                        <div className="space-y-2">
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Recipient Title</p>
-                          <div className="flex gap-4 text-xs font-semibold">
-                            {['Miss', 'Mr', 'Mrs', 'Ms'].map((t) => (
-                              <label key={t} className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                  type="checkbox"
-                                  checked={diffTitle === t}
-                                  onChange={() => setDiffTitle(diffTitle === t ? '' : t)}
-                                  className="rounded text-green-600 focus:ring-green-500"
-                                />
-                                {t}
-                              </label>
-                            ))}
-                          </div>
-                        </div>
+                  {/* Conditional Different Address Fields */}
+                  {differentAddress && (
+                    <div className="space-y-6 pt-4 border-t border-dashed border-slate-200 animate-fade-in-up">
+                      <p className="text-sm font-bold text-slate-500">Shipping Address Details</p>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <input
-                            type="text"
-                            required
-                            placeholder="Recipient first name *"
-                            value={diffFirstName}
-                            onChange={(e) => setDiffFirstName(e.target.value)}
-                            className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm bg-white outline-none"
-                          />
-                          <input
-                            type="text"
-                            required
-                            placeholder="Recipient surname *"
-                            value={diffSurname}
-                            onChange={(e) => setDiffSurname(e.target.value)}
-                            className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm bg-white outline-none"
-                          />
-                          <input
-                            type="tel"
-                            placeholder="Recipient telephone (optional)"
-                            value={diffPhone}
-                            onChange={(e) => setDiffPhone(e.target.value)}
-                            className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm bg-white outline-none md:col-span-2"
-                          />
-                        </div>
-
-                        <div className="space-y-4">
-                          <input
-                            type="text"
-                            required
-                            placeholder="Delivery address or street line 1 *"
-                            value={diffAddressLine}
-                            onChange={(e) => setDiffAddressLine(e.target.value)}
-                            className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm bg-white outline-none"
-                          />
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex gap-4 text-xs font-semibold">
+                        {['Miss', 'Mr', 'Mrs', 'Ms'].map((t) => (
+                          <label key={`diff-${t}`} className="flex items-center gap-2 cursor-pointer">
                             <input
-                              type="text"
-                              required
-                              placeholder="Town / City *"
-                              value={diffCity}
-                              onChange={(e) => setDiffCity(e.target.value)}
-                              className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm bg-white outline-none"
+                              type="checkbox"
+                              checked={diffTitle === t}
+                              onChange={() => setDiffTitle(diffTitle === t ? '' : t)}
+                              className="rounded text-green-600 focus:ring-green-500"
                             />
+                            {t}
+                          </label>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <input
+                          type="text"
+                          required
+                          placeholder="Shipping First name"
+                          value={diffFirstName}
+                          onChange={(e) => setDiffFirstName(e.target.value)}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm"
+                        />
+                        <input
+                          type="text"
+                          required
+                          placeholder="Shipping Surname"
+                          value={diffSurname}
+                          onChange={(e) => setDiffSurname(e.target.value)}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm"
+                        />
+                        <input
+                          type="tel"
+                          placeholder="Shipping Contact number (Optional)"
+                          value={diffPhone}
+                          onChange={(e) => setDiffPhone(e.target.value)}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm"
+                        />
+                        <input
+                          type="text"
+                          required
+                          placeholder="Shipping Address Line"
+                          value={diffAddressLine}
+                          onChange={(e) => setDiffAddressLine(e.target.value)}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm"
+                        />
+                        <input
+                          type="text"
+                          required
+                          placeholder="Shipping City"
+                          value={diffCity}
+                          onChange={(e) => setDiffCity(e.target.value)}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm"
+                        />
+                        <input
+                          type="text"
+                          required
+                          placeholder="Shipping Postcode"
+                          value={diffPostcode}
+                          onChange={(e) => setDiffPostcode(e.target.value)}
+                          className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Create account & newsletter checkboxes */}
+                  <div className="space-y-4 pt-4 border-t border-slate-100 text-sm">
+
+                    {!user && (
+                      <div className="space-y-3">
+                        <label className="flex items-start gap-3 cursor-pointer font-medium text-slate-600">
+                          <input
+                            type="checkbox"
+                            checked={createAccount}
+                            onChange={() => setCreateAccount(!createAccount)}
+                            className="rounded text-green-600 focus:ring-green-500 w-4 h-4 mt-0.5 shrink-0"
+                          />
+                          <span>Do you want to be our premium member?</span>
+                        </label>
+                        {createAccount && (
+                          <div className="animate-fade-in-up">
                             <input
-                              type="text"
-                              required
-                              placeholder="Postcode *"
-                              value={diffPostcode}
-                              onChange={(e) => setDiffPostcode(e.target.value)}
-                              className="w-full px-4 py-3 border border-slate-200 rounded-lg text-sm bg-white outline-none"
+                              type="password"
+                              required={createAccount}
+                              placeholder="Choose a secure password"
+                              value={checkoutPassword}
+                              onChange={(e) => setCheckoutPassword(e.target.value)}
+                              className="w-full md:w-1/2 px-4 py-3 border border-slate-200 rounded-lg outline-none focus:border-green-600 text-sm"
                             />
                           </div>
-                        </div>
+                        )}
                       </div>
                     )}
                   </div>
 
-                  {/* Account creation option for unauthenticated guests */}
-                  {!user && (
-                    <div className="pt-4 border-t border-slate-100">
-                      <label className="flex items-center gap-3 cursor-pointer text-sm font-medium text-slate-700">
-                        <input
-                          type="checkbox"
-                          checked={createAccount}
-                          onChange={() => setCreateAccount(!createAccount)}
-                          className="rounded text-green-600 w-4 h-4 focus:ring-green-500"
-                        />
-                        Create an account for faster checkouts later?
-                      </label>
-                      {createAccount && (
-                        <div className="mt-4">
-                          <input
-                            type="password"
-                            required
-                            placeholder="Choose a password *"
-                            value={checkoutPassword}
-                            onChange={(e) => setCheckoutPassword(e.target.value)}
-                            className="w-full md:w-1/2 px-4 py-3 border border-slate-200 rounded-lg text-sm focus:border-green-600 outline-none"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {/* T&Cs, Privacy Note & Button */}
+                  <div className="pt-6 border-t border-slate-100 space-y-4">
+                    <p className="text-[10px] text-slate-400 leading-relaxed">
+                      By clicking continue you agree to our <span className="underline cursor-pointer hover:text-slate-600">Terms and Conditions</span> and <span className="underline cursor-pointer hover:text-slate-600">Privacy Policy</span>.
+                    </p>
+                    <button
+                      type="submit"
+                      className="w-full md:w-auto px-10 py-4 bg-[#51823F] hover:bg-[#457036] text-white font-extrabold uppercase tracking-widest text-xs rounded shadow-md hover:shadow-lg hover:scale-[1.01] transition-all"
+                    >
+                      Continue
+                    </button>
+                  </div>
 
-                  <button
-                    type="submit"
-                    className="w-full md:w-auto px-10 py-4 bg-[#51823F] hover:bg-[#457036] text-white font-extrabold uppercase tracking-widest text-xs rounded shadow-md transition-all"
-                  >
-                    Continue to Dates
-                  </button>
                 </form>
               )}
 
-              {/* Step 2: Delivery Dates & Addons */}
+              {/* Step 2: Select Delivery Dates */}
               {currentStep === 2 && (
                 <div className="space-y-8 animate-fade-in-up">
                   <h3 className="text-xl font-bold font-serif text-slate-900 pb-2 border-b border-slate-100">
                     2. Select delivery dates
                   </h3>
 
-                  {/* Premium Service Add-on Box */}
-                  <div className="p-5 rounded-2xl border-2 border-slate-100 bg-white shadow-sm">
-                    <label className="flex items-start gap-4 cursor-pointer">
+                  <p className="text-sm text-slate-500 mb-6 leading-relaxed">
+                    Please select your preferred complimentary white-glove home assembly slot from our available artisan logistics schedule.
+                  </p>
+
+                  {/* Date Cards */}
+                  {/* Assembly Service Checkbox */}
+                  <div className="mb-6 p-5 rounded-2xl border-2 border-slate-100 bg-white hover:border-[#51823F] transition-all">
+                    <label className="flex items-start gap-4 cursor-pointer select-none">
                       <input
                         type="checkbox"
                         checked={assemblyService}
                         onChange={() => setAssemblyService(!assemblyService)}
-                        className="rounded text-green-600 w-5 h-5 mt-0.5 focus:ring-green-500"
+                        className="rounded text-green-600 focus:ring-green-500 w-5 h-5 mt-0.5 shrink-0 cursor-pointer"
                       />
                       <div>
-                        <p className="text-sm font-bold text-slate-900">
-                          Add Premium Assembly Service (+£50.00)
-                        </p>
-                        <p className="text-xs text-slate-500 mt-1">
-                          Our specialist white-glove team will unpack, assemble, and position your furniture in your room of choice, removing all packaging materials.
-                        </p>
+                        <p className="text-sm font-bold text-slate-900">Add Premium Assembly Service (+&pound;50.00)</p>
+                        <p className="text-xs text-slate-500 mt-1 leading-relaxed">Our expert logistics team will fully assemble your items in your room of choice and remove all packaging.</p>
                       </div>
                     </label>
                   </div>
 
-                  {/* Dates Selection */}
                   <div className="space-y-4">
-                    {deliveryOptions.map((opt) => (
-                      <div
-                        key={opt.id}
-                        onClick={() => setSelectedDeliveryDate(opt.date)}
-                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all flex justify-between items-center ${selectedDeliveryDate === opt.date
-                            ? 'border-[#51823F] bg-green-50/20 shadow-sm'
-                            : 'border-slate-100 hover:border-slate-300'
-                          }`}
-                      >
-                        <div>
-                          <p className="font-bold text-sm text-slate-900">{opt.date}</p>
-                          <p className="text-xs text-slate-500">{opt.desc}</p>
+                    {deliveryOptions.map((opt) => {
+                      const isSelected = selectedDeliveryDate === opt.date;
+                      return (
+                        <div
+                          key={opt.id}
+                          onClick={() => setSelectedDeliveryDate(opt.date)}
+                          className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${isSelected ? 'border-[#51823F] bg-green-50/20' : 'border-slate-100 hover:border-slate-300'}`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-lg font-serif font-bold text-slate-900">{opt.date}</p>
+                              <p className="text-xs text-slate-500 mt-1">{opt.desc}</p>
+                            </div>
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
+                              {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                            </div>
+                          </div>
                         </div>
-                        <input
-                          type="radio"
-                          name="deliveryDate"
-                          checked={selectedDeliveryDate === opt.date}
-                          onChange={() => setSelectedDeliveryDate(opt.date)}
-                          className="text-green-600 focus:ring-green-500"
-                        />
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
-                  <div className="flex gap-4">
-                    <button
-                      type="button"
+                  {/* Back & Next Actions */}
+                  <div className="pt-8 border-t border-slate-100 flex gap-4 justify-between">
+                    <button type="button"
                       onClick={() => setCurrentStep(1)}
-                      className="px-6 py-4 border border-slate-200 text-slate-600 font-bold text-xs uppercase rounded hover:bg-slate-50 transition-colors"
+                      className="px-6 py-3 border border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-widest rounded hover:bg-slate-50 transition-colors"
                     >
                       Back
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setCurrentStep(3)}
-                      className="px-10 py-4 bg-[#51823F] hover:bg-[#457036] text-white font-extrabold uppercase tracking-widest text-xs rounded shadow-md transition-all"
+                    <button type="button"
+                      onClick={handleStep2Submit}
+                      className="px-10 py-3 bg-[#51823F] hover:bg-[#457036] text-white font-extrabold uppercase tracking-widest text-xs rounded shadow-md hover:shadow-lg transition-all"
                     >
                       Continue to Payment
                     </button>
@@ -692,120 +749,252 @@ const Checkout = () => {
                 </div>
               )}
 
-              {/* Step 3: Payment Choice */}
+              {/* Step 3: Payment */}
               {currentStep === 3 && (
                 <div className="space-y-8 animate-fade-in-up">
                   <h3 className="text-xl font-bold font-serif text-slate-900 pb-2 border-b border-slate-100">
-                    3. Payment Option
+                    3. Payment
                   </h3>
 
-                  <div className="space-y-4">
-                    <div
-                      onClick={() => setPaymentMethod('card')}
-                      className={`p-4 border-2 rounded-xl cursor-pointer flex justify-between items-center transition-all ${paymentMethod === 'card'
-                          ? 'border-[#51823F] bg-green-50/20 shadow-sm'
-                          : 'border-slate-100 hover:border-slate-300'
-                        }`}
-                    >
-                      <span className="font-bold text-sm text-slate-900">Credit / Debit Card (Stripe)</span>
-                      <img src={mastercardImg} alt="Card Payment" className="h-6" />
-                    </div>
-
-                    <div
-                      onClick={() => setPaymentMethod('PayItMonthly')}
-                      className={`p-4 border-2 rounded-xl cursor-pointer flex justify-between items-center transition-all ${paymentMethod === 'PayItMonthly'
-                          ? 'border-[#51823F] bg-green-50/20 shadow-sm'
-                          : 'border-slate-100 hover:border-slate-300'
-                        }`}
-                    >
+                  {/* Review Information Card */}
+                  <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4 text-sm leading-relaxed">
+                    <p className="text-xs font-black uppercase tracking-wider text-slate-400">Review details</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <span className="font-bold text-sm text-slate-900 block">Pay It Monthly</span>
-                        <span className="text-xs text-slate-500">Spread the cost with flexible monthly instalments</span>
+                        <span className="font-bold text-slate-500 block">Name:</span>
+                        <span className="font-medium text-slate-800">{firstName} {surname}</span>
                       </div>
-                      <img src={payItMonthlyImg} alt="PayItMonthly" className="h-6" />
+                      <div>
+                        <span className="font-bold text-slate-500 block">Email:</span>
+                        <span className="font-medium text-slate-800">{email}</span>
+                      </div>
+                      <div className="md:col-span-2">
+                        <span className="font-bold text-slate-500 block">Delivery Address:</span>
+                        <span className="font-medium text-slate-800">{differentAddress ? diffAddressLine : addressLine}, {differentAddress ? diffCity : city}, {differentAddress ? diffPostcode : postcode}</span>
+                      </div>
+                      <div className="md:col-span-2">
+                        <span className="font-bold text-slate-500 block">Artisanal Delivery:</span>
+                        <span className="font-medium text-[#51823F] font-bold">{selectedDeliveryDate}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex gap-4 pt-4 border-t border-slate-100">
-                    <button
-                      type="button"
+                  {/* Stripe Payment Info & Trigger */}
+                  <div className="space-y-6">
+                    <p className="text-xs font-black uppercase tracking-wider text-slate-400 border-b border-slate-100 pb-2">Select Payment Method</p>
+
+
+
+                    <div className="grid grid-cols-1 gap-4">
+                      <div
+                        onClick={() => setPaymentMethod('card')}
+                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${paymentMethod === 'card' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'card' ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
+                            {paymentMethod === 'card' && <Check className="w-3 h-3 stroke-[3]" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-slate-800">Secure Payment (Stripe)</p>
+                            <p className="text-xs text-slate-500 mt-0.5">Pay securely via Card, Clearpay, Klarna</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto pl-8 sm:pl-0">
+                          <img src={mastercardImg} alt="Mastercard" className="h-[20px] w-auto object-contain rounded-sm" />
+                          <img src={clearpayImg} alt="Clearpay" className="h-[20px] w-auto object-contain rounded-sm" />
+                          <img src={klarnaImg} alt="Klarna" className="h-[20px] w-auto object-contain rounded-sm" />
+                        </div>
+                      </div>
+
+                      <div
+                        onClick={() => setPaymentMethod('PayItMonthly')}
+                        className={`p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${paymentMethod === 'PayItMonthly' ? 'border-[#51823F] bg-green-50/30' : 'border-slate-100 hover:border-slate-300'}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === 'PayItMonthly' ? 'border-[#51823F] bg-[#51823F] text-white' : 'border-slate-300'}`}>
+                            {paymentMethod === 'PayItMonthly' && <Check className="w-3 h-3 stroke-[3]" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-slate-800">Pay Monthly (PayItMonthly)</p>
+                            <p className="text-xs text-slate-500 mt-0.5">Interest-free finance options powered by PayItMonthly</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto pl-8 sm:pl-0">
+                          <img src={payItMonthlyImg} alt="PayItMonthly" className="h-[20px] w-auto object-contain rounded-sm" />
+                        </div>
+                      </div>
+                    </div>
+
+
+
+                    <button type="button"
+                      onClick={handlePaymentSubmit}
+                      disabled={paymentLoading}
+                      className="w-full py-5 bg-[#51823F] hover:bg-[#457036] text-white font-black uppercase tracking-[0.2em] text-sm rounded shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                    >
+                      <CreditCard className="w-5 h-5" />
+                      {paymentLoading ? 'Processing...' : 'Complete Payment'}
+                    </button>
+                  </div>
+
+                  {/* Back Button */}
+                  <div className="pt-4 border-t border-slate-100">
+                    <button type="button"
                       onClick={() => setCurrentStep(2)}
-                      className="px-6 py-4 border border-slate-200 text-slate-600 font-bold text-xs uppercase rounded hover:bg-slate-50 transition-colors"
+                      className="px-6 py-3 border border-slate-200 text-slate-500 font-bold text-xs uppercase tracking-widest rounded hover:bg-slate-50 transition-colors"
                     >
                       Back
-                    </button>
-                    <button
-                      type="button"
-                      disabled={paymentLoading}
-                      onClick={handlePaymentSubmit}
-                      className="px-10 py-4 bg-[#51823F] hover:bg-[#457036] text-white font-extrabold uppercase tracking-widest text-xs rounded shadow-md disabled:opacity-50 transition-all"
-                    >
-                      {paymentLoading ? 'Redirecting...' : 'Place Order & Pay'}
                     </button>
                   </div>
                 </div>
               )}
+
             </div>
 
-            {/* Right Side: Order Summary */}
-            <div className="lg:col-span-4 bg-white border border-slate-100 shadow-xl rounded-3xl p-6 sticky top-28">
-              <h3 className="text-lg font-serif font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
-                Order Summary
-              </h3>
+            {/* Right Column: Order Summary (Image 2 style) */}
+            <div className="lg:col-span-4 lg:sticky lg:top-8 space-y-6">
 
-              <div className="space-y-4 mb-6 max-h-80 overflow-y-auto pr-1">
-                {cartItems.map((item, index) => (
-                  <div key={index} className="flex gap-4 items-center border-b border-slate-50 pb-3">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-14 h-14 object-cover rounded-lg border border-slate-100"
-                    />
-                    <div className="flex-1 text-xs">
-                      <p className="font-bold text-slate-800 line-clamp-1">{item.title}</p>
-                      {item.variant && <p className="text-slate-400">Variant: {item.variant}</p>}
-                      {item.material && <p className="text-slate-400">Material: {item.material}</p>}
-                      {item.color && <p className="text-slate-400">Color: {item.color}</p>}
-                      <p className="text-slate-500 mt-1">Qty: {item.quantity}</p>
+              {/* Core Order Summary Card */}
+              <div className="bg-white border border-slate-100 shadow-xl rounded-3xl p-6 md:p-8">
+
+                {/* Heading */}
+                <div className="flex justify-between items-baseline mb-6 border-b border-slate-100 pb-4">
+                  <h3 className="text-xl font-serif text-slate-900 font-bold">
+                    Order summary <span className="text-sm font-sans font-medium text-slate-400">({cartItems.length} item{cartItems.length > 1 ? 's' : ''})</span>
+                  </h3>
+                  <Link to="/cart" className="text-xs font-bold text-blue-600 hover:underline">‹ Amend</Link>
+                </div>
+
+                {/* Item List */}
+                <div className="space-y-6 mb-8 max-h-[300px] overflow-y-auto pr-1">
+                  {cartItems.filter(item => item.product).map((item) => (
+                    <div key={item._id} className="flex gap-4 items-center">
+
+                      {/* Thumbnail Image */}
+                      <div className={`w-16 h-16 rounded-xl bg-slate-50 overflow-hidden border border-slate-100 shrink-0 ${item.variant === "Fabric Swatches Bundle" ? 'flex flex-wrap p-0.5' : ''}`}>
+                        {item.variant === "Fabric Swatches Bundle" ? (
+                          item.image.split('|').slice(0, 4).map((imgUrl, i) => (
+                            <div key={i} className={`w-1/2 h-1/2 p-0.5`}>
+                              {imgUrl ? <img src={imgUrl} alt="Fabric Swatch Preview" className="w-full h-full object-cover rounded" /> : <div className="w-full h-full bg-slate-200 rounded" />}
+                            </div>
+                          ))
+                        ) : (
+                          <img src={item.image || 'https://placehold.co/100x100?text=Sofa'} className="w-full h-full object-cover" alt={item.title} />
+                        )}
+                      </div>
+
+                      {/* Details */}
+                      <div className="flex-grow text-xs space-y-1">
+                        <h4 className="font-bold text-slate-800 line-clamp-2 leading-tight">{item.title}</h4>
+                        <div className="flex gap-2 text-slate-400 text-[10px] uppercase font-black tracking-wider">
+                          <span>Qty {item.quantity}</span>
+                          <span>•</span>
+                          <span>{item.variant || 'Standard'}</span>
+                        </div>
+                        {item.variant === "Fabric Swatches Bundle" && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 line-clamp-1">
+                            {item.color}
+                          </div>
+                        )}
+                        {item.leg && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 font-bold uppercase tracking-wider">
+                            Legs: {item.leg}
+                          </div>
+                        )}
+                        {item.firmness && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 font-bold uppercase tracking-wider">
+                            Firmness: {item.firmness}
+                          </div>
+                        )}
+                        {item.footstool && item.footstool === 'Yes' && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 font-bold uppercase tracking-wider">
+                            Matching Footstool: Yes
+                          </div>
+                        )}
+                        {item.coffeeTable && item.coffeeTable === 'Yes' && (
+                          <div className="text-slate-500 text-[9px] mt-0.5 font-bold uppercase tracking-wider">
+                            Coffee Table: Yes
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1.5 text-green-700 text-[10px] font-black uppercase tracking-widest">
+                          <Truck className="w-3.5 h-3.5 shrink-0" />
+                          <span>In stock. Fast delivery.</span>
+                        </div>
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-extrabold text-slate-900">&pound;{(Number(item.price) * item.quantity).toLocaleString()}</p>
+                      </div>
+
                     </div>
-                    <span className="text-xs font-bold text-slate-900">
-                      £{(item.price * item.quantity).toFixed(2)}
-                    </span>
+                  ))}
+                </div>
+
+                {/* Subtotals & Totals Block */}
+                <div className="space-y-4 pt-4 border-t border-slate-100 text-sm">
+
+                  <div className="flex justify-between text-slate-500">
+                    <span className="font-semibold">Order subtotal</span>
+                    <span className="font-bold">&pound;{cartTotal.toLocaleString()}</span>
                   </div>
-                ))}
+
+                  <div className="flex justify-between text-slate-500">
+                    <span className="font-semibold">Delivery</span>
+                    <span className="font-bold text-[#51823F]">Free</span>
+                  </div>
+
+                  {assemblyService && (
+                    <div className="flex justify-between text-slate-500">
+                      <span className="font-semibold">Assembly Service</span>
+                      <span className="font-bold">&pound;50.00</span>
+                    </div>
+                  )}
+
+                  <div className="h-[1px] bg-slate-100 w-full my-4" />
+
+                  <div className="flex justify-between items-baseline text-slate-900">
+                    <span className="text-lg font-serif font-medium">Total</span>
+                    <div className="text-right">
+                      <span className="text-2xl font-black text-slate-900">&pound;{(cartTotal + (assemblyService ? 50 : 0)).toLocaleString()}</span>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Including VAT &pound;0.00</p>
+                    </div>
+                  </div>
+
+                </div>
+
               </div>
 
-              <div className="space-y-3 text-sm border-t border-slate-100 pt-4">
-                <div className="flex justify-between text-slate-600">
-                  <span>Subtotal</span>
-                  <span>£{cartTotal.toFixed(2)}</span>
+              {/* Brand Value Props List (Image 2 styles) */}
+              <div className="bg-white border border-slate-100 shadow-md rounded-2xl p-6 space-y-4 text-xs font-bold text-slate-600 leading-none">
+
+                <div className="flex items-center gap-3 py-1 cursor-pointer hover:text-slate-900">
+                  <span className="text-green-600 text-base">✓</span>
+                  <span>Delivery info ›</span>
                 </div>
-                {assemblyService && (
-                  <div className="flex justify-between text-slate-600">
-                    <span>Assembly Service</span>
-                    <span>£50.00</span>
-                  </div>
-                )}
-                <div className="flex justify-between font-bold text-xl text-slate-900 pt-3 border-t border-slate-100">
-                  <span>Total</span>
-                  <span>£{(cartTotal + (assemblyService ? 50 : 0)).toFixed(2)}</span>
+
+                <div className="flex items-center gap-3 py-1 cursor-pointer hover:text-slate-900">
+                  <span className="text-green-600 text-base">✓</span>
+                  <span>Free & easy returns ›</span>
                 </div>
+
+                <div className="flex items-center gap-3 py-1 cursor-pointer hover:text-slate-900">
+                  <span className="text-green-600 text-base">✓</span>
+                  <span>0% finance ›</span>
+                </div>
+
+                <div className="flex items-center gap-3 py-1 cursor-pointer hover:text-slate-900">
+                  <span className="text-green-600 text-base">✓</span>
+                  <span>Family owned British business ›</span>
+                </div>
+
               </div>
 
-              <div className="mt-6 bg-slate-50 p-4 rounded-xl space-y-2 text-xs text-slate-500 border border-slate-100">
-                <div className="flex items-center gap-2 text-slate-700 font-semibold">
-                  <ShieldCheck className="w-4 h-4 text-green-700" /> 256-Bit SSL Encrypted
-                </div>
-                <div className="flex items-center gap-2 text-slate-700 font-semibold">
-                  <Truck className="w-4 h-4 text-green-700" /> White-Glove Direct Delivery
-                </div>
-                <div className="flex items-center gap-2 text-slate-700 font-semibold">
-                  <Clock className="w-4 h-4 text-green-700" /> Scheduled Slots Available
-                </div>
-              </div>
             </div>
+
           </div>
         )}
+
       </div>
     </div>
   );
