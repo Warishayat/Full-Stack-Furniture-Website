@@ -270,10 +270,7 @@ const Cart = () => {
                     <p className="text-[9px] text-gray-400 mt-2 tracking-wider">Free Delivery on all orders</p>
                   </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300 font-medium tracking-wide">Vat (0%)</span>
-                  <span className="font-bold text-gray-200">£0.00</span>
-                </div>
+
                 
                 <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent w-full my-8" />
                 

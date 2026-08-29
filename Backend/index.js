@@ -66,6 +66,16 @@ app.use((req, res, next) => {
   if (req.body) mongoSanitize.sanitize(req.body, { replaceWith: '_' });
   if (req.query) mongoSanitize.sanitize(req.query, { replaceWith: '_' });
   if (req.params) mongoSanitize.sanitize(req.params, { replaceWith: '_' });
+  
+  // Cache Control Headers
+  if (req.method === 'GET') {
+    if (req.path.startsWith('/product') || req.path.startsWith('/category') || req.path.startsWith('/filter') || req.path.startsWith('/review')) {
+      res.setHeader('Cache-Control', 'public, max-age=300'); // Cache for 5 mins
+    } else if (req.path.startsWith('/cart') || req.path.startsWith('/auth') || req.path.startsWith('/api/order') || req.path.startsWith('/account')) {
+      res.setHeader('Cache-Control', 'no-store, private');
+    }
+  }
+  
   next();
 });
 
@@ -81,6 +91,7 @@ app.use("/support", contactRouter);
 app.use("/newsletter", newsletterRouter);
 app.use("/wishlist", wishlistRouter);
 app.use("/", require("./Routes/feedRoutes"));
+app.use("/api/meta", require("./Routes/feedRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

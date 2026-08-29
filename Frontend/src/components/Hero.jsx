@@ -35,16 +35,18 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative min-h-[85vh] w-full flex flex-col items-center justify-between pb-12 md:pb-16 pt-28 overflow-hidden">
+    <section className="relative min-h-[60vh] md:min-h-[85vh] w-full flex flex-col items-center justify-between pb-12 md:pb-16 pt-28 overflow-hidden">
       {/* Background Image - Clean, No Dark Gradients */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/hero-light-sofa.png"
+          src="/HeroImage.jpeg"
           alt="Midsummer Sale"
+          fetchpriority="high"
+          loading="eager"
           className="w-full h-full object-cover object-center"
         />
         {/* Subtle overlay only to ensure white text readability */}
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
       {/* Main Text Content */}

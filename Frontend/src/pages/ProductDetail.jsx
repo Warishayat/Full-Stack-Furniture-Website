@@ -917,12 +917,8 @@ const ProductDetail = () => {
 
         {/* Dynamic Sliders Section */}
         <div className="mt-32 space-y-24">
-           {relatedProducts.length > 0 && (
-             <SectionSlider title="Shop the collection" products={relatedProducts} />
-           )}
-           {relatedProducts.length > 0 && (
-             <SectionSlider title="You may also like" products={[...relatedProducts].reverse()} />
-           )}
+
+
            {recentlyViewed.length > 0 && (
              <SectionSlider title="Recently viewed" products={recentlyViewed} />
            )}
@@ -941,7 +937,7 @@ const ProductDetail = () => {
                </div>
             </div>
             <div className="w-full md:w-[45%] aspect-[16/9] bg-gray-200 relative overflow-hidden group">
-               <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1000&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="Interior" />
+               <img src="/FlashSofa.jpeg" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="Flash Sofa" />
             </div>
          </div>
       </div>

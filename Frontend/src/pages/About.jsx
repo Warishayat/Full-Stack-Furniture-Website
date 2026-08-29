@@ -63,7 +63,7 @@ const About = () => {
             </div>
             <div className="lg:w-1/2 relative">
                <div className="aspect-[4/5] rounded-sm overflow-hidden shadow-2xl shadow-gray-200">
-                  <img src="https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=2670&auto=format&fit=crop" className="w-full h-full object-cover" alt="EliteSeating Craftsmanship" />
+                  <img src="/FlashSofa.jpeg" className="w-full h-full object-cover" alt="EliteSeating Craftsmanship" />
                </div>
                <div className="absolute -bottom-10 -right-10 bg-[#D7282F] p-12 text-white max-w-[280px] shadow-2xl">
                   <Heart className="w-8 h-8 mb-6" />

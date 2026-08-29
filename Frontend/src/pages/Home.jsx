@@ -21,7 +21,7 @@ const Home = () => {
         setLoading(true);
         const [catRes, prodRes, reviewRes, overallRes] = await Promise.all([
           API.get('/category/getallCategories'),
-          API.get('/product/getAllProducts', { params: { limit: 100 } }),
+          API.get('/product/getAllProducts', { params: { limit: 100, lite: true } }),
           API.get('/review/all-reviews'),
           API.get('/review/overall').catch(() => ({ data: { success: false } }))
         ]);
@@ -182,7 +182,7 @@ const Home = () => {
             <div className="lg:w-1/2 relative group overflow-hidden">
               <div className="aspect-[4/5] lg:aspect-[16/10] xl:aspect-[16/10] overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?q=80&w=2670&auto=format&fit=crop" 
+                  src="/FlashSofa.jpeg" 
                   alt="Flash Sofa Sale"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[3s]"
                 />
@@ -236,7 +236,7 @@ const Home = () => {
             <div className="lg:w-1/2 relative group overflow-hidden">
               <div className="aspect-[4/5] lg:aspect-[16/10] xl:aspect-[16/10] overflow-hidden">
                 <img 
-                  src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=2670&auto=format&fit=crop" 
+                  src="/SofaBed.jpeg" 
                   alt="Sofa Cum Bed Collection"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[3s]"
                 />

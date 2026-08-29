@@ -957,7 +957,6 @@ const Checkout = () => {
                     <span className="text-lg font-serif font-medium">Total</span>
                     <div className="text-right">
                       <span className="text-2xl font-black text-slate-900">&pound;{(cartTotal + (assemblyService ? 50 : 0)).toLocaleString()}</span>
-                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-1">Including VAT &pound;0.00</p>
                     </div>
                   </div>
 

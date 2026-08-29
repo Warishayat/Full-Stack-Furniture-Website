@@ -52,9 +52,9 @@ const Footer = () => {
         
         <div className="flex justify-center gap-6 mb-12">
           {[
-            { Icon: FaFacebookF, url: "https://www.facebook.com/share/1EXvZWS5aU/?mibextid=wwXIfr" },
-            { Icon: FaInstagram, url: "https://www.instagram.com/eliteseatingltd?igsh=aG0zcWFxcmx0ajRx" },
-            { Icon: FaTiktok, url: "https://www.tiktok.com/@eliteseatingltd?_r=1&_t=ZN-98TULF06BVv" }
+            { Icon: FaFacebookF, url: "https://www.facebook.com/share/1J2KPTmPhn/?mibextid=wwXIfr" },
+            { Icon: FaInstagram, url: "https://www.instagram.com/eliteseatingltd?igsi=MWRkNDN6YTM4MnZpOA%3D%3D&utm_source=qr" },
+            { Icon: FaTiktok, url: "https://www.tiktok.com/@eliteseatingltd?_r=1&_t=ZG-99Hj9V0MLq4" }
           ].map(({ Icon, url }, idx) => (
             <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors">
               <Icon size={18} className="text-gray-600" />
@@ -148,9 +148,9 @@ const Footer = () => {
               <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 border-l border-gray-200 pl-2">Ltd.</span>
             </Link>
             <p className="text-[10px] text-gray-400 leading-relaxed max-w-2xl">
-              © 2026 EliteSeating Ltd. All Rights Reserved. | Company no. 16900002
+              © 2026 EliteSeating Ltd. All Rights Reserved. | Company no. 17187176
               <br />
-              EliteSeating Ltd. is authorised and regulated by the Financial Conduct Authority, company number 16900002 and act as a credit broker and not a lender.
+              EliteSeating Ltd. is authorised and regulated by the Financial Conduct Authority, company number 17187176 and act as a credit broker and not a lender.
             </p>
           </div>
           

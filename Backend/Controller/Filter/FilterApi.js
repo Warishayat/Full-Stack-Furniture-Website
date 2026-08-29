@@ -11,9 +11,9 @@ const escapeRegex = (string) => {
 
 const getFilteredProducts = async (req, res) => {
   try {
-    const { variant, material, color, category, minPrice, maxPrice, search } = req.query;
+    const { variant, material, color, category, minPrice, maxPrice, search, lite } = req.query;
 
-    const cacheKey = `filter_prod_${category || ''}_${variant || ''}_${material || ''}_${color || ''}_${minPrice || ''}_${maxPrice || ''}_${search || ''}`;
+    const cacheKey = `filter_prod_${category || ''}_${variant || ''}_${material || ''}_${color || ''}_${minPrice || ''}_${maxPrice || ''}_${search || ''}_${lite || 'false'}`;
     const cachedData = getCache(cacheKey);
     if (cachedData) return res.json(cachedData);
 
@@ -74,9 +74,15 @@ const getFilteredProducts = async (req, res) => {
       if (maxPrice) query["variants.price"].$lte = Number(maxPrice);
     }
 
-    const products = await Product.find(query)
-      .populate("category", "name slug")
-      .select("-specifications -variants.dimensions")
+    let dbQuery = Product.find(query).populate("category", "name slug");
+    
+    if (lite === 'true') {
+      dbQuery = dbQuery.select("_id title slug price oldPrice images category averageRating numReviews variants.name variants.price variants.oldPrice variants.materials.name variants.materials.colors.name variants.materials.colors.swatchImage variants.images specifications.delivery");
+    } else {
+      dbQuery = dbQuery.select("-specifications -variants.dimensions");
+    }
+
+    const products = await dbQuery
       .sort({ createdAt: -1 })
       .lean();
 

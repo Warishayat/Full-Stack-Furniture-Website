@@ -162,6 +162,8 @@ const ProductSchema = new Schema(
 
 ProductSchema.index({ category: 1, createdAt: -1 });
 ProductSchema.index({ createdAt: -1 });
+ProductSchema.index({ title: "text" });
+ProductSchema.index({ "variants.price": 1 });
 
 const Product = model("Product", ProductSchema);
 

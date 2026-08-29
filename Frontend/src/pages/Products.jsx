@@ -135,6 +135,7 @@ const Products = () => {
         if (activeFilters.material) params.material = activeFilters.material;
         if (activeFilters.color) params.color = activeFilters.color;
         if (activeFilters.variant) params.variant = activeFilters.variant;
+        params.lite = true;
 
         const { data } = await API.get(endpoint, { params });
         const items = data.products || (Array.isArray(data) ? data : []);

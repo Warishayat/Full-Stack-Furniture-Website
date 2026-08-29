@@ -84,6 +84,13 @@ const ProductCard = memo(({ product }) => {
     return url && (!!url.match(/\.(mp4|mov|webm|ogg)$/i) || url.includes('video/upload'));
   };
 
+  const getOptimizedUrl = (url, width) => {
+    if (url && url.includes('cloudinary.com') && url.includes('/upload/')) {
+      return url.replace('/upload/', `/upload/c_limit,w_${width},f_auto,q_auto/`);
+    }
+    return url;
+  };
+
   return (
     <div className="group bg-white overflow-hidden transition-all duration-300 flex flex-col h-full relative">
       {oldPrice > minPrice && (
@@ -105,9 +112,12 @@ const ProductCard = memo(({ product }) => {
       {/* Image Container */}
       <Link to={`/product/${product._id}`} className="relative aspect-[4/3] overflow-hidden bg-gray-50 flex items-center justify-center group">
         <img
-          src={isVideo(displayImage) ? displayImage.replace(/\.(mp4|mov|webm|ogg)$/i, '.jpg') : displayImage}
+          src={getOptimizedUrl(isVideo(displayImage) ? displayImage.replace(/\.(mp4|mov|webm|ogg)$/i, '.jpg') : displayImage, 500)}
           alt={product.title}
           loading="lazy"
+          decoding="async"
+          width="500"
+          height="375"
           className="w-full h-full object-contain object-center mix-blend-multiply scale-125 origin-center group-hover:scale-[1.35] transition-transform duration-700"
         />
         {isVideo(displayImage) && (

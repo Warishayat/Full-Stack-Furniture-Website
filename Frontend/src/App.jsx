@@ -9,7 +9,7 @@ import ScrollToTop from './components/utils/ScrollToTop';
 import { FaWhatsapp } from 'react-icons/fa';
 
 // Lazy load user pages
-const Home = lazy(() => import('./pages/Home'));
+import Home from './pages/Home';
 const Products = lazy(() => import('./pages/Products'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
 const Cart = lazy(() => import('./pages/Cart'));

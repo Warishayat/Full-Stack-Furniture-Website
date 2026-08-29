@@ -217,9 +217,9 @@ const createProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   try {
-    const { category, page = 1, limit = 10 } = req.query;
+    const { category, page = 1, limit = 10, lite } = req.query;
     
-    const cacheKey = `product_all_${category || 'all'}_${page}_${limit}`;
+    const cacheKey = `product_all_${category || 'all'}_${page}_${limit}_${lite || 'false'}`;
     const cachedData = getCache(cacheKey);
     if (cachedData) {
       return res.status(200).json(cachedData);
@@ -232,9 +232,15 @@ const getAllProducts = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
-    const products = await Product.find(filter)
-      .populate("category", "name slug")
-      .select("-specifications -variants.dimensions")
+    let query = Product.find(filter).populate("category", "name slug");
+    
+    if (lite === 'true') {
+      query = query.select("_id title slug price oldPrice images category averageRating numReviews variants.name variants.price variants.oldPrice variants.materials.name variants.materials.colors.name variants.materials.colors.swatchImage variants.images specifications.delivery");
+    } else {
+      query = query.select("-specifications.general -specifications.dimensions -specifications.packaging -specifications.care -specifications.assembly -specifications.returns -variants.dimensions");
+    }
+
+    const products = await query
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(Number(limit))

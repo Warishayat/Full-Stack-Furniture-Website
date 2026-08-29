@@ -8,7 +8,7 @@ const TestFeed = () => {
     try {
       // Get the current API base URL
       const baseUrl = API.defaults.baseURL || 'http://localhost:8000';
-      const downloadUrl = `${baseUrl}/product.csv`;
+      const downloadUrl = `${baseUrl}/api/meta/catalog.csv`;
       
       // Native browser download (most reliable way)
       window.open(downloadUrl, "_blank", "noopener,noreferrer");
@@ -26,20 +26,20 @@ const TestFeed = () => {
         <span className="text-[#D7282F] uppercase tracking-[0.4em] text-[10px] font-black mb-6 block">Diagnostics & Testing</span>
         <h2 className="text-4xl lg:text-5xl font-serif font-medium text-gray-900 tracking-tighter mb-4">Meta Catalog Feed</h2>
         <p className="text-gray-600 text-lg font-medium leading-relaxed max-w-2xl">
-          Use this page to verify and download the product catalog feed tailored for Meta/Facebook Commerce Manager.
+          Use this page to verify and download the dynamic product catalog feed tailored for Meta/Facebook Commerce Manager.
         </p>
       </div>
 
       <div className="bg-[#F2EDE7] p-10 border border-gray-100 mt-8 max-w-2xl">
         <h3 className="text-2xl font-serif font-medium text-gray-900 mb-4">Export Feed</h3>
-        <p className="text-gray-600 mb-8 font-medium">Click the button below to generate and download the latest product inventory in CSV format.</p>
+        <p className="text-gray-600 mb-8 font-medium">Click the button below to generate and download the latest product inventory (broken down into separate variants) in CSV format.</p>
         
         <button type="button" 
           onClick={handleDownload}
           className="flex items-center gap-3 px-8 py-4 bg-gray-900 text-white font-black text-[10px] uppercase tracking-[0.3em] hover:bg-[#D7282F] transition-all"
         >
           <Download className="w-4 h-4" />
-          Download product.csv
+          Download catalog.csv
         </button>
       </div>
     </div>
