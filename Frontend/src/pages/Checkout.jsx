@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -193,8 +193,11 @@ const Checkout = () => {
   };
 
   const [paymentLoading, setPaymentLoading] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const handlePaymentSubmit = async () => {
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
     try {
       setPaymentLoading(true);
 
@@ -261,6 +264,7 @@ const Checkout = () => {
     } catch (error) {
       console.error('Payment redirect error:', error);
       toast.error(error.response?.data?.message || 'Failed to initialize payment.');
+      isSubmittingRef.current = false;
     } finally {
       setPaymentLoading(false);
     }

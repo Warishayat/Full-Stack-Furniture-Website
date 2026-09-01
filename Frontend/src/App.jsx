@@ -148,7 +148,7 @@ function App() {
         href="https://wa.me/447376770302"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-[#25D366] text-white p-3.5 md:p-4 rounded-full shadow-[0_4px_14px_0_rgba(37,211,102,0.39)] hover:scale-110 hover:shadow-[0_6px_20px_rgba(37,211,102,0.23)] transition-all z-[9999] flex items-center justify-center"
+        className="fixed bottom-6 right-6 md:bottom-8 md:right-8 bg-[#25D366] text-white p-3.5 md:p-4 rounded-full shadow-[0_4px_14px_0_rgba(37,211,102,0.39)] hover:scale-110 hover:shadow-[0_6px_20px_rgba(37,211,102,0.23)] transition-all z-[9999] flex items-center justify-center print:hidden"
         aria-label="Chat with us on WhatsApp"
       >
         <FaWhatsapp className="w-7 h-7 md:w-8 md:h-8" />

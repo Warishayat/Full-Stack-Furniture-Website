@@ -31,7 +31,7 @@ const generateFeed = async (req, res) => {
         }
 
         // SKU is fallback if not present
-        const sku = variant.sku || `${product._id}-${variant._id}`;
+        const sku = variant.sku || variant._id.toString();
 
         // Get color and material as comma separated strings
         let colors = new Set();
@@ -60,6 +60,26 @@ const generateFeed = async (req, res) => {
            if (parts.length > 0) dimensionsStr = `${parts.join('x')} ${unit || 'cm'}`;
         }
 
+        const formatFacebookImage = (url) => {
+          if (!url) return "";
+          let finalUrl = url;
+          
+          if (url.startsWith("/")) finalUrl = `https://eliteseatingltd.co.uk${url}`;
+          else if (!url.startsWith("http")) finalUrl = `https://eliteseatingltd.co.uk/${url}`;
+
+          if (finalUrl.includes('cloudinary.com') && finalUrl.includes('/upload/')) {
+             // Force JPG format for Facebook/Meta
+             finalUrl = finalUrl.replace('/upload/', '/upload/f_jpg,q_auto/');
+             // Convert video extensions to jpg (Cloudinary will grab a frame)
+             finalUrl = finalUrl.replace(/\.(mp4|mov|webm|ogg)$/i, '.jpg');
+          }
+
+          // Meta caches broken images aggressively. We add a version string based on the product's last update.
+          const version = product.updatedAt ? new Date(product.updatedAt).getTime() : "v1";
+          const separator = finalUrl.includes('?') ? '&' : '?';
+          return `${finalUrl}${separator}v=${version}`;
+        };
+
         feedData.push({
           id: sku,
           title: `${product.title} - ${variant.name}`,
@@ -68,9 +88,9 @@ const generateFeed = async (req, res) => {
           condition: "new",
           price: priceStr,
           sale_price: salePriceStr,
-          link: `https://eliteseatingltd.co.uk/product/${product.slug || product._id}?variant=${encodeURIComponent(variant.name)}`,
-          image_link: variant.images[0],
-          additional_image_link: variant.images.slice(1).join(","),
+          link: `https://eliteseatingltd.co.uk/product/${product._id.toString()}?variant=${encodeURIComponent(variant.name)}`,
+          image_link: formatFacebookImage(variant.images[0]),
+          additional_image_link: variant.images.slice(1).map(formatFacebookImage).join(","),
           brand: "Elite Seating Ltd.",
           product_type: product.category?.name || "Furniture",
           item_group_id: product.slug || product._id.toString(),

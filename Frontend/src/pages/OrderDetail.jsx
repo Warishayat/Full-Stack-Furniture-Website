@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Package, Truck, CheckCircle, Clock, MapPin, CreditCard, ChevronLeft, Calendar, User, ArrowLeft } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, MapPin, CreditCard, ChevronLeft, Calendar, User, ArrowLeft, Printer } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import API from '../services/api';
@@ -41,6 +41,17 @@ const OrderDetail = () => {
     }
   };
 
+  const handlePaymentStatusChange = async (newStatus) => {
+    try {
+      await API.put(`/api/order/updatePaymentStatus/${id}`, { paymentStatus: newStatus });
+      setOrder(prev => ({ ...prev, paymentStatus: newStatus }));
+      toast.success(`Payment marked as ${newStatus}`);
+    } catch (error) {
+      console.error('Error updating payment status:', error);
+      toast.error('Failed to update payment status');
+    }
+  };
+
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
       case 'processing': return <Clock className="w-6 h-6 text-amber-500" />;
@@ -74,7 +85,8 @@ const OrderDetail = () => {
   }
 
   return (
-    <div className="bg-secondary min-h-screen pt-32 lg:pt-40 pb-24 lg:pb-32 overflow-x-hidden">
+    <>
+    <div className="bg-secondary min-h-screen pt-32 lg:pt-40 pb-24 lg:pb-32 overflow-x-hidden print:hidden">
       <div className="w-full px-4 sm:px-6 lg:px-12 max-w-7xl">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
@@ -91,12 +103,21 @@ const OrderDetail = () => {
             </h1>
           </div>
           
-          <div className="flex items-center gap-4 bg-white px-6 py-3 rounded-2xl border border-primary-100 shadow-sm">
-            <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
-              {getStatusIcon(order.orderStatus)}
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-0.5">Current Status</p>
+          <div className="flex items-center gap-4">
+             <button 
+               onClick={() => window.print()} 
+               className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-primary-100 shadow-sm text-primary-950 font-bold text-xs uppercase tracking-widest hover:bg-primary-50 transition-colors print:hidden"
+             >
+               <Printer className="w-4 h-4" />
+               Print Receipt
+             </button>
+             
+             <div className="flex items-center gap-4 bg-white px-6 py-3 rounded-2xl border border-primary-100 shadow-sm">
+               <div className="w-10 h-10 bg-primary-50 rounded-xl flex items-center justify-center">
+                 {getStatusIcon(order.orderStatus)}
+               </div>
+               <div>
+                 <p className="text-[10px] font-black text-primary-400 uppercase tracking-widest mb-0.5">Current Status</p>
               {user?.role === 'admin' || user?.isAdmin ? (
                 <select
                   value={order.orderStatus || 'processing'}
@@ -112,6 +133,7 @@ const OrderDetail = () => {
                 <p className="text-sm font-bold text-primary-950 capitalize">{order.orderStatus || 'Processing'}</p>
               )}
             </div>
+          </div>
           </div>
         </div>
 
@@ -149,7 +171,9 @@ const OrderDetail = () => {
                           )}
                         </div>
                         <div className="flex-1 min-w-0 space-y-2">
-                          <h4 className="text-lg font-serif font-bold text-primary-950 truncate">{item.title || item.product?.title || item.product?.name || 'Handcrafted Piece'}</h4>
+                          <Link to={`/product/${item.product?._id || item.product}`}>
+                             <h4 className="text-lg font-serif font-bold text-primary-950 truncate hover:text-accent transition-colors cursor-pointer">{item.title || item.product?.title || item.product?.name || 'Handcrafted Piece'}</h4>
+                          </Link>
                           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-primary-500 font-medium">
                             {item.variant?.name && (
                               <span>Variant: <strong className="text-primary-950">{item.variant.name}</strong></span>
@@ -202,14 +226,27 @@ const OrderDetail = () => {
                         <p className="font-bold text-primary-950">
                           {order.paymentMethod === 'cod' ? 'Cash on Delivery' : (order.paymentMethod === 'afterpay_clearpay' ? 'Clearpay / Afterpay' : 'Secure Card Payment')}
                         </p>
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 mt-1 text-[9px] font-black uppercase tracking-widest rounded-full ${
-                          order.paymentStatus === 'paid' 
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
-                            : 'bg-amber-50 text-amber-700 border border-amber-100'
-                        }`}>
-                          <div className={`w-1 h-1 rounded-full ${order.paymentStatus === 'paid' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                          {order.paymentStatus === 'paid' ? 'Paid / Completed' : (order.paymentMethod === 'cod' ? 'Pending (Pay on Delivery)' : 'Pending')}
-                        </span>
+                        <div className="flex items-center gap-2 mt-2">
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full ${
+                            order.paymentStatus === 'paid' 
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' 
+                              : 'bg-amber-50 text-amber-700 border border-amber-100'
+                          }`}>
+                            <div className={`w-1 h-1 rounded-full ${order.paymentStatus === 'paid' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                            {order.paymentStatus === 'paid' ? 'Paid / Completed' : (order.paymentMethod === 'cod' ? 'Pending (Pay on Delivery)' : 'Pending')}
+                          </span>
+                          
+                          {(user?.role === 'admin' || user?.isAdmin) && (
+                            <select
+                              value={order.paymentStatus || 'pending'}
+                              onChange={(e) => handlePaymentStatusChange(e.target.value)}
+                              className="bg-transparent text-[10px] font-black text-[#D7282F] outline-none cursor-pointer border-b border-dashed border-[#D7282F]/30 pb-0.5 focus:border-[#D7282F] uppercase tracking-widest"
+                            >
+                              <option value="pending">Mark as Pending</option>
+                              <option value="paid">Mark as Paid</option>
+                            </select>
+                          )}
+                        </div>
                      </div>
                   </div>
                   <div className="flex items-start gap-4 md:col-span-2 pt-4 border-t border-primary-50">
@@ -308,6 +345,110 @@ const OrderDetail = () => {
         </div>
       </div>
     </div>
+
+    {/* Print Only Receipt */}
+    <div className="hidden print:block p-10 bg-white text-black font-sans min-h-screen w-full relative" style={{ pageBreakAfter: 'always' }}>
+       {/* Header */}
+       <div className="flex justify-between items-start border-b border-gray-300 pb-6 mb-8">
+          <div>
+             <h1 className="text-3xl font-serif font-bold text-gray-900">EliteSeating LTD</h1>
+             <p className="text-sm text-gray-500 mt-1">Order Invoice / Receipt</p>
+          </div>
+          <div className="text-right">
+             <h2 className="text-xl font-bold text-gray-900">Order #{order._id.slice(-8).toUpperCase()}</h2>
+             <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+             <p className="text-sm text-gray-500 font-bold">{order.paymentStatus === 'paid' ? 'PAID' : 'PENDING'}</p>
+          </div>
+       </div>
+
+       {/* Customer Details */}
+       <div className="flex justify-between mb-8 text-sm">
+          <div>
+             <h3 className="font-bold text-gray-900 mb-2 uppercase text-xs">Billed / Delivered To</h3>
+             <p className="font-medium">{order.shippingAddress?.fullName || order.user?.name || 'Customer'}</p>
+             <p>{order.shippingAddress?.address}</p>
+             <p>{order.shippingAddress?.city}, {order.shippingAddress?.postalCode}</p>
+             <p>Phone: {order.shippingAddress?.phone || 'N/A'}</p>
+             <p>Email: {order.user?.email || 'N/A'}</p>
+          </div>
+       </div>
+
+       {/* Items Table */}
+       <table className="w-full text-left border-collapse mb-8 text-sm">
+          <thead>
+             <tr className="border-b border-gray-300">
+                <th className="py-3 font-bold text-gray-900 w-24">Item</th>
+                <th className="py-3 font-bold text-gray-900">Description</th>
+                <th className="py-3 font-bold text-gray-900 text-center">Qty</th>
+                <th className="py-3 font-bold text-gray-900 text-right">Price</th>
+             </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+             {order.items?.map((item, idx) => (
+                <tr key={idx}>
+                   <td className="py-4 pr-4">
+                      <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden border border-gray-200 shrink-0">
+                         <img 
+                           src={item.image || item.product?.images?.[0] || 'https://placehold.co/100x100'} 
+                           alt={item.title} 
+                           className="w-full h-full object-cover"
+                         />
+                      </div>
+                   </td>
+                   <td className="py-4">
+                      <p className="font-bold text-gray-900 text-base">{item.title || item.product?.title}</p>
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-600 mt-1">
+                        {item.variant?.name && <span>Variant: <strong className="text-gray-900">{item.variant.name}</strong></span>} 
+                        {item.color?.name && <span>Color: <strong className="text-gray-900">{item.color.name}</strong></span>}
+                        {item.material?.name && <span>Fabric: <strong className="text-gray-900">{item.material.name}</strong></span>}
+                        {item.leg && <span>Legs: <strong className="text-gray-900">{item.leg?.name || (typeof item.leg === 'string' ? item.leg : '')}</strong></span>}
+                        {item.firmness && <span>Firmness: <strong className="text-gray-900">{item.firmness?.name || (typeof item.firmness === 'string' ? item.firmness : '')}</strong></span>}
+                        {item.footstool && <span>Footstool: <strong className="text-gray-900">{item.footstool?.name || (typeof item.footstool === 'string' ? item.footstool : '')}</strong></span>}
+                        {item.coffeeTable && <span>Coffee Table: <strong className="text-gray-900">{item.coffeeTable?.name || (typeof item.coffeeTable === 'string' ? item.coffeeTable : '')}</strong></span>}
+                      </div>
+                   </td>
+                   <td className="py-4 text-center">{item.quantity}</td>
+                   <td className="py-4 text-right">£{(item.price || item.product?.price || 0).toLocaleString()}</td>
+                </tr>
+             ))}
+          </tbody>
+       </table>
+
+       {/* Totals */}
+       <div className="flex justify-end mb-32 text-sm">
+          <div className="w-1/2">
+             <div className="flex justify-between py-2 border-b border-gray-100">
+                <span className="text-gray-500">Subtotal</span>
+                <span>£{order.totalPrice ? (order.totalPrice - (order.assemblyService ? 50 : 0)).toLocaleString() : 0}</span>
+             </div>
+             {order.assemblyService && (
+               <div className="flex justify-between py-2 border-b border-gray-100">
+                  <span className="text-gray-500">Assembly</span>
+                  <span>£50</span>
+               </div>
+             )}
+             <div className="flex justify-between py-2 font-bold text-lg text-gray-900">
+                <span>Total</span>
+                <span>£{order.totalPrice?.toLocaleString()}</span>
+             </div>
+          </div>
+       </div>
+
+       {/* Signatures */}
+       <div className="flex justify-between mt-auto pt-32 pb-8">
+          <div className="text-center w-64">
+             <div className="w-full border-t-2 border-gray-900 mb-3 pt-2">
+               <p className="font-bold text-sm text-gray-900">Company Signature</p>
+             </div>
+          </div>
+          <div className="text-center w-64">
+             <div className="w-full border-t-2 border-gray-900 mb-3 pt-2">
+               <p className="font-bold text-sm text-gray-900">Customer Signature</p>
+             </div>
+          </div>
+       </div>
+    </div>
+    </>
   );
 };
 

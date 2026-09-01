@@ -42,7 +42,7 @@ const createCheckoutSession = async (req, res) => {
     });
 
     // Use req.headers.origin to dynamically get the frontend URL
-    const frontend_url = req.headers.origin || process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontend_url = req.headers.origin || process.env.FRONTEND_URL || "https://eliteseatingltd.onrender.com";
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card", "afterpay_clearpay", "klarna"],
@@ -345,7 +345,21 @@ const getMyOrders = async (req, res) => {
 
 const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
+    const { startDate, endDate } = req.query;
+    let query = {};
+    
+    if (startDate && endDate) {
+      query.createdAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    } else if (startDate) {
+      query.createdAt = { $gte: new Date(startDate) };
+    } else if (endDate) {
+      query.createdAt = { $lte: new Date(endDate) };
+    }
+
+    const orders = await Order.find(query)
       .populate("user", "name email")
       .populate("items.product")
       .sort({ createdAt: -1 });
@@ -887,6 +901,83 @@ const createSwatchOrder = async (req, res) => {
   }
 };
 
+const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const order = await Order.findByIdAndDelete(id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+    return res.status(200).json({ success: true, message: "Order deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updateOrderDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { shippingAddress, notes, orderStatus, paymentStatus } = req.body;
+    
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    if (shippingAddress) order.shippingAddress = shippingAddress;
+    if (notes !== undefined) order.notes = notes;
+    if (orderStatus) order.orderStatus = orderStatus;
+    if (paymentStatus) order.paymentStatus = paymentStatus;
+
+    await order.save();
+    return res.status(200).json({ success: true, message: "Order updated successfully", order });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updatePaymentStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { paymentStatus } = req.body;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    const previousStatus = order.paymentStatus;
+    order.paymentStatus = paymentStatus;
+    await order.save();
+
+    // If manually marked as paid, send the confirmation email
+    if (previousStatus === "pending" && paymentStatus === "paid") {
+      let finalEmail = order.user ? (await User.findById(order.user))?.email : null;
+      if (!finalEmail) finalEmail = order.shippingAddress?.fullName; // fallback or check if we store guest email
+      // Let's rely on finding email properly or skipping if guest didn't save email
+      // Wait, guest email is saved during checkout? 
+      // Actually we just use user email if available
+      if (order.user) {
+        const userDoc = await User.findById(order.user);
+        if (userDoc && userDoc.email) {
+          sendOrderConfirmationEmail(userDoc.email, order).catch(err => console.log("Manual Email error:", err));
+        }
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Payment status updated successfully",
+      order,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update payment status",
+    });
+  }
+};
+
 module.exports = {
   createCheckoutSession,
   webhookHandler,
@@ -897,5 +988,8 @@ module.exports = {
   getOrderById,
   createOrderAndSession,
   verifyPayment,
-  createSwatchOrder
+  updatePaymentStatus,
+  createSwatchOrder,
+  deleteOrder,
+  updateOrderDetails
 };

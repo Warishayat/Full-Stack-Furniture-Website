@@ -79,8 +79,8 @@ exports.createPayItMonthlyCheckout = async (req, res) => {
 
     const costOfGoods = (totalPrice).toFixed(2);
     
-    const frontend_url = req.headers.origin || process.env.FRONTEND_URL || "http://localhost:5173";
-    const backend_url = process.env.BACKEND_URL || "http://localhost:8000";
+    const frontend_url = req.headers.origin || process.env.FRONTEND_URL || "https://eliteseatingltd.onrender.com";
+    const backend_url = process.env.BACKEND_URL || "https://full-stack-furniture-website-oxz9.onrender.com";
 
     const newOrder = new Order({
       user: resolvedUser ? resolvedUser._id : undefined,
